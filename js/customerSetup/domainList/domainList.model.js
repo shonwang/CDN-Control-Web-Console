@@ -95,9 +95,9 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
                         }
                     }.bind(this))
                     this.total = res.totalCount;
-                    this.trigger("query.domain.success");
+                    this.trigger("query.domain.success", res);
                 } else {
-                    this.trigger("query.domain.error"); 
+                    this.trigger("query.domain.error", res); 
                 } 
             }.bind(this),function(res){
                 this.trigger("query.domain.error", res);

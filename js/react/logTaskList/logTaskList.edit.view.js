@@ -4,8 +4,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -14,10 +12,11 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "moment"], function (require, exports, template, BaseView, Utility, Antd, React, moment) {
+define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "moment"], function (require, exports, template, BaseView, Utility, Antd, React, moment) {
 
     var Button = Antd.Button,
         Input = Antd.Input,
+        InputNumber = Antd.InputNumber,
         Form = Antd.Form,
         Spin = Antd.Spin,
         FormItem = Form.Item,
@@ -25,103 +24,132 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
         Option = Select.Option,
         Modal = Antd.Modal,
         Table = Antd.Table,
-        InputNumber = Antd.InputNumber,
-        Tag = Antd.Tag,
         Icon = Antd.Icon,
         Tooltip = Antd.Tooltip,
-        Upload = Antd.Upload,
-        List = Antd.List,
-        DatePicker = Antd.DatePicker,
-        TimePicker = Antd.TimePicker,
-        RangePicker = DatePicker.RangePicker,
         Col = Antd.Col,
         Alert = Antd.Alert,
-        confirm = Modal.confirm;
+        confirm = Modal.confirm,
+        Popover = Antd.Popover,
+        Tag = Antd.Tag,
+        AutoComplete = Antd.AutoComplete;
 
-    var PreheatManageEditForm = function (_React$Component) {
-        _inherits(PreheatManageEditForm, _React$Component);
+    var logTaskListEditForm = function (_React$Component) {
+        _inherits(logTaskListEditForm, _React$Component);
 
-        function PreheatManageEditForm(props, context) {
-            _classCallCheck(this, PreheatManageEditForm);
+        function logTaskListEditForm(props, context) {
+            _classCallCheck(this, logTaskListEditForm);
 
-            var _this = _possibleConstructorReturn(this, (PreheatManageEditForm.__proto__ || Object.getPrototypeOf(PreheatManageEditForm)).call(this, props));
+            var _this = _possibleConstructorReturn(this, (logTaskListEditForm.__proto__ || Object.getPrototypeOf(logTaskListEditForm)).call(this, props));
 
             _this.onClickCancel = _this.onClickCancel.bind(_this);
-            _this.renderTaskNameView = _this.renderTaskNameView.bind(_this);
-            _this.renderNodesTableView = _this.renderNodesTableView.bind(_this);
-            _this.renderTimeBandTableView = _this.renderTimeBandTableView.bind(_this);
-            _this.validateTimeBand = _this.validateTimeBand.bind(_this);
-            _this.validateNodesList = _this.validateNodesList.bind(_this);
+            _this.renderBaseInfoView = _this.renderBaseInfoView.bind(_this);
+            _this.renderConditionTableView = _this.renderConditionTableView.bind(_this);
+            _this.validateTemplateFieldList = _this.validateTemplateFieldList.bind(_this);
+            _this.validateBackGetLogName = _this.validateBackGetLogName.bind(_this);
+            _this.validateDomains = _this.validateDomains.bind(_this);
             _this.handleSubmit = _this.handleSubmit.bind(_this);
+            _this.convertEnumToShowStr = _this.convertEnumToShowStr.bind(_this);
 
             _this.state = {
-                //上传
-                fileList: [],
-                disabledUpload: false,
-                preloadUrlCount: 0,
-                preloadFilePath: "",
-                //预热批次
-                isLoadingNodesList: false,
-                nodesList: [],
-                nodeModalVisible: false,
-                nodeDataSource: [],
-                isEditNode: false,
-                curEditNode: {},
-                //分时带宽
-                timeBandList: [],
-                timeModalVisible: false,
-                isEditTime: false,
-                curEditTime: {}
+                name: "", //"任务名称",
+                templateName: "", //"模板名称",
+                accountId: "",
+                domainType: "", //DomainType 域名类型 FUULLSCALE（全量域名） CUSTOM（自定义域名）
+                domains: [],
+                backUrl: "",
+                productType: "",
+
+                backMethod: "", //回传方法
+                senderType: "",
+                backGetLogName: "",
+                batchCount: 100, //多条发送上限
+                batchInterval: 60, //单批次最大延迟发送时间
+                logRange: "", //日志范围  EDGE（边缘） EDGE_AND_UPPER （边缘+上层）
+                compressMode: "", //压缩方式 TEXT（文本） LZ4（lz4）  GZ（gzip）
+                userAgent: "",
+                tokenKey: "",
+                taskTokenType: "KEY_FIRST", //任务TOKEN类型   KEY_FIRST （key在前时间在后） KEY_LAST （key在后时间在前）
+                taskTokenTimeType: "", //任务TOKEN日期类型 WITH_CROSS（有横线 例如 2010-08-12） NO_CROSS （无横线 例如 20100812）
+                taskConditionList: [],
+
+                dataSourceUserId: [],
+                dataSourceTemplateName: [],
+                dataSourceDomains: [],
+                dataSourceOriginFieldTag: [],
+                domainsVisible: "none",
+                backGetLogNameVisible: "none",
+
+                isLoadingTplDetail: true,
+                fieldModalVisible: false,
+                isEditField: false,
+                curEditField: {}
             };
 
-            if (props.isEdit) {
-                _this.state.nodesList = props.model.batchTimeBandwidth;
-            }
-
-            _this.isUploadDone = false;
-            moment.locale("zh");
+            _this.userIdList = [];
             return _this;
         }
 
-        _createClass(PreheatManageEditForm, [{
+        _createClass(logTaskListEditForm, [{
             key: 'componentDidMount',
             value: function componentDidMount() {
-                var preHeatProps = this.props.preHeatProps,
-                    nodeList = preHeatProps.nodeList;
-                if (nodeList.length == 0) {
-                    require(['nodeManage.model'], function (NodeManageModel) {
-                        var nodeManageModel = new NodeManageModel();
-                        nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this));
-                        nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this));
-                        nodeManageModel.getNodeList({ page: 1, count: 9999 });
-                        this.setState({
-                            isLoadingNodesList: true
-                        });
-                    }.bind(this));
-                }
-                var collection = this.props.preHeatProps.collection;
-                collection.on("refresh.commit.success", $.proxy(this.onSubmitSuccess, this));
-                collection.on("refresh.commit.error", $.proxy(this.onGetError, this));
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
+                require(['customerSetup.model'], function (CustomerSetupModel) {
+                    var customerSetup = new CustomerSetupModel();
+                    customerSetup.on("get.user.success", $.proxy(this.onGetUserListSuccess, this));
+                    customerSetup.on("get.user.error", $.proxy(this.onGetError, this));
+                    customerSetup.queryChannel({ currentPage: 1, pageSize: 99999 });
+                }.bind(this));
+                collection.on("template.selectList.success", $.proxy(this.onGetTplByProductTypeSuccess, this));
+                collection.on("template.selectList.error", $.proxy(this.onGetError, this));
+                collection.on("add.task.success", $.proxy(this.onSubmitSuccess, this));
+                collection.on("add.task.error", $.proxy(this.onGetError, this));
+                require(['logTemplateManage.field.model'], function (LogTplManageOriginField) {
+                    this.logTplManageOriginField = LogTplManageOriginField;
+                    var originFieldTagArray = LogTplManageOriginField.map(function (el, index) {
+                        return React.createElement(
+                            Option,
+                            { key: el.id },
+                            el.field
+                        );
+                    });
+                    this.setState({
+                        dataSourceOriginFieldTag: originFieldTagArray
+                    });
+                }.bind(this));
             }
         }, {
             key: 'componentWillUnmount',
             value: function componentWillUnmount() {
-                var collection = this.props.preHeatProps.collection;
-                collection.off("refresh.commit.success");
-                collection.off("refresh.commit.error");
+                var collection = this.props.ltProps.collection;
+                if (this.props.isEdit) {
+                    collection.off("task.detail.success");
+                    collection.off("task.detail.error");
+                }
+                collection.off("template.selectList.success");
+                collection.off("template.selectList.error");
+                collection.off("add.task.success");
+                collection.off("add.task.error");
             }
         }, {
-            key: 'onGetNodeListSuccess',
-            value: function onGetNodeListSuccess(res) {
-                this.props.preHeatProps.nodeList = res;
-                this.setState({
-                    isLoadingNodesList: false
-                });
-            }
-        }, {
-            key: 'onGetError',
-            value: function onGetError(error) {
-                if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
+            key: 'onGetUserListSuccess',
+            value: function onGetUserListSuccess(res) {
+                _.each(res.data, function (el) {
+                    this.userIdList.push(el.userId);
+                }.bind(this));
+
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
+                var model = this.props.model;
+                if (this.props.isEdit) {
+                    collection.on("task.detail.success", $.proxy(this.onGetTaskDetailSuccess, this));
+                    collection.on("task.detail.error", $.proxy(this.onGetError, this));
+                    collection.getTaskDetail({ id: model.id });
+                } else {
+                    this.setState({
+                        isLoadingTplDetail: false
+                    });
+                }
             }
         }, {
             key: 'onSubmitSuccess',
@@ -130,579 +158,972 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 this.onClickCancel();
             }
         }, {
-            key: 'onGetNodeListError',
-            value: function onGetNodeListError(error) {
-                var msg = error ? error.message : "获取节点信息失败!";
-                Utility.alerts(msg);
-            }
-        }, {
-            key: 'handleSubmit',
-            value: function handleSubmit(e) {
-                e.preventDefault();
-                var _props$form = this.props.form,
-                    resetFields = _props$form.resetFields,
-                    validateFields = _props$form.validateFields;
+            key: 'onGetTaskDetailSuccess',
+            value: function onGetTaskDetailSuccess(res) {
+                this.groupId = res.groupId;
+                this.originCreateTime = res.originCreateTime;
 
-                resetFields("nodesList");
-                var checkArray = ["taskName", "taskDomain", "rangeTimePicker", "nodesList", "fileList"];
-                if (this.props.isEdit) {
-                    checkArray = ["nodesList"];
-                }
-                validateFields(checkArray, function (err, vals) {
-                    var _this2 = this;
-
-                    var postParam,
-                        postNodesList = [],
-                        model = this.props.model;
-                    var collection = this.props.preHeatProps.collection;
-                    if (!err) {
-                        _.each(this.state.nodesList, function (node) {
-                            var postNode = {
-                                id: node.id,
-                                sortnum: node.sortnum,
-                                nodes: node.nodeNameArray.join(";")
-                            },
-                                timeWidthList = [];
-
-                            if (!_this2.props.isEdit) delete postNode.id;
-
-                            _.each(node.timeWidth, function (time) {
-                                var timeObj = {
-                                    bandwidth: time.bandwidth,
-                                    batchEndTime: moment(time.batchEndTime, 'HH:mm').valueOf(),
-                                    id: time.id,
-                                    batchStartTime: moment(time.batchStartTime, 'HH:mm').valueOf()
-                                };
-                                if (!_this2.props.isEdit) delete timeObj.id;
-
-                                timeWidthList.push(timeObj);
-                            });
-                            postNode.timeWidth = timeWidthList;
-                            postNodesList.push(postNode);
-                        });
-
-                        if (!this.props.isEdit) {
-                            postParam = {
-                                taskName: vals.taskName,
-                                preloadChannel: vals.taskDomain,
-                                preloadFilePath: this.state.preloadFilePath,
-                                preloadUrlCount: this.state.preloadUrlCount,
-                                startTime: vals.rangeTimePicker[0].valueOf(),
-                                endTime: vals.rangeTimePicker[1].valueOf(),
-                                batchTimeBandwidth: postNodesList,
-                                committer: $(".user-name").html()
-                            };
-                            console.log(postParam);
-                            collection.commitTask(postParam);
-                        } else {
-
-                            postParam = {
-                                taskId: model.id,
-                                batchTimeBandwidth: postNodesList
-                            };
-                            console.log(postParam);
-                            collection.taskModify(postParam);
-                        }
-                    }
-                }.bind(this));
-            }
-        }, {
-            key: 'onClickCancel',
-            value: function onClickCancel() {
-                var onClickCancelCallback = this.props.preHeatProps.onClickCancelCallback;
-                onClickCancelCallback && onClickCancelCallback();
-            }
-        }, {
-            key: 'onUploadFile',
-            value: function onUploadFile(e) {
-                console.log('Upload event:', e);
-                if (e.fileList.length > 1) {
-                    return [];
-                }
-                if (e) {
-                    if (e.file.status == "error") {
-                        this.onGetError(e.file.response);
-                    } else if (e.file.status == "done") {
-                        Utility.alerts("上传成功！", "success", 2000);
-                        var res = e.file.response;
-                        this.setState({
-                            preloadUrlCount: res.preloadUrlCount,
-                            preloadFilePath: res.preloadFilePath
-                        });
-                    }
-                    if (!this.state.disabledUpload) {
-                        this.setState({
-                            disabledUpload: true
-                        });
-                    }
-                }
-                return e.fileList;
-            }
-        }, {
-            key: 'validateDomain',
-            value: function validateDomain(rule, value, callback) {
-                if (value && Utility.isDomain(value)) {
-                    callback();
-                } else {
-                    callback('请输入正确的域名！');
-                }
-            }
-        }, {
-            key: 'validateNodesList',
-            value: function validateNodesList(rule, value, callback) {
-                if (this.state.nodesList.length != 0) {
-                    callback();
-                } else {
-                    callback('请添加预热节点！');
-                }
-            }
-        }, {
-            key: 'validateTimeBand',
-            value: function validateTimeBand(rule, value, callback) {
-                if (this.state.timeBandList.length != 0) {
-                    callback();
-                } else {
-                    callback('请添加分时分时任务！');
-                }
-            }
-        }, {
-            key: 'renderTaskNameView',
-            value: function renderTaskNameView(formItemLayout) {
-                var _this3 = this;
-
-                var _props$form2 = this.props.form,
-                    getFieldDecorator = _props$form2.getFieldDecorator,
-                    setFieldsValue = _props$form2.setFieldsValue,
-                    getFieldValue = _props$form2.getFieldValue;
-
-                var taskNameView = "",
-                    model = this.props.model;
-
-                var uploadProps = {
-                    action: BASE_URL + "/refresh/task/upload",
-                    onRemove: function onRemove(file) {
-                        var fileList = getFieldValue("fileList");
-                        var index = fileList.indexOf(file);
-                        var newFileList = fileList.slice();
-                        newFileList.splice(index, 1);
-                        setFieldsValue({
-                            fileList: newFileList
-                        });
-                        _this3.setState({
-                            disabledUpload: false
-                        });
-                    },
-                    beforeUpload: function beforeUpload(file, fileList) {
-                        if (fileList.length > 1) {
-                            return false;
-                        }
-                    },
-                    multiple: false,
-                    disabled: this.state.disabledUpload
-                };
-
-                if (this.props.isEdit) {
-                    taskNameView = React.createElement(
-                        'div',
-                        null,
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u4EFB\u52A1\u540D\u79F0', style: { marginBottom: "0px" } }),
-                            React.createElement(
-                                'span',
-                                { className: 'ant-form-text' },
-                                model.taskName
-                            )
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u57DF\u540D', style: { marginBottom: "0px" } }),
-                            React.createElement(
-                                'span',
-                                { className: 'ant-form-text' },
-                                model.channel
-                            )
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u6587\u4EF6', style: { marginBottom: "0px" } }),
-                            React.createElement(
-                                'span',
-                                { className: 'ant-form-text' },
-                                model.preloadFilePath
-                            )
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u6587\u4EF6\u6570\u76EE', style: { marginBottom: "0px" } }),
-                            React.createElement(
-                                'span',
-                                { className: 'ant-form-text' },
-                                model.preloadUrlCount
-                            )
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u8D77\u6B62\u65F6\u95F4' }),
-                            React.createElement(
-                                'span',
-                                { className: 'ant-form-text' },
-                                model.startTimeFormated,
-                                '~',
-                                model.endTimeFormated
-                            )
-                        )
-                    );
-                } else {
-                    taskNameView = React.createElement(
-                        'div',
-                        null,
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u4EFB\u52A1\u540D\u79F0', hasFeedback: true }),
-                            getFieldDecorator('taskName', {
-                                rules: [{ required: true, message: '请输入任务名称!' }]
-                            })(React.createElement(Input, null))
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u57DF\u540D', hasFeedback: true }),
-                            getFieldDecorator('taskDomain', {
-                                validateFirst: true,
-                                rules: [{
-                                    required: true, message: '请输入预热域名!' }, {
-                                    validator: this.validateDomain
-                                }]
-                            })(React.createElement(Input, null))
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u6587\u4EF6' }),
-                            React.createElement(
-                                'div',
-                                { className: 'dropbox' },
-                                getFieldDecorator('fileList', {
-                                    valuePropName: 'fileList',
-                                    getValueFromEvent: $.proxy(this.onUploadFile, this),
-                                    initialValue: this.state.fileList,
-                                    rules: [{ type: "array", required: true, message: '请上传预热文件，只能上传一个!' }]
-                                })(React.createElement(
-                                    Upload.Dragger,
-                                    uploadProps,
-                                    React.createElement(
-                                        'p',
-                                        { className: 'ant-upload-drag-icon' },
-                                        React.createElement(Icon, { type: 'inbox' })
-                                    ),
-                                    React.createElement(
-                                        'p',
-                                        { className: 'ant-upload-text' },
-                                        '\u652F\u6301\u70B9\u51FB\u6216\u62D6\u62FD\u5230\u6846\u91CC\u4E0A\u4F20'
-                                    ),
-                                    React.createElement(
-                                        'p',
-                                        { className: 'ant-upload-hint' },
-                                        '\u53EA\u80FD\u4E0A\u4F20\u4E00\u4E2A\u6587\u4EF6'
-                                    )
-                                ))
-                            )
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u6587\u4EF6\u6570\u76EE', style: { marginBottom: "0px" } }),
-                            React.createElement(
-                                'span',
-                                { className: 'ant-form-text' },
-                                this.state.preloadUrlCount
-                            )
-                        ),
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u8D77\u6B62\u65F6\u95F4' }),
-                            getFieldDecorator('rangeTimePicker', {
-                                rules: [{ type: 'array', required: true, message: '请选择起止时间！' }]
-                            })(React.createElement(RangePicker, { showTime: { format: 'HH:mm', minuteStep: 30 },
-                                format: 'YYYY/MM/DD HH:mm',
-                                disabledDate: this.disabledDate,
-                                disabledTime: this.disabledTime }))
-                        )
-                    );
-                }
-
-                return taskNameView;
-            }
-        }, {
-            key: 'handleCancel',
-            value: function handleCancel() {
+                _.each(res.taskConditionList, function (el) {
+                    el.id = Utility.randomStr(8);
+                });
                 this.setState({
-                    nodeModalVisible: false
+                    name: res.name,
+                    templateName: res.templateName,
+                    accountId: res.accountId,
+                    domainType: res.domainType,
+                    domains: res.domains,
+                    backUrl: res.backUrl,
+                    productType: res.productType,
+
+                    backMethod: res.taskFieldJson.backMethod,
+                    senderType: res.taskFieldJson.senderType,
+                    backGetLogName: res.taskFieldJson.backGetLogName,
+                    batchCount: res.taskFieldJson.batchCount,
+                    batchInterval: res.taskFieldJson.batchInterval,
+                    logRange: res.taskFieldJson.logRange,
+                    compressMode: res.taskFieldJson.compressMode,
+                    userAgent: res.taskFieldJson.userAgent,
+                    tokenKey: res.taskFieldJson.tokenKey,
+                    taskTokenType: res.taskFieldJson.taskTokenType,
+                    taskTokenTimeType: res.taskFieldJson.taskTokenTimeType,
+                    taskConditionList: res.taskFieldJson.taskConditionList,
+
+                    isLoadingTplDetail: false
                 });
             }
         }, {
-            key: 'handleTimeCancel',
-            value: function handleTimeCancel() {
-                this.setState({
-                    timeModalVisible: false
-                });
-            }
-        }, {
-            key: 'onClickAddNodes',
-            value: function onClickAddNodes(event) {
-                this.setState({
-                    isEditNode: false,
-                    curEditNode: {},
-                    nodeModalVisible: true,
-                    timeBandList: []
-                });
-            }
-        }, {
-            key: 'handleNodeOk',
-            value: function handleNodeOk(e) {
-                var _this4 = this;
-
-                e.preventDefault();
+            key: 'convertEnumToShowStr',
+            value: function convertEnumToShowStr() {
                 var _state = this.state,
-                    nodesList = _state.nodesList,
-                    isEditNode = _state.isEditNode,
-                    curEditNode = _state.curEditNode,
-                    timeBandList = _state.timeBandList;
-                var _props$form3 = this.props.form,
-                    getFieldsValue = _props$form3.getFieldsValue,
-                    validateFields = _props$form3.validateFields,
-                    resetFields = _props$form3.resetFields;
+                    taskTokenTimeType = _state.taskTokenTimeType,
+                    taskTokenType = _state.taskTokenType,
+                    backMethod = _state.backMethod,
+                    tokenKey = _state.tokenKey,
+                    backGetLogName = _state.backGetLogName,
+                    domainType = _state.domainType,
+                    domains = _state.domains,
+                    logRange = _state.logRange,
+                    compressMode = _state.compressMode;
 
-                var newNodes = null;
-                resetFields("timeBand");
-                validateFields(["selectNodes", "inputOriginBand", "timeBand"], function (err, vals) {
-                    if (!err && !isEditNode) {
-                        newNodes = {
-                            sortnum: nodesList.length + 1,
-                            id: Utility.randomStr(8),
-                            nodeNameArray: getFieldsValue().selectNodes,
-                            timeWidth: [].concat(_toConsumableArray(timeBandList))
-                        };
-                        _this4.setState({
-                            nodesList: [].concat(_toConsumableArray(nodesList), [newNodes]),
-                            nodeModalVisible: false
-                        });
-                    } else if (!err && isEditNode) {
-                        _.find(nodesList, function (el) {
-                            if (el.id == curEditNode.id) {
-                                el.nodeNameArray = getFieldsValue().selectNodes, el.timeWidth = [].concat(_toConsumableArray(timeBandList));
-                            }
-                        });
+                var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
 
-                        _this4.setState({
-                            nodesList: [].concat(_toConsumableArray(nodesList)),
-                            nodeModalVisible: false
+                var dataForShow = {
+                    token: "",
+                    taskTokenTimeType: "",
+                    backGetLogName: "",
+                    domainType: "",
+                    domainContent: "全量域名",
+                    logRange: "",
+                    compressMode: ""
+                };
+                if (taskTokenTimeType == "WITH_CROSS") {
+                    dataForShow.taskTokenTimeType = "yyyy-MM-dd";
+                } else if (taskTokenTimeType == "NO_CROSS") {
+                    dataForShow.taskTokenTimeType = "yyyyMMdd";
+                }
+                if (taskTokenType == "KEY_FIRST") {
+                    dataForShow.token = "方式一：md5({key:" + tokenKey + "}{time:" + dataForShow.taskTokenTimeType + "})";
+                } else if (taskTokenType == "KEY_LAST ") {
+                    dataForShow.token = "方式一：md5({time:" + dataForShow.taskTokenTimeType + "}{key:" + tokenKey + "})";
+                }
+                if (backMethod == "GET") {
+                    dataForShow.backGetLogName = ", Log参数名称：" + backGetLogName;
+                }
+                if (domainType == "FULLSCALE") {
+                    dataForShow.domainType = "全量域名";
+                } else if (domainType == "CUSTOM") {
+                    dataForShow.domainType = "自定义域名";
+                    if (domains) {
+                        dataForShow.domainContent = domains.map(function (el, index) {
+                            var random = Math.floor(Math.random() * colors.length);
+                            return React.createElement(
+                                Tag,
+                                { color: colors[random], key: index, style: { marginBottom: '5px' } },
+                                el
+                            );
                         });
                     }
-                });
+                }
+                if (logRange == "EDGE") {
+                    dataForShow.logRange = "边缘";
+                } else if (logRange == "EDGE_AND_UPPER") {
+                    dataForShow.logRange = "边缘+上层";
+                }
+                if (compressMode == "TEXT") {
+                    dataForShow.compressMode = "文本";
+                } else if (compressMode == "LZ4") {
+                    dataForShow.compressMode = "lz4";
+                } else if (compressMode == "GZ") {
+                    dataForShow.compressMode = "gzip";
+                }
+                return dataForShow;
             }
         }, {
-            key: 'handleNodeSearch',
-            value: function handleNodeSearch(value) {
-                var preHeatProps = this.props.preHeatProps;
-                var nodeArray = [],
-                    nodeList = preHeatProps.nodeList;
-                if (value && nodeList) {
-                    nodeArray = _.filter(nodeList, function (el) {
-                        return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1;
+            key: 'renderBaseInfoView',
+            value: function renderBaseInfoView(formItemLayout) {
+                var _props$form = this.props.form,
+                    getFieldDecorator = _props$form.getFieldDecorator,
+                    setFieldsValue = _props$form.setFieldsValue,
+                    getFieldValue = _props$form.getFieldValue;
+
+                var baseInfoView = null,
+                    dataShow = this.convertEnumToShowStr(),
+                    wrapperCol204 = { span: 22, offset: 2 },
+                    wrapperCol22 = { span: 20 },
+                    tokenTypeTxt1 = "md5({key: TOKEN KEY}{time: TOKEN 日期})",
+                    tokenTypeTxt2 = "md5({time: TOKEN 日期}{key: TOKEN KEY})";
+                if (this.props.isView) {
+                    baseInfoView = React.createElement(
+                        'div',
+                        null,
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u4EFB\u52A1\u540D\u79F0' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.name
+                                    )
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u5BA2\u6237ID' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.accountId
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u4EA7\u54C1\u7EBF' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.productType
+                                    )
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u6A21\u7248\u540D\u79F0' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.templateName
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u57DF\u540D\u6807\u8BC6' }),
+                                    React.createElement(
+                                        Popover,
+                                        { content: dataShow.domainContent, trigger: 'click', placement: 'bottom' },
+                                        React.createElement(
+                                            Tag,
+                                            { color: "green" },
+                                            dataShow.domainType
+                                        )
+                                    )
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u56DE\u4F20\u5730\u5740' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.backUrl
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 24 },
+                                React.createElement(
+                                    FormItem,
+                                    { labelCol: { span: 4 }, wrapperCol: { span: 20 }, label: '\u56DE\u4F20\u65B9\u6CD5' },
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.backMethod,
+                                        dataShow.backGetLogName
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u591A\u6761\u53D1\u9001\u4E0A\u9650' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.batchCount
+                                    )
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    { labelCol: { span: 16 }, wrapperCol: { span: 8 }, label: '\u5355\u6279\u6B21\u6700\u5927\u5EF6\u8FDF\u53D1\u9001\u65F6\u95F4' },
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.batchInterval
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u65E5\u5FD7\u53D1\u9001\u8303\u56F4' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        dataShow.logRange
+                                    )
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u538B\u7F29\u65B9\u5F0F' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        dataShow.compressMode
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 8 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: 'User-Agent' }),
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        this.state.userAgent
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol204 },
+                            React.createElement(
+                                Col,
+                                { span: 24 },
+                                React.createElement(
+                                    FormItem,
+                                    { labelCol: { span: 4 }, wrapperCol: { span: 20 }, label: 'token' },
+                                    React.createElement(
+                                        'span',
+                                        { className: 'ant-form-text' },
+                                        dataShow.token
+                                    )
+                                )
+                            )
+                        )
+                    );
+                } else {
+                    baseInfoView = React.createElement(
+                        'div',
+                        null,
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u4EFB\u52A1\u540D\u79F0', hasFeedback: true }),
+                                    getFieldDecorator('name', {
+                                        initialValue: this.state.name,
+                                        validateFirst: true,
+                                        rules: [{ required: true, message: '请输入任务名称!' }]
+                                    })(React.createElement(Input, { disabled: this.props.isEdit }))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u5BA2\u6237ID' }),
+                                    getFieldDecorator('accountId', {
+                                        initialValue: this.state.accountId,
+                                        rules: [{ required: true, message: '请输入客户ID!' }]
+                                    })(React.createElement(
+                                        AutoComplete,
+                                        {
+                                            style: { width: 200 },
+                                            onBlur: $.proxy(this.onAccountIdChange, this),
+                                            onSearch: $.proxy(this.handleUserIdSearch, this) },
+                                        this.state.dataSourceUserId
+                                    ))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u4EA7\u54C1\u7EBF' }),
+                                    getFieldDecorator('productType', {
+                                        initialValue: this.state.productType,
+                                        rules: [{ required: true, message: '请选择产品线!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 }, onChange: $.proxy(this.onProductTypeChange, this) },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'LIVE' },
+                                            '\u76F4\u64AD'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'DOWNLOAD' },
+                                            '\u70B9\u64AD'
+                                        )
+                                    ))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u6A21\u7248\u540D\u79F0' }),
+                                    getFieldDecorator('templateName', {
+                                        initialValue: this.state.templateName,
+                                        rules: [{ required: true, message: '请输入模版名称!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 }, labelInValue: true },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        this.state.dataSourceTemplateName
+                                    ))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: React.createElement(
+                                            'span',
+                                            null,
+                                            '\u57DF\u540D\u6807\u8BC6\xA0',
+                                            React.createElement(
+                                                Tooltip,
+                                                { title: '\u8BF4\u660E\uFF1A\uFF081\uFF09\u9009\u62E9\u5168\u91CF\u57DF\u540D\u6807\u8BC6\u540E\uFF0C\u7CFB\u7EDF\u53EF\u901A\u8FC7\u5BA2\u6237ID\u5173\u8054\u51FA\u8BE5\u5BA2\u6237\u7684\u5168\u91CF\u57DF\u540D\uFF0C\u5E76\u540C\u6B65\u589E\u51CF\u57DF\uFF0C\u6BCF\u6B21\u57DF\u540D\u53D8\u5316\u65E0\u9700\u518D\u6B21\u66F4\u6539\u65E5\u5FD7\u7684\u914D\u7F6E\uFF082\uFF09\u9009\u62E9\u53EF\u914D\u7F6E\u57DF\u540D\u540E\uFF0C\u9700\u8981\u7EE7\u7EED\u914D\u7F6E\u5BA2\u6237\u56DE\u4F20\u57DF\u540D\uFF0C\u4E14\u540E\u7EED\u53EF\u66F4\u6539' },
+                                                React.createElement(Icon, { type: 'question-circle-o' })
+                                            )
+                                        ) }),
+                                    getFieldDecorator('domainType', {
+                                        initialValue: this.state.domainType,
+                                        rules: [{ required: true, message: '请选择域名标识!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 }, onChange: $.proxy(this.onDomainTypeChange, this) },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'FULLSCALE' },
+                                            '\u5168\u91CF\u57DF\u540D'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'CUSTOM' },
+                                            '\u81EA\u5B9A\u4E49\u57DF\u540D'
+                                        )
+                                    ))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u5BA2\u6237\u56DE\u4F20\u57DF\u540D\u8BBE\u7F6E', required: true, style: { display: this.state.domainsVisible } }),
+                                    getFieldDecorator('domains', {
+                                        initialValue: this.state.domains,
+                                        rules: [{ validator: this.validateDomains }]
+                                    })(React.createElement(
+                                        Select,
+                                        { mode: 'multiple', allowClear: true,
+                                            placeholder: '请选择',
+                                            maxTagCount: 1,
+                                            notFoundContent: React.createElement(Spin, { size: 'small' }),
+                                            filterOption: false },
+                                        this.state.dataSourceDomains
+                                    ))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u56DE\u4F20\u5730\u5740', hasFeedback: true }),
+                                    getFieldDecorator('backUrl', {
+                                        initialValue: this.state.name,
+                                        validateFirst: true,
+                                        rules: [{ required: true, message: '请输入回传地址!' }]
+                                    })(React.createElement(Input, { style: { width: "600px" } }))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: "回传方法" }),
+                                    getFieldDecorator('backMethod', {
+                                        initialValue: this.state.backMethod,
+                                        rules: [{ required: true, message: '请选择回传方法!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 }, onChange: $.proxy(this.onBackMethodChange, this) },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'GET' },
+                                            'GET'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'POST' },
+                                            'POST'
+                                        )
+                                    ))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: '\u53C2\u6570\u540D\u79F0', required: true, style: { display: this.state.backGetLogNameVisible } }),
+                                    getFieldDecorator('backGetLogName', {
+                                        initialValue: this.state.backGetLogName,
+                                        rules: [{ validator: this.validateBackGetLogName }]
+                                    })(React.createElement(Input, null))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: React.createElement(
+                                            'span',
+                                            null,
+                                            '\u591A\u6761\u53D1\u9001\u4E0A\u9650\xA0',
+                                            React.createElement(
+                                                Tooltip,
+                                                { title: '\u6700\u5927\u53D1\u9001\u4E0A\u96501000\u6761' },
+                                                React.createElement(Icon, { type: 'question-circle-o' })
+                                            )
+                                        ) }),
+                                    getFieldDecorator('batchCount', {
+                                        initialValue: this.state.batchCount,
+                                        rules: [{ required: true, message: '请输入多条发送上限!' }]
+                                    })(React.createElement(InputNumber, { min: 1, max: 1000 }))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: React.createElement(
+                                            'span',
+                                            null,
+                                            '\u5355\u6279\u6B21\u6700\u5927\u5EF6\u8FDF\u53D1\u9001\u65F6\u95F4\xA0',
+                                            React.createElement(
+                                                Tooltip,
+                                                { title: '\u8BE5\u914D\u7F6E\u4E0E\u591A\u6761\u53D1\u9001\u4E0A\u9650\u6EE1\u8DB3\u4E00\u4E2A\u5373\u53D1\u9001' },
+                                                React.createElement(Icon, { type: 'question-circle-o' })
+                                            )
+                                        ) }),
+                                    getFieldDecorator('batchInterval', {
+                                        initialValue: this.state.batchInterval,
+                                        rules: [{ required: true, message: '请输入单批次最大延迟发送时间!' }]
+                                    })(React.createElement(InputNumber, null)),
+                                    React.createElement(
+                                        'span',
+                                        { style: { marginLeft: "10px" } },
+                                        'S'
+                                    )
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: "日志发送范围" }),
+                                    getFieldDecorator('logRange', {
+                                        initialValue: this.state.logRange,
+                                        rules: [{ required: true, message: '请选择日志发送范围!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 } },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'EDGE' },
+                                            '\u8FB9\u7F18'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'EDGE_AND_UPPER' },
+                                            '\u8FB9\u7F18+\u4E0A\u5C42'
+                                        )
+                                    ))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: "压缩方式" }),
+                                    getFieldDecorator('compressMode', {
+                                        initialValue: this.state.compressMode,
+                                        rules: [{ required: true, message: '请选择压缩方式!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 } },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'TEXT' },
+                                            '\u6587\u672C'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'LZ4' },
+                                            'lz4'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'GZ' },
+                                            'gzip'
+                                        )
+                                    ))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: 'User-Agent' }),
+                                    getFieldDecorator('userAgent', {
+                                        initialValue: this.state.userAgent,
+                                        rules: [{ required: true, message: '请输入User-Agent!' }]
+                                    })(React.createElement(Input, null))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: React.createElement(
+                                            'span',
+                                            null,
+                                            'TOKEN\u7C7B\u578B\xA0',
+                                            React.createElement(
+                                                Tooltip,
+                                                { title: '\uFF081\uFF09token\u4E3A32\u5B57\u8282\u957F\u5EA6\u9274\u6743\u4E32;\uFF082\uFF09id\u4E3A8\u5B57\u8282\u957F\u5EA6\u5B57\u7B26\u4E32\uFF0C\u6BCF\u6B21\u8BF7\u6C42\u5206\u914D\u4E0D\u540Cid\uFF0C\u7528\u4E8E\u533A\u5206\u4E0D\u540C\u8BF7\u6C42\uFF1B\uFF083\uFF09cdnkey\u4E3A\u5206\u914D\u7ED9cdn\u5382\u5546\u7684\u5BC6\u94A5\uFF1B\uFF084\uFF09time\u4E3A\u65F6\u95F4\u6233\uFF0C\u5305\u542B\u4E09\u79CD\u683C\u5F0F\uFF1AUNIX\u65F6\u95F4\u6233\uFF0C2018-05-08 14:00:00\uFF0C 20180508141156' },
+                                                React.createElement(Icon, { type: 'question-circle-o' })
+                                            )
+                                        ) }),
+                                    getFieldDecorator('taskTokenType', {
+                                        initialValue: this.state.taskTokenType,
+                                        rules: [{ required: true, message: '请选择域名标识!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 500 } },
+                                        React.createElement(
+                                            Option,
+                                            { value: 'KEY_FIRST' },
+                                            '\u65B9\u5F0F\u4E00\uFF1AKEY\u5728\u524D\u65F6\u95F4\u5728\u540E ',
+                                            tokenTypeTxt1
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'KEY_LAST' },
+                                            '\u65B9\u5F0F\u4E8C\uFF1AKEY\u5728\u540E\u65F6\u95F4\u5728\u524D ',
+                                            tokenTypeTxt2
+                                        )
+                                    ))
+                                )
+                            )
+                        ),
+                        React.createElement(
+                            FormItem,
+                            { wrapperCol: wrapperCol22 },
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: 'TOKEN KEY' }),
+                                    getFieldDecorator('tokenKey', {
+                                        initialValue: this.state.tokenKey,
+                                        rules: [{ required: true, message: '请输入TOKEN KEY!' }]
+                                    })(React.createElement(Input, null))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: "TOKEN日期类型" }),
+                                    getFieldDecorator('taskTokenTimeType', {
+                                        initialValue: this.state.taskTokenTimeType,
+                                        rules: [{ required: true, message: '请选择TOKEN日期类型!' }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 } },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'WITH_CROSS' },
+                                            'yyyy-MM-dd'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'NO_CROSS' },
+                                            'yyyyMMdd'
+                                        )
+                                    ))
+                                )
+                            )
+                        )
+                    );
+                }
+
+                return baseInfoView;
+            }
+        }, {
+            key: 'handleUserIdSearch',
+            value: function handleUserIdSearch(value) {
+                if (value.length < 3) return;
+                var IdArray = [],
+                    userIdList = this.userIdList;
+                if (value && userIdList) {
+                    IdArray = _.filter(userIdList, function (el) {
+                        var id = el + "";
+                        return id.indexOf(value) > -1;
                     }.bind(this)).map(function (el) {
+                        el = el + "";
                         return React.createElement(
                             Option,
-                            { key: el.name },
-                            el.name
+                            { key: el },
+                            el
                         );
                     });
                 }
 
                 this.setState({
-                    nodeDataSource: nodeArray
+                    dataSourceUserId: IdArray
                 });
             }
         }, {
-            key: 'onClickEditNode',
-            value: function onClickEditNode(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.nodesList, function (obj) {
-                    return obj.id == id;
-                }.bind(this));
+            key: 'onProductTypeChange',
+            value: function onProductTypeChange(value) {
+                var _props$form2 = this.props.form,
+                    setFieldsValue = _props$form2.setFieldsValue,
+                    getFieldsValue = _props$form2.getFieldsValue;
 
+                setFieldsValue({ "templateName": "" });
                 this.setState({
-                    nodeModalVisible: true,
-                    isEditNode: true,
-                    curEditNode: model,
-                    timeBandList: model.timeWidth
+                    dataSourceTemplateName: []
                 });
-            }
-        }, {
-            key: 'onClickDeleteNode',
-            value: function onClickDeleteNode(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                confirm({
-                    title: '你确定要删除吗？',
-                    okText: '确定',
-                    okType: 'danger',
-                    cancelText: '算了，不删了',
-                    onOk: function () {
-                        var list = _.filter(this.state.nodesList, function (obj) {
-                            return obj.id !== id;
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection,
+                    applicationType = "",
+                    accountId = getFieldsValue().accountId;
+                if (value) {
+                    collection.getTemplateByProductType({ productType: value });
+                    if (accountId) {
+                        applicationType = value == "LIVE" ? 203 : 202;
+                        require(['domainList.model'], function (DomainListModel) {
+                            var domainListModel = new DomainListModel();
+                            domainListModel.on("query.domain.success", $.proxy(this.onGetDomainListSuccess, this));
+                            domainListModel.on("query.domain.error", $.proxy(this.onGetError, this));
+                            domainListModel.getDomainInfoList({
+                                currentPage: 1,
+                                applicationType: applicationType,
+                                pageSize: 99999,
+                                userId: accountId
+                            });
                         }.bind(this));
-                        _.each(list, function (el, index) {
-                            el.sortnum = index + 1;
-                        });
-                        this.setState({
-                            nodesList: list
-                        });
-                    }.bind(this)
+                    }
+                }
+            }
+        }, {
+            key: 'onGetTplByProductTypeSuccess',
+            value: function onGetTplByProductTypeSuccess(res) {
+                var tplArray = res.map(function (el) {
+                    return React.createElement(
+                        Option,
+                        { key: el.groupId },
+                        el.name
+                    );
+                });
+                this.setState({
+                    dataSourceTemplateName: tplArray
                 });
             }
         }, {
-            key: 'renderNodesTableView',
-            value: function renderNodesTableView(formItemLayout) {
-                var _this5 = this,
-                    _React$createElement;
+            key: 'onAccountIdChange',
+            value: function onAccountIdChange(value) {
+                var _props$form3 = this.props.form,
+                    setFieldsValue = _props$form3.setFieldsValue,
+                    getFieldsValue = _props$form3.getFieldsValue;
+
+                setFieldsValue({ "domains": [] });
+                this.setState({
+                    dataSourceDomains: []
+                });
+                var productType = getFieldsValue().productType,
+                    applicationType = productType == "LIVE" ? 203 : 202;
+
+                if (!productType) applicationType = null;
+
+                if (value) {
+                    require(['domainList.model'], function (DomainListModel) {
+                        var domainListModel = new DomainListModel();
+                        domainListModel.on("query.domain.success", $.proxy(this.onGetDomainListSuccess, this));
+                        domainListModel.on("query.domain.error", $.proxy(this.onGetError, this));
+                        domainListModel.getDomainInfoList({
+                            currentPage: 1,
+                            applicationType: applicationType,
+                            pageSize: 99999,
+                            userId: value
+                        });
+                    }.bind(this));
+                }
+            }
+        }, {
+            key: 'onGetDomainListSuccess',
+            value: function onGetDomainListSuccess(res) {
+                var domainArray = res.data.map(function (el) {
+                    return React.createElement(
+                        Option,
+                        { key: el.originDomain.domain },
+                        el.originDomain.domain
+                    );
+                });
+                this.setState({
+                    dataSourceDomains: domainArray
+                });
+            }
+        }, {
+            key: 'onDomainTypeChange',
+            value: function onDomainTypeChange(value) {
+                if (value == "CUSTOM") {
+                    this.setState({
+                        domainsVisible: "list-item"
+                    });
+                } else {
+                    this.setState({
+                        domainsVisible: "none"
+                    });
+                }
+            }
+        }, {
+            key: 'onBackMethodChange',
+            value: function onBackMethodChange(value) {
+                if (value == "GET") {
+                    this.setState({
+                        backGetLogNameVisible: "list-item"
+                    });
+                } else {
+                    this.setState({
+                        backGetLogNameVisible: "none"
+                    });
+                }
+            }
+        }, {
+            key: 'renderConditionTableView',
+            value: function renderConditionTableView(formItemLayout) {
+                var _this2 = this;
 
                 var getFieldDecorator = this.props.form.getFieldDecorator;
                 var _state2 = this.state,
-                    nodesList = _state2.nodesList,
-                    nodeModalVisible = _state2.nodeModalVisible,
-                    nodeDataSource = _state2.nodeDataSource,
-                    curEditNode = _state2.curEditNode;
+                    taskConditionList = _state2.taskConditionList,
+                    fieldModalVisible = _state2.fieldModalVisible,
+                    curEditField = _state2.curEditField;
 
-                var preheatNodesView = "";
+                var conditionListView = "";
                 var _props = this.props,
                     isView = _props.isView,
                     isEdit = _props.isEdit;
 
                 var columns = [{
-                    title: '批次',
-                    dataIndex: 'sortnum',
-                    key: 'sortnum'
+                    title: '原字段标识',
+                    dataIndex: 'originTag',
+                    key: 'originTag'
                 }, {
-                    title: '预热节点',
-                    dataIndex: 'nodeNameArray',
-                    key: 'nodeNameArray',
-                    width: 300,
-                    render: function render(text, record) {
-                        var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
-                        var content = [];
-                        var random = void 0;
-                        for (var i = 0; i < record.nodeNameArray.length; i++) {
-                            random = Math.floor(Math.random() * colors.length);
-                            content.push(React.createElement(
-                                Tag,
-                                { color: colors[random], key: i, style: { marginBottom: '5px' } },
-                                record.nodeNameArray[i]
-                            ));
-                        }
-                        return content;
-                    }
-                }, {
-                    title: '进度',
-                    dataIndex: 'successed ',
-                    key: 'successed ',
-                    render: function render(text, record) {
-                        if (record.successed != undefined && record.failed != undefined) {
-                            var total = record.successed + record.failed;
-                            return total;
-                        } else {
-                            return "-";
-                        }
-                    }
-                }, {
-                    title: '状态',
-                    dataIndex: 'status',
-                    key: 'status',
+                    title: '关系',
+                    dataIndex: 'conditionType',
+                    key: 'conditionType',
                     render: function render(text, record) {
                         var tag = null;
-                        if (record.status == 3) tag = React.createElement(
+                        if (record.conditionType == "NE") tag = React.createElement(
                             Tag,
                             { color: "red" },
-                            '\u5DF2\u6682\u505C'
-                        );else if (record.status == 2) tag = React.createElement(
+                            '\u4E0D\u76F8\u7B49'
+                        );else if (record.conditionType == "EQ") tag = React.createElement(
                             Tag,
                             { color: "green" },
-                            '\u5DF2\u5B8C\u6210'
-                        );else if (record.status == 0) tag = React.createElement(
+                            '\u76F8\u7B49'
+                        );else if (record.conditionType == "IN") tag = React.createElement(
                             Tag,
                             { color: "blue" },
-                            '\u5F85\u9884\u70ED'
-                        );else if (record.status == 1) tag = React.createElement(
+                            '\u5305\u542B'
+                        );else if (record.conditionType == "NIN") tag = React.createElement(
                             Tag,
                             { color: "orange" },
-                            '\u9884\u70ED\u4E2D'
-                        );else if (record.status == 4) tag = React.createElement(
-                            Tag,
-                            { color: "purple" },
-                            '\u6682\u505C\u4E2D'
+                            '\u4E0D\u5305\u542B'
                         );
                         return tag;
                     }
                 }, {
-                    title: '成功率',
-                    dataIndex: 'failed',
-                    key: 'failed',
-                    render: function render(text, record) {
-                        if (record.successed != undefined && record.failed != undefined) {
-                            var total = record.successed + record.failed;
-                            if (total != 0) {
-                                return record.successed / total * 100 + "%";
-                            } else {
-                                return "0";
-                            }
-                        } else {
-                            return "-";
-                        }
-                    }
-                }, {
-                    title: '执行时间',
-                    dataIndex: 'timeWidth',
-                    key: 'timeWidth',
-                    render: function render(text, record) {
-                        return React.createElement(List, { size: 'small', dataSource: record.timeWidth,
-                            renderItem: function renderItem(item) {
-                                return React.createElement(
-                                    List.Item,
-                                    null,
-                                    item.batchStartTime,
-                                    '~',
-                                    item.batchEndTime
-                                );
-                            } });
-                    }
-                }, {
-                    title: '回源带宽',
-                    dataIndex: 'bandwidth',
-                    key: 'bandwidth',
-                    render: function render(text, record) {
-                        return React.createElement(List, { size: 'small', dataSource: record.timeWidth, renderItem: function renderItem(item) {
-                                return React.createElement(
-                                    List.Item,
-                                    null,
-                                    item.bandwidth,
-                                    'M'
-                                );
-                            } });
-                    }
+                    title: '值',
+                    dataIndex: 'value',
+                    key: 'value'
                 }, {
                     title: '操作',
-                    dataIndex: 'id',
+                    dataIndex: '',
                     key: 'action',
                     render: function render(text, record) {
                         var editButton = React.createElement(
@@ -710,7 +1131,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             { placement: 'bottom', title: "编辑" },
                             React.createElement(
                                 'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this5.onClickEditNode, _this5) },
+                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this2.onClickEditField, _this2) },
                                 React.createElement(Icon, { type: 'edit' })
                             )
                         );
@@ -719,14 +1140,14 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                             { placement: 'bottom', title: "删除" },
                             React.createElement(
                                 'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this5.onClickDeleteNode, _this5) },
+                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this2.onClickDeleteField, _this2) },
                                 React.createElement(Icon, { type: 'delete' })
                             )
                         );
                         var buttonGroup = null;
                         if (isView && isEdit) {
                             buttonGroup = "-";
-                        } else if (!isEdit) {
+                        } else {
                             buttonGroup = React.createElement(
                                 'div',
                                 null,
@@ -734,148 +1155,156 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                                 React.createElement('span', { className: 'ant-divider' }),
                                 deleteButton
                             );
-                        } else if (isEdit) {
-                            buttonGroup = editButton;
                         }
                         return buttonGroup;
                     }
                 }];
 
-                var addEditNodesView = null,
-                    addButton = null;
-                var timeBandView = this.renderTimeBandTableView(formItemLayout);
+                var addEditFieldView = "",
+                    addButton = "";
 
-                if (this.state.isLoadingNodesList) {
-                    addEditNodesView = React.createElement(
-                        'div',
-                        { style: { textAlign: "center" } },
-                        React.createElement(Spin, null)
-                    );
-                } else {
-                    addEditNodesView = React.createElement(
-                        Form,
-                        null,
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u9884\u70ED\u8282\u70B9' }),
-                            getFieldDecorator('selectNodes', {
-                                initialValue: curEditNode.nodeNameArray || [],
-                                rules: [{ type: "array", required: true, message: '请选择预热节点!' }]
-                            })(React.createElement(
-                                Select,
-                                { mode: 'multiple', allowClear: true,
-                                    disabled: this.props.isEdit,
-                                    notFoundContent: '请输入节点关键字',
-                                    filterOption: false,
-                                    onSearch: $.proxy(this.handleNodeSearch, this) },
-                                nodeDataSource
-                            ))
-                        ),
-                        timeBandView,
-                        React.createElement(
-                            FormItem,
-                            _extends({}, formItemLayout, { label: '\u5206\u65F6\u4EFB\u52A1', style: { display: "none" } }),
-                            React.createElement(
-                                Button,
-                                { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddNodes, this) },
-                                '\u65B0\u5EFA\u5206\u65F6\u4EFB\u52A1'
-                            ),
-                            getFieldDecorator('inputOriginBand', {
-                                initialValue: curEditNode.bandwidth || 100,
-                                rules: [{ required: true, message: '请输入回源带宽!' }]
-                            })(React.createElement(InputNumber, null)),
-                            React.createElement(
-                                'span',
-                                { style: { marginLeft: "10px" } },
-                                'M'
-                            )
-                        )
-                    );
-                }
-
-                if (!this.props.isEdit) {
+                if (!this.props.isView) {
+                    addEditFieldView = this.renderAddEditFieldView({
+                        labelCol: { span: 6 },
+                        wrapperCol: { span: 12 }
+                    });
                     addButton = React.createElement(
                         Button,
-                        { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddNodes, this) },
-                        '\u65B0\u5EFA\u9884\u70ED\u6279\u6B21'
+                        { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddField, this) },
+                        '\u65B0\u589E'
                     );
                 }
-
-                preheatNodesView = React.createElement(
-                    FormItem,
-                    _extends({}, formItemLayout, { label: '\u9884\u70ED\u6279\u6B21', required: true }),
-                    addButton,
-                    React.createElement(Alert, { style: { marginBottom: '10px' }, message: '\u9884\u70ED\u4EFB\u52A1\u9075\u5FAA\u9884\u70ED\u6279\u6B21\u81EA\u52A8\u6267\u884C', type: 'info', showIcon: true }),
-                    getFieldDecorator('nodesList', {
-                        rules: [{ validator: this.validateNodesList }]
-                    })(React.createElement(Table, { rowKey: 'id', columns: columns, pagination: false, size: 'small', dataSource: nodesList })),
+                conditionListView = React.createElement(
+                    'div',
+                    null,
                     React.createElement(
-                        Modal,
-                        (_React$createElement = { title: '预热批次', destroyOnClose: true, width: 800
-                        }, _defineProperty(_React$createElement, 'destroyOnClose', true), _defineProperty(_React$createElement, 'visible', nodeModalVisible), _defineProperty(_React$createElement, 'onOk', $.proxy(this.handleNodeOk, this)), _defineProperty(_React$createElement, 'onCancel', $.proxy(this.handleCancel, this)), _React$createElement),
-                        addEditNodesView
+                        FormItem,
+                        { labelCol: { span: 5 }, wrapperCol: { span: 12 }, label: '\u6761\u4EF6\u9650\u5236' },
+                        addButton
+                    ),
+                    React.createElement(
+                        FormItem,
+                        { wrapperCol: { span: 16, offset: 4 } },
+                        getFieldDecorator('taskConditionList', {
+                            rules: [{ validator: this.validateTemplateFieldList }]
+                        })(React.createElement(Table, { rowKey: 'id', columns: columns, pagination: false, size: 'small', dataSource: taskConditionList })),
+                        React.createElement(
+                            Modal,
+                            { title: '条件限制',
+                                destroyOnClose: true,
+                                visible: fieldModalVisible,
+                                onOk: $.proxy(this.handleFieldOk, this),
+                                onCancel: $.proxy(this.handleModalCancel, this) },
+                            addEditFieldView
+                        )
                     )
                 );
 
-                return preheatNodesView;
+                return conditionListView;
             }
         }, {
-            key: 'onClickAddTime',
-            value: function onClickAddTime(event) {
+            key: 'validateTemplateFieldList',
+            value: function validateTemplateFieldList(rule, value, callback) {
+                //if (this.state.taskConditionList.length != 0) {
+                callback();
+                // } else {
+                //     callback('请添加条件限制！');
+                // }
+            }
+        }, {
+            key: 'validateBackGetLogName',
+            value: function validateBackGetLogName(rule, value, callback) {
+                var getFieldsValue = this.props.form.getFieldsValue;
+
+                var backMethod = getFieldsValue().backMethod;
+                if (backMethod == "GET" && value == "") {
+                    callback('请添加参数名称！');
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'validateDomains',
+            value: function validateDomains(rule, value, callback) {
+                var getFieldsValue = this.props.form.getFieldsValue;
+
+                var domainType = getFieldsValue().domainType;
+                if (domainType == "CUSTOM" && value.length == 0) {
+                    callback('请选择域名！');
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'onClickAddField',
+            value: function onClickAddField(event) {
                 this.setState({
-                    isEditTime: false,
-                    curEditTime: {},
-                    timeModalVisible: true
+                    isEditField: false,
+                    curEditField: {},
+                    fieldModalVisible: true
                 });
             }
         }, {
-            key: 'handleTimeOk',
-            value: function handleTimeOk(e) {
-                var _this6 = this;
+            key: 'handleFieldOk',
+            value: function handleFieldOk(e) {
+                var _this3 = this;
 
                 e.preventDefault();
                 var _state3 = this.state,
-                    timeBandList = _state3.timeBandList,
-                    isEditTime = _state3.isEditTime,
-                    curEditTime = _state3.curEditTime;
+                    taskConditionList = _state3.taskConditionList,
+                    isEditField = _state3.isEditField,
+                    curEditField = _state3.curEditField;
                 var _props$form4 = this.props.form,
                     getFieldsValue = _props$form4.getFieldsValue,
                     validateFields = _props$form4.validateFields,
                     resetFields = _props$form4.resetFields;
 
-                var newTimeBand = null;
-                validateFields(["selectStartTime", "selectEndTime", "inputBand"], function (err, vals) {
-                    var format = 'HH:mm';
-                    if (!err && !isEditTime) {
-                        console.log(getFieldsValue());
-                        newTimeBand = {
-                            id: Utility.randomStr(8),
-                            batchStartTime: getFieldsValue().selectStartTime.format(format),
-                            batchEndTime: getFieldsValue().selectEndTime.format(format),
-                            bandwidth: getFieldsValue().inputBand
-                        };
-                        _this6.setState({
-                            timeBandList: [].concat(_toConsumableArray(timeBandList), [newTimeBand]),
-                            timeModalVisible: false
+                var newField = null,
+                    fieldObj = void 0;
+                validateFields(["originTag", "conditionType", "value"], function (err, vals) {
+                    if (!err && !isEditField) {
+                        fieldObj = _.find(_this3.logTplManageOriginField, function (el) {
+                            return el.id == vals.originTag;
                         });
-                    } else if (!err && isEditTime) {
-                        _.each(timeBandList, function (el) {
-                            if (el.id == curEditTime.id) {
-                                el.batchStartTime = getFieldsValue().selectStartTime.format(format);
-                                el.batchEndTime = getFieldsValue().selectEndTime.format(format);
-                                el.bandwidth = getFieldsValue().inputBand;
+                        newField = {
+                            id: Utility.randomStr(8),
+                            originTag: fieldObj.field,
+                            conditionType: vals.conditionType,
+                            value: vals.value
+                        };
+                        _this3.setState({
+                            taskConditionList: [].concat(_toConsumableArray(taskConditionList), [newField]),
+                            fieldModalVisible: false
+                        });
+                    } else if (!err && isEditField) {
+                        fieldObj = _.find(_this3.logTplManageOriginField, function (el) {
+                            return el.id == vals.originTag;
+                        });
+                        _.find(taskConditionList, function (el) {
+                            if (el.id == curEditField.id) {
+                                el.originTag = fieldObj.field;
+                                el.conditionType = vals.conditionType;
+                                el.value = vals.value;
                             }
                         });
-                        _this6.setState({
-                            timeBandList: [].concat(_toConsumableArray(timeBandList)),
-                            timeModalVisible: false
+
+                        _this3.setState({
+                            taskConditionList: [].concat(_toConsumableArray(taskConditionList)),
+                            fieldModalVisible: false
                         });
                     }
                 });
             }
         }, {
-            key: 'handleEditTimeClick',
-            value: function handleEditTimeClick(event) {
+            key: 'handleModalCancel',
+            value: function handleModalCancel() {
+                this.setState({
+                    fieldModalVisible: false
+                });
+            }
+        }, {
+            key: 'onClickEditField',
+            value: function onClickEditField(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -884,26 +1313,18 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-                var model = _.find(this.state.timeBandList, function (obj) {
+                var model = _.find(this.state.taskConditionList, function (obj) {
                     return obj.id == id;
                 }.bind(this));
-                var format = 'HH:mm',
-                    selectStartTime = model.batchStartTime,
-                    selectEndTime = model.batchEndTime;
                 this.setState({
-                    timeModalVisible: true,
-                    isEditTime: true,
-                    curEditTime: {
-                        selectStartTime: moment(selectStartTime, format),
-                        selectEndTime: moment(selectEndTime, format),
-                        bandwidth: model.bandwidth,
-                        id: model.id
-                    }
+                    fieldModalVisible: true,
+                    isEditField: true,
+                    curEditField: model
                 });
             }
         }, {
-            key: 'handleDeleteTimeClick',
-            value: function handleDeleteTimeClick(event) {
+            key: 'onClickDeleteField',
+            value: function onClickDeleteField(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -918,179 +1339,152 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                     okType: 'danger',
                     cancelText: '算了，不删了',
                     onOk: function () {
-                        var list = _.filter(this.state.timeBandList, function (obj) {
-                            return obj.id != id;
+                        var list = _.filter(this.state.taskConditionList, function (obj) {
+                            return obj.id !== id;
                         }.bind(this));
                         this.setState({
-                            timeBandList: list
+                            taskConditionList: list
                         });
                     }.bind(this)
                 });
             }
         }, {
-            key: 'renderTimeBandTableView',
-            value: function renderTimeBandTableView(formItemLayout) {
-                var _this7 = this,
-                    _React$createElement2;
-
+            key: 'renderAddEditFieldView',
+            value: function renderAddEditFieldView(formItemLayout) {
                 var getFieldDecorator = this.props.form.getFieldDecorator;
                 var _state4 = this.state,
-                    timeModalVisible = _state4.timeModalVisible,
-                    curEditTime = _state4.curEditTime;
+                    curEditField = _state4.curEditField,
+                    isEditField = _state4.isEditField;
 
-                var timeBandView = "",
-                    model = this.props.model;
-                var columns = [{
-                    title: '执行时间',
-                    dataIndex: 'batchStartTime',
-                    key: 'batchStartTime',
-                    render: function render(text, record) {
-                        return text + "~" + record.batchEndTime;
-                    }
-                }, {
-                    title: '回源带宽',
-                    dataIndex: 'bandwidth',
-                    key: 'bandwidth',
-                    render: function render(text, record) {
-                        return text + "M";
-                    }
-                }, {
-                    title: '操作',
-                    dataIndex: 'id',
-                    key: 'action',
-                    render: function render(text, record) {
-                        var editButton = React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "编辑" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this7.handleEditTimeClick, _this7) },
-                                React.createElement(Icon, { type: 'edit' })
-                            )
-                        );
-                        var deleteButton = React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "删除" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this7.handleDeleteTimeClick, _this7) },
-                                React.createElement(Icon, { type: 'delete' })
-                            )
-                        );
-                        var buttonGroup;
-                        buttonGroup = React.createElement(
-                            'div',
-                            null,
-                            editButton,
-                            React.createElement('span', { className: 'ant-divider' }),
-                            deleteButton
-                        );
-                        return buttonGroup;
-                    }
-                }];
-
-                var format = 'HH:mm';
-
-                var addEditTimeView = React.createElement(
+                var addEditNodesView = "";
+                addEditNodesView = React.createElement(
                     Form,
                     null,
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u6267\u884C\u65F6\u95F4', required: true }),
-                        React.createElement(
-                            Col,
-                            { span: 11 },
-                            React.createElement(
-                                FormItem,
-                                null,
-                                getFieldDecorator('selectStartTime', {
-                                    rules: [{ required: true, message: '请选择开始时间!' }],
-                                    initialValue: curEditTime.selectStartTime || moment('00:00', format)
-                                })(React.createElement(TimePicker, { format: format, minuteStep: 1 }))
-                            )
-                        ),
-                        React.createElement(
-                            Col,
-                            { span: 2 },
-                            React.createElement(
-                                'span',
-                                { style: { display: 'inline-block', width: '100%', textAlign: 'center' } },
-                                '-'
-                            )
-                        ),
-                        React.createElement(
-                            Col,
-                            { span: 11 },
-                            React.createElement(
-                                FormItem,
-                                null,
-                                getFieldDecorator('selectEndTime', {
-                                    rules: [{ required: true, message: '请选择结束时间!' }],
-                                    initialValue: curEditTime.selectEndTime || moment('23:59', format)
-                                })(React.createElement(TimePicker, { format: format, minuteStep: 1 }))
-                            )
-                        )
+                        _extends({}, formItemLayout, { label: '\u539F\u5B57\u6BB5\u6807\u8BC6' }),
+                        getFieldDecorator('originTag', {
+                            initialValue: curEditField.originTag || "",
+                            rules: [{ required: true, message: '请选择原字段标识!' }]
+                        })(React.createElement(
+                            Select,
+                            {
+                                showSearch: true,
+                                allowClear: true,
+                                style: { width: 200 },
+                                optionFilterProp: 'children',
+                                filterOption: function filterOption(input, option) {
+                                    return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                                }
+                            },
+                            this.state.dataSourceOriginFieldTag
+                        ))
                     ),
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u56DE\u6E90\u5E26\u5BBD' }),
-                        getFieldDecorator('inputBand', {
-                            initialValue: curEditTime.bandwidth || 100,
-                            rules: [{ required: true, message: '请输入带宽!' }]
-                        })(React.createElement(InputNumber, null)),
-                        React.createElement(
-                            'span',
-                            { style: { marginLeft: "10px" } },
-                            'M'
-                        )
-                    )
-                );
-
-                timeBandView = React.createElement(
-                    FormItem,
-                    _extends({}, formItemLayout, { label: '\u5206\u65F6\u4EFB\u52A1', required: true }),
-                    React.createElement(
-                        Button,
-                        { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddTime, this) },
-                        '\u65B0\u5EFA\u5206\u65F6\u4EFB\u52A1'
+                        _extends({}, formItemLayout, { label: '\u5173\u7CFB' }),
+                        getFieldDecorator('conditionType', {
+                            initialValue: curEditField.conditionType || "",
+                            rules: [{ required: true, message: '请选择关系!' }]
+                        })(React.createElement(
+                            Select,
+                            { style: { width: 200 } },
+                            React.createElement(
+                                Option,
+                                { value: '' },
+                                '\u8BF7\u9009\u62E9'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'NE' },
+                                '\u4E0D\u76F8\u7B49'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'EQ' },
+                                '\u76F8\u7B49'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'IN' },
+                                '\u5305\u542B'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'NIN' },
+                                '\u4E0D\u5305\u542B'
+                            )
+                        ))
                     ),
-                    React.createElement(Alert, { style: { marginBottom: '10px' }, message: '\u4EC5\u5728\u6DFB\u52A0\u7684\u5206\u65F6\u4EFB\u52A1\u65F6\u95F4\u6BB5\u5185\u8FDB\u884C\u9884\u70ED', type: 'info', showIcon: true }),
-                    getFieldDecorator('timeBand', {
-                        rules: [{ validator: this.validateTimeBand }]
-                    })(React.createElement(Table, { rowKey: 'id', columns: columns, pagination: false, size: 'small', dataSource: this.state.timeBandList })),
                     React.createElement(
-                        Modal,
-                        (_React$createElement2 = { title: '分时任务', destroyOnClose: true
-                        }, _defineProperty(_React$createElement2, 'destroyOnClose', true), _defineProperty(_React$createElement2, 'visible', timeModalVisible), _defineProperty(_React$createElement2, 'onOk', $.proxy(this.handleTimeOk, this)), _defineProperty(_React$createElement2, 'onCancel', $.proxy(this.handleTimeCancel, this)), _React$createElement2),
-                        addEditTimeView
+                        FormItem,
+                        _extends({}, formItemLayout, { label: '\u503C', hasFeedback: true }),
+                        getFieldDecorator('value', {
+                            initialValue: curEditField.value || "",
+                            rules: [{ required: true, message: '请输入值!' }]
+                        })(React.createElement(Input, null))
                     )
                 );
 
-                return timeBandView;
+                return addEditNodesView;
             }
         }, {
-            key: 'disabledDate',
-            value: function disabledDate(current) {
-                return current && current < moment().add(-1, 'day');
-            }
-        }, {
-            key: 'disabledTime',
-            value: function disabledTime(type) {
-                function range(start, end) {
-                    var result = [];
-                    for (var i = start; i < end; i++) {
-                        result.push(i);
-                    }
-                    return result;
-                }
+            key: 'handleSubmit',
+            value: function handleSubmit(e) {
+                e.preventDefault();
+                var _props$form5 = this.props.form,
+                    resetFields = _props$form5.resetFields,
+                    validateFields = _props$form5.validateFields;
+                //resetFields("taskConditionList")
 
-                if (type === 'start') {
-                    return {
-                        disabledHours: function disabledHours() {
-                            return range(0, moment().hour() + 1);
-                        }
-                    };
-                }
+                var checkArray = ["accountId", "backGetLogName", "backMethod", "backUrl", "batchCount", "batchInterval", "compressMode", "domainType", "domains", "logRange", "name", "productType", "taskTokenTimeType", "taskTokenType", "templateName", "tokenKey", "userAgent"];
+                validateFields(checkArray, function (err, vals) {
+                    var postParam,
+                        taskFieldJson,
+                        model = this.props.model;
+                    var collection = this.props.ltProps.collection;
+                    console.log(vals);
+                    if (!err) {
+                        taskFieldJson = {
+                            "backMethod": vals.backMethod,
+                            "backGetLogName": vals.backGetLogName,
+                            "batchCount": vals.batchCount,
+                            "batchInterval": vals.batchInterval,
+                            "logRange": vals.logRange,
+                            "compressMode": vals.compressMode,
+                            "userAgent": vals.userAgent,
+                            "tokenKey": vals.tokenKey,
+                            "taskTokenType": vals.taskTokenType,
+                            "taskTokenTimeType": vals.taskTokenTimeType
+                        };
+                        postParam = {
+                            accountId: vals.accountId,
+                            backUrl: vals.backUrl,
+                            domainType: vals.domainType,
+                            domains: vals.domains,
+                            name: vals.name,
+                            productType: vals.productType,
+                            groupId: vals.templateName.key,
+                            templateName: vals.templateName.label, //{key: "22991kskd91", label: "测试模板"}
+                            taskFieldJson: taskFieldJson,
+                            taskConditionList: this.state.taskConditionList
+                        };
+                        collection.addTask(postParam);
+                    }
+                }.bind(this));
+            }
+        }, {
+            key: 'onClickCancel',
+            value: function onClickCancel() {
+                var onClickCancelCallback = this.props.ltProps.onClickCancelCallback,
+                    onClickHistoryCallback = this.props.ltProps.onClickHistoryCallback;
+
+                if (this.props.backTarget != "history") onClickCancelCallback && onClickCancelCallback();else onClickHistoryCallback && onClickHistoryCallback({ groupId: this.groupId });
+            }
+        }, {
+            key: 'onGetError',
+            value: function onGetError(error) {
+                if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
         }, {
             key: 'render',
@@ -1098,44 +1492,55 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 var getFieldDecorator = this.props.form.getFieldDecorator;
 
                 var formItemLayout = {
-                    labelCol: { span: 4 },
-                    wrapperCol: { span: 16 }
+                    labelCol: { span: 12 },
+                    wrapperCol: { span: 12 }
                 };
-                var taskNameView = this.renderTaskNameView(formItemLayout);
-                var preheatNodesView = this.renderNodesTableView(formItemLayout);
-                var saveButton = null;
+                var baseInfoView = this.renderBaseInfoView(formItemLayout);
+                var conditionListView = this.renderConditionTableView(formItemLayout);
+                var saveButton = null,
+                    editView = null;
                 if (!this.props.isView) saveButton = React.createElement(
                     Button,
                     { type: 'primary', htmlType: 'submit' },
                     '\u4FDD\u5B58'
                 );
 
-                return React.createElement(
-                    'div',
-                    null,
-                    React.createElement(
-                        Form,
-                        { onSubmit: this.handleSubmit },
-                        taskNameView,
-                        preheatNodesView,
+                if (this.state.isLoadingTplDetail) {
+                    editView = React.createElement(
+                        'div',
+                        { style: { textAlign: "center" } },
+                        React.createElement(Spin, null)
+                    );
+                } else {
+                    editView = React.createElement(
+                        'div',
+                        null,
                         React.createElement(
-                            FormItem,
-                            { wrapperCol: { span: 12, offset: 6 } },
-                            saveButton,
+                            Form,
+                            { onSubmit: this.handleSubmit },
+                            baseInfoView,
+                            conditionListView,
                             React.createElement(
-                                Button,
-                                { onClick: this.onClickCancel, style: { marginLeft: "10px" } },
-                                '\u53D6\u6D88'
+                                FormItem,
+                                { wrapperCol: { span: 12, offset: 6 } },
+                                saveButton,
+                                React.createElement(
+                                    Button,
+                                    { onClick: this.onClickCancel, style: { marginLeft: "10px" } },
+                                    '\u53D6\u6D88'
+                                )
                             )
                         )
-                    )
-                );
+                    );
+                }
+
+                return editView;
             }
         }]);
 
-        return PreheatManageEditForm;
+        return logTaskListEditForm;
     }(React.Component);
 
-    var PreheatManageEditView = Form.create()(PreheatManageEditForm);
-    return PreheatManageEditView;
+    var logTaskListEditView = Form.create()(logTaskListEditForm);
+    return logTaskListEditView;
 });

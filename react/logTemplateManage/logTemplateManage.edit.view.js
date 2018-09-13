@@ -10,15 +10,8 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
             Option = Select.Option,
             Modal = Antd.Modal,
             Table = Antd.Table,
-            InputNumber = Antd.InputNumber,
-            Tag = Antd.Tag,
             Icon = Antd.Icon,
             Tooltip = Antd.Tooltip,
-            Upload = Antd.Upload,
-            List = Antd.List,
-            DatePicker = Antd.DatePicker,
-            TimePicker = Antd.TimePicker,
-            RangePicker = DatePicker.RangePicker,
             Col = Antd.Col,
             Alert = Antd.Alert,
             confirm = Modal.confirm;
@@ -31,6 +24,8 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 this.renderExportFieldTableView = this.renderExportFieldTableView.bind(this);
                 this.validateTemplateFieldList = this.validateTemplateFieldList.bind(this);
                 this.handleSubmit = this.handleSubmit.bind(this);
+                this.convertEnumToShowStr = this.convertEnumToShowStr.bind(this);
+                this.getFieldExample = this.getFieldExample.bind(this);
 
                 this.state = {
                     name: "",
@@ -46,15 +41,8 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                     isEditField: false,
                     curEditField: {},
 
-
-                    // //分时带宽
-                    // timeBandList: [],
-                    // timeModalVisible: false,
-                    // isEditTime: false,
-                    // curEditTime: {},
+                    dataSourceOriginFieldTag: []
                 };
-
-                moment.locale("zh");
             }
 
             componentDidMount() {
@@ -66,14 +54,23 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                     collection.on("template.detail.error", $.proxy(this.onGetError, this))
                     collection.getTemplateDetail({id: model.id});
                 }
-                // collection.on("refresh.commit.success", $.proxy(this.onSubmitSuccess, this));
-                // collection.on("refresh.commit.error", $.proxy(this.onGetError, this));     
+                collection.on("add.template.success", $.proxy(this.onSubmitSuccess, this));
+                collection.on("add.template.error", $.proxy(this.onGetError, this));
+                require(['logTemplateManage.field.model'],function(LogTplManageOriginField){
+                    this.logTplManageOriginField = LogTplManageOriginField
+                    var originFieldTagArray = LogTplManageOriginField.map((el, index) => {
+                            return (<Option key={el.id}>{el.field}</Option>)
+                        })
+                    this.setState({
+                        dataSourceOriginFieldTag: originFieldTagArray
+                    });
+                }.bind(this));   
             }
 
             componentWillUnmount() {
                 const collection = this.props.ltProps.collection;
-                // collection.off("refresh.commit.success");
-                // collection.off("refresh.commit.error");
+                collection.off("add.template.success");
+                collection.off("add.template.error");
                 if (this.props.isEdit) {   
                     collection.off("template.detail.success");
                     collection.off("template.detail.error");
@@ -81,6 +78,8 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
             }
 
             onGetTplDetailSuccess(res) {
+                this.groupId = res.groupId;
+                this.originCreateTime = res.groupId;
                 if (res.fieldSeparator != "    " &&
                     res.fieldSeparator != " " &&
                     res.fieldSeparator != "|") {
@@ -103,25 +102,56 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 });
             }
 
+            convertEnumToShowStr() {
+                const { productType, backType, fieldSeparator, 
+                        fieldSeparatorCusValue } = this.state;
+                const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
+
+                var dataForShow = {
+                    productType: "", 
+                    backType: "", 
+                    fieldSeparator: ""
+                }; 
+
+                if (productType == "DOWNLOAD") {
+                    dataForShow.productType = "下载"
+                } else if (productType == "LIVE") {
+                    dataForShow.productType = "直播"
+                }
+                if (backType == "CENTER") {
+                    dataForShow.backType = "中心回传"
+                } else if (backType == "EDGE") {
+                    dataForShow.backType = "边缘回传"
+                }
+                if (fieldSeparator == "custom") {
+                    dataForShow.fieldSeparator = fieldSeparatorCusValue
+                } else {
+                    dataForShow.fieldSeparator = fieldSeparator
+                }
+
+                return dataForShow
+            }
+
             renderBaseInfoView(formItemLayout) {
                 const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
-                var baseInfoView = null, model = this.props.model; 
-                // productType的取值类型 DOWNLOAD（下载）LIVE（直播） 
+                var baseInfoView = null; 
+                // backType的取值类型 DOWNLOAD（下载）LIVE（直播） 
                 // backType的取值类型 CENTER（中心回传） EDGE（边缘回传）
                 if (this.props.isView) {
+                    var dataForShow = this.convertEnumToShowStr()
                     baseInfoView = (
                         <div>
                             <FormItem {...formItemLayout} label="模板名称" style={{marginBottom: "0px"}}>
                                 <span className="ant-form-text">{this.state.name}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="产品线标识" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{this.state.productType}</span>
+                                <span className="ant-form-text">{dataForShow.productType}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="回传方式" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{this.state.backType}</span>
+                                <span className="ant-form-text">{dataForShow.backType}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="字段间隔符设置" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{this.state.fieldSeparator}</span>
+                                <span className="ant-form-text">{dataForShow.fieldSeparator}</span>
                             </FormItem>
                             <FormItem {...formItemLayout} label="换行符设置" style={{marginBottom: "0px"}}>
                                 <span className="ant-form-text">{this.state.lineBreak}</span>
@@ -272,10 +302,24 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                     title: '导出数据类型',
                     dataIndex: 'exportFieldType',
                     key: 'exportFieldType',
-                },{
+                },{                
                     title: '赋值类型',
                     dataIndex: 'valueType',
-                    key: 'valueType'
+                    key: 'valueType',
+                    render: (text, record) => {
+                        var tag = null;
+                        if (record.valueType == "ORIGINAL_VALUE")
+                            tag = "原值"
+                        else if (record.valueType == "FIXED_VALUE")
+                            tag = "固定值"
+                        else if (record.valueType == "PREFIX_VALUE")
+                            tag = "前缀"
+                        else if (record.valueType == "SUFFIX_VALUE")
+                            tag = "后缀"
+                        else if (record.valueType == "PREFIX_AND_SUFFIX_VALUE")
+                            tag = "前后缀"
+                        return tag
+                    }
                 },{
                     title: '赋值参数',
                     dataIndex: 'param',
@@ -298,7 +342,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                         );
                         var deleteButton = (
                             <Tooltip placement="bottom" title={"删除"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickDeleteNode, this)}>
+                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickDeleteField, this)}>
                                     <Icon type="delete" />
                                 </a>
                             </Tooltip>
@@ -337,7 +381,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                             })(
                                 <Table rowKey="order" columns={columns} pagination={false} size="small" dataSource={templateFieldList} />
                             )}
-                            <Modal title={'导出字段'} destroyOnClose={true} width={800}
+                            <Modal title={'导出字段'} width={800}
                                    destroyOnClose={true}
                                    visible={fieldModalVisible}
                                    onOk={$.proxy(this.handleFieldOk, this)}
@@ -380,15 +424,17 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 e.preventDefault();
                 const { templateFieldList, isEditField, curEditField } = this.state;
                 const { getFieldsValue, validateFields, resetFields } = this.props.form;
-                let newField = null;
+                let newField = null, fieldObj;
                 validateFields(["originFieldTag", "exportFieldTag", "exportFieldName", "exportFieldType", "valueType", "param"], (err, vals) => {
-                    console.log(vals)
-                    console.log(getFieldsValue())
+                    console.log("点击OK时的字段：", vals)
                     if (!err && !isEditField) {
+                        fieldObj = _.find(this.logTplManageOriginField, (el)=>{
+                            return el.id == vals.originFieldTag
+                        })
                         newField = {
                             order: templateFieldList.length + 1,
                             id: Utility.randomStr(8),
-                            originFieldTag: vals.originFieldTag,
+                            originFieldTag: fieldObj.field,
                             originFieldName: curEditField.originFieldName,
                             exportFieldTag: vals.exportFieldTag,
                             exportFieldName: vals.exportFieldName,
@@ -402,9 +448,12 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                             fieldModalVisible: false
                         });
                     } else if (!err && isEditField) {
+                        fieldObj = _.find(this.logTplManageOriginField, (el)=>{
+                            return el.id == vals.originFieldTag
+                        })
                         _.find(templateFieldList, (el) => {
-                            if (el.id == curEditNode.id) {
-                                el.originFieldTag = vals.originFieldTag,
+                            if (el.id == curEditField.id) {
+                                el.originFieldTag = fieldObj.field,
                                 el.originFieldName = curEditField.originFieldName,
                                 el.exportFieldTag = vals.exportFieldTag,
                                 el.exportFieldName = vals.exportFieldName,
@@ -448,7 +497,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 });
             }
 
-            onClickDeleteNode(event) {
+            onClickDeleteField(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -490,13 +539,12 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                                 <Select
                                     showSearch
                                     allowClear={true}
-                                    style={{ width: 200 }}
+                                    style={{ width: 300 }}
                                     optionFilterProp="children"
                                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                    onChange={$.proxy(this.onOriginFieldTagChange, this)}
                                 >
-                                    <Option value="jack">Jack</Option>
-                                    <Option value="lucy">Lucy</Option>
-                                    <Option value="tom">Tom</Option>
+                                {this.state.dataSourceOriginFieldTag}
                                 </Select>
                             )}
                         </FormItem>
@@ -526,8 +574,9 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                             })(
                                 <Select style={{ width: 200 }}>
                                     <Option value="">请选择</Option> 
-                                    <Option value="LIVE">直播</Option>
-                                    <Option value="DOWNLOAD">点播</Option>
+                                    <Option value="string">string</Option>
+                                    <Option value="int">int</Option>
+                                    <Option value="double">double</Option>
                                 </Select>
                             )}
                         </FormItem>
@@ -536,10 +585,13 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                                 initialValue: curEditField.valueType || "",
                                 rules: [{ required: true, message: '请选择赋值类型!' }]
                             })(
-                                <Select style={{ width: 200 }}>
+                                <Select style={{ width: 200 }} onChange={$.proxy(this.onValueTypeChange, this)}>
                                     <Option value="">请选择</Option> 
-                                    <Option value="LIVE">直播</Option>
-                                    <Option value="DOWNLOAD">点播</Option>
+                                    <Option value="ORIGINAL_VALUE">原值</Option>
+                                    <Option value="FIXED_VALUE">固定值</Option>
+                                    <Option value="PREFIX_VALUE">前缀</Option>
+                                    <Option value="SUFFIX_VALUE">后缀</Option>
+                                    <Option value="PREFIX_AND_SUFFIX_VALUE">前后缀(请以","分割)</Option>
                                 </Select>
                             )}
                         </FormItem>
@@ -548,7 +600,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                                     initialValue: curEditField.param || "",
                                     rules: [{ required: true, message: '请输入赋值参数!' }],
                                 })(
-                                <Input />
+                                <Input onChange={$.proxy(this.onParamChange, this)}/>
                             )}
                         </FormItem>
                         <FormItem {...formItemLayout} label="样例">
@@ -558,6 +610,86 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 );
 
                 return addEditNodesView;
+            }
+
+            getFieldExample(originField, valueType, param) {
+                var example = "", prefix, suffix;
+                if (valueType && param && originField) {
+                    if (valueType == "ORIGINAL_VALUE") {
+                        example = "${" + originField + "}"
+                    } else if (valueType == "FIXED_VALUE") {
+                        example = param
+                    } else if (valueType == "PREFIX_VALUE") {
+                        example = param + "${" + originField + "}"
+                    } else if (valueType == "SUFFIX_VALUE") {
+                        example = "${" + originField + "}" + param
+                    } else if (valueType == "PREFIX_AND_SUFFIX_VALUE") {
+                        prefix = param.split(",")[0]
+                        suffix = param.split(",")[1]
+                        example = prefix + "${" + originField + "}" + suffix
+                    }
+                }
+                return example
+            }
+
+            onOriginFieldTagChange(value) {
+                const { setFieldsValue, getFieldsValue } = this.props.form;
+                var fieldObj, 
+                    curEditField = this.state.curEditField,
+                    fieldFormObj = getFieldsValue(),
+                    valueType = fieldFormObj.valueType, 
+                    param = fieldFormObj.param;
+
+                if (value) {
+                    fieldObj = _.find(this.logTplManageOriginField, (el)=>{
+                        return el.id == value
+                    })
+                    setFieldsValue({"exportFieldType": fieldObj.type})
+                    curEditField.originFieldName = fieldObj.name
+                    curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
+                } else {
+                    setFieldsValue({"exportFieldType": ""})
+                    curEditField.originFieldName = "";
+                    curEditField.example = "";
+                }
+
+                this.setState({
+                    curEditField: curEditField
+                });
+            }
+
+            onParamChange(e) {
+                const { setFieldsValue, getFieldsValue } = this.props.form;
+                var curEditField = this.state.curEditField,
+                    fieldFormObj = getFieldsValue(),
+                    valueType = fieldFormObj.valueType, 
+                    param = e.target.value,
+                    originFieldTag = fieldFormObj.originFieldTag,
+                    fieldObj = _.find(this.logTplManageOriginField, (el)=>{
+                        return el.id == originFieldTag
+                    })
+                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
+
+                this.setState({
+                    curEditField: curEditField
+                });
+            }
+
+            onValueTypeChange(value) {
+                const { setFieldsValue, getFieldsValue } = this.props.form;
+                var curEditField = this.state.curEditField,
+                    fieldFormObj = getFieldsValue(),
+                    valueType = value, 
+                    param = fieldFormObj.param,
+                    originFieldTag = fieldFormObj.originFieldTag,
+                    fieldObj = _.find(this.logTplManageOriginField, (el)=>{
+                        return el.id == originFieldTag
+                    })
+                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
+
+                this.setState({
+                    curEditField: curEditField
+                });
             }                          
 
             onSubmitSuccess (){
@@ -568,315 +700,40 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
             handleSubmit(e) {
                 e.preventDefault();
                 const { resetFields, validateFields } = this.props.form;
-                resetFields("nodesList")
-                var checkArray = ["taskName", "taskDomain", "rangeTimePicker", "nodesList", "fileList"];
+                resetFields("templateFieldList")
+                var checkArray = ["name", "productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', 'templateFieldList'];
                 if (this.props.isEdit) {
-                    checkArray = ["nodesList"];
+                    checkArray = ["productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', "templateFieldList"];
                 }
                 validateFields(checkArray, function(err, vals) {
-                    var postParam, postNodesList = [], model = this.props.model;
+                    var postParam, model = this.props.model;
                     const collection = this.props.ltProps.collection;
                     if (!err) {
-                        _.each(this.state.nodesList, (node) => {
-                            var postNode = {
-                                id: node.id,
-                                sortnum: node.sortnum,
-                                nodes: node.nodeNameArray.join(";"),
-                            }, timeWidthList = [];
-
-                            if (!this.props.isEdit) delete postNode.id;
-
-                            _.each(node.timeWidth, (time) => {
-                                var timeObj = {
-                                    bandwidth: time.bandwidth,
-                                    batchEndTime: moment(time.batchEndTime, 'HH:mm').valueOf(),
-                                    id: time.id,
-                                    batchStartTime: moment(time.batchStartTime, 'HH:mm').valueOf()
-                                }
-                                if (!this.props.isEdit) delete timeObj.id;
-
-                                timeWidthList.push(timeObj)
-                            })
-                            postNode.timeWidth = timeWidthList;
-                            postNodesList.push(postNode)
-                        })
-
-                        if (!this.props.isEdit) {
-                            postParam = {
-                                taskName: vals.taskName,
-                                preloadChannel: vals.taskDomain,
-                                preloadFilePath: this.state.preloadFilePath,
-                                preloadUrlCount: this.state.preloadUrlCount,
-                                startTime: vals.rangeTimePicker[0].valueOf(),
-                                endTime: vals.rangeTimePicker[1].valueOf(),
-                                batchTimeBandwidth: postNodesList,
-                                committer: $(".user-name").html()
-                            }
-                            console.log(postParam)
-                            collection.commitTask(postParam);
-                        } else {
-
-                            postParam = {
-                                taskId: model.id,
-                                batchTimeBandwidth: postNodesList
-                            }
-                            console.log(postParam)
-                            collection.taskModify(postParam);
+                        postParam = {
+                            name: vals.name,
+                            productType: vals.productType,
+                            backType: vals.backType,
+                            fieldSeparator: vals.fieldSeparator == "custom" ? vals.fieldSeparatorCusValue : vals.fieldSeparator,
+                            lineBreak: vals.lineBreak,                    
+                            templateFieldList: this.state.templateFieldList,
                         }
+                        if (this.props.isEdit) {
+                            postParam.groupId = this.groupId,
+                            postParam.originCreateTime = this.originCreateTime
+                        }
+                        collection.addTemplate(postParam);
                     }
                 }.bind(this))
             }
 
             onClickCancel() {
-                const onClickCancelCallback = this.props.ltProps.onClickCancelCallback;
-                onClickCancelCallback&&onClickCancelCallback();
-            }
+                const onClickCancelCallback = this.props.ltProps.onClickCancelCallback,
+                      onClickHistoryCallback = this.props.ltProps.onClickHistoryCallback;
 
-            handleTimeCancel (){
-                this.setState({
-                    timeModalVisible: false
-                });
-            }
-
-            handleNodeSearch (value) {
-                var ltProps = this.props.ltProps;
-                var nodeArray = [], nodeList = ltProps.nodeList;
-                if (value && nodeList) {
-                    nodeArray = _.filter(nodeList, function(el){
-                        return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1
-                    }.bind(this)).map((el) => {
-                        return <Option key={el.name}>{el.name}</Option>;
-                    })
-                }
-
-                this.setState({
-                    nodeDataSource: nodeArray
-                });
-            }
-
-            onClickAddTime (event) {
-                this.setState({
-                    isEditTime: false,
-                    curEditTime: {},
-                    timeModalVisible: true
-                });
-            }
-
-            handleTimeOk (e){
-                e.preventDefault();
-                const { timeBandList, isEditTime, curEditTime} = this.state;
-                const { getFieldsValue, validateFields, resetFields } = this.props.form;
-                let newTimeBand = null;
-                validateFields(["selectStartTime","selectEndTime", "inputBand"], (err, vals) => {
-                    const format = 'HH:mm';
-                    if (!err && !isEditTime) {
-                        console.log(getFieldsValue())
-                        newTimeBand = {
-                            id: Utility.randomStr(8),
-                            batchStartTime: getFieldsValue().selectStartTime.format(format),
-                            batchEndTime: getFieldsValue().selectEndTime.format(format),
-                            bandwidth: getFieldsValue().inputBand
-                        }
-                        this.setState({
-                            timeBandList: [...timeBandList, newTimeBand],
-                            timeModalVisible: false
-                        });
-                    } else if (!err && isEditTime) {
-                        _.each(timeBandList, (el)=>{
-                            if (el.id == curEditTime.id) {
-                                el.batchStartTime = getFieldsValue().selectStartTime.format(format);
-                                el.batchEndTime = getFieldsValue().selectEndTime.format(format);
-                                el.bandwidth = getFieldsValue().inputBand
-                            }
-                        })
-                        this.setState({
-                            timeBandList: [...timeBandList],
-                            timeModalVisible: false
-                        });
-                    }
-                })
-            }
-
-            handleEditTimeClick (event){
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.timeBandList, function(obj){
-                        return obj.id == id
-                    }.bind(this))
-                const format = 'HH:mm',
-                      selectStartTime = model.batchStartTime,
-                      selectEndTime = model.batchEndTime;
-                this.setState({
-                    timeModalVisible: true,
-                    isEditTime: true,
-                    curEditTime: {
-                        selectStartTime:moment(selectStartTime, format), 
-                        selectEndTime: moment(selectEndTime, format), 
-                        bandwidth: model.bandwidth,
-                        id: model.id
-                    }
-                });
-            }
-
-            handleDeleteTimeClick (event){
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                confirm({
-                    title: '你确定要删除吗？',
-                    okText: '确定',
-                    okType: 'danger',
-                    cancelText: '算了，不删了',
-                    onOk: function(){
-                        var list = _.filter(this.state.timeBandList, function(obj){
-                                return obj.id != id
-                            }.bind(this))
-                        this.setState({
-                            timeBandList: list
-                        })
-                    }.bind(this)
-                  });
-            }
-
-            renderTimeBandTableView(formItemLayout) {
-                const { getFieldDecorator } = this.props.form;
-                const { timeModalVisible, curEditTime } = this.state;
-                var timeBandView = "", model = this.props.model;
-                var  columns = [{
-                    title: '执行时间',
-                    dataIndex: 'batchStartTime',
-                    key: 'batchStartTime',
-                    render: (text, record) => (text + "~" + record.batchEndTime)
-                },{
-                    title: '回源带宽',
-                    dataIndex: 'bandwidth',
-                    key: 'bandwidth',
-                    render: (text, record) => (text + "M")
-                }, {
-                    title: '操作',
-                    dataIndex: 'id',
-                    key: 'action',
-                    render: (text, record) => {
-                        var editButton = (
-                            <Tooltip placement="bottom" title={"编辑"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.handleEditTimeClick, this)}>
-                                    <Icon type="edit" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var deleteButton = (
-                            <Tooltip placement="bottom" title={"删除"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.handleDeleteTimeClick, this)}>
-                                    <Icon type="delete" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var buttonGroup;
-                        buttonGroup = (
-                            <div>
-                                {editButton}
-                                <span className="ant-divider" />
-                                {deleteButton}
-                            </div>
-                        )
-                        return buttonGroup
-                    },
-                }];
-
-                const format = 'HH:mm';
-
-                const addEditTimeView = (
-                    <Form>                            
-                        <FormItem {...formItemLayout} label="执行时间" required={true}>
-                            <Col span={11}>
-                                <FormItem>
-                                    {getFieldDecorator('selectStartTime', {
-                                            rules: [{ required: true, message: '请选择开始时间!' }],
-                                            initialValue: curEditTime.selectStartTime || moment('00:00', format)
-                                        })(
-                                            <TimePicker format={format} minuteStep={1} />
-                                    )}
-                                </FormItem>
-                            </Col>
-                            <Col span={2}>
-                                <span style={{ display: 'inline-block', width: '100%', textAlign: 'center' }}>
-                                -
-                                </span>
-                            </Col>
-                            <Col span={11}>
-                                <FormItem>
-                                    {getFieldDecorator('selectEndTime', {
-                                            rules: [{ required: true, message: '请选择结束时间!' }],
-                                            initialValue: curEditTime.selectEndTime  || moment('23:59', format)
-                                        })(
-                                            <TimePicker  format={format} minuteStep={1} />
-                                    )}
-                                </FormItem>
-                            </Col>
-                        </FormItem> 
-                        <FormItem {...formItemLayout} label="回源带宽">
-                            {getFieldDecorator('inputBand', {
-                                    initialValue: curEditTime.bandwidth || 100,
-                                    rules: [{ required: true, message: '请输入带宽!' }],
-                                })(
-                                <InputNumber/>
-                            )}
-                            <span style={{marginLeft: "10px"}}>M</span>
-                        </FormItem>
-                    </Form>
-                );
-
-                timeBandView = (
-                    <FormItem {...formItemLayout} label="分时任务" required={true}>
-                        <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddTime, this)}>新建分时任务</Button>
-                        <Alert style={{ marginBottom: '10px' }} message="仅在添加的分时任务时间段内进行预热" type="info" showIcon />
-                        {getFieldDecorator('timeBand', {
-                            rules: [{ validator: this.validateTimeBand }],
-                        })(
-                            <Table rowKey="id" columns={columns} pagination={false} size="small" dataSource={this.state.timeBandList} />
-                        )}
-                        <Modal title={'分时任务'} destroyOnClose={true}
-                               destroyOnClose={true}
-                               visible={timeModalVisible}
-                               onOk={$.proxy(this.handleTimeOk, this)}
-                               onCancel={$.proxy(this.handleTimeCancel, this)}>
-                               {addEditTimeView}
-                        </Modal>
-                    </FormItem>
-                )
-
-                return timeBandView;
-            }
-
-            disabledDate(current) {
-                return current && current < moment().add(-1,'day')
-            }
-
-            disabledTime(type) {
-                function range(start, end) {
-                    const result = [];
-                        for (let i = start; i < end; i++) {
-                            result.push(i);
-                        }
-                    return result;
-                }
-
-                if (type === 'start') {
-                    return {
-                        disabledHours: () => range(0, moment().hour() + 1)
-                    }
-                }
+                if (this.props.backTarget != "history")
+                    onClickCancelCallback&&onClickCancelCallback();
+                else
+                    onClickHistoryCallback&&onClickHistoryCallback({groupId: this.groupId});
             }
 
             onGetError (error){

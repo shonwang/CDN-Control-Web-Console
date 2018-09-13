@@ -1,5 +1,7 @@
 'use strict';
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -8,7 +10,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], function (require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
+define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], function (require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
 
     var Layout = Antd.Layout,
         Content = Layout.Content,
@@ -17,30 +19,30 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         Input = Antd.Input,
         Form = Antd.Form,
         FormItem = Form.Item,
-        Select = Antd.Select,
-        Option = Select.Option,
-        AutoComplete = Antd.AutoComplete,
         Table = Antd.Table,
         Alert = Antd.Alert,
-        Tag = Antd.Tag,
-        Popover = Antd.Popover,
-        Badge = Antd.Badge,
         Icon = Antd.Icon,
         Spin = Antd.Spin,
-        Tooltip = Antd.Tooltip;
+        Tooltip = Antd.Tooltip,
+        Col = Antd.Col,
+        Row = Antd.Row,
+        message = Antd.message,
+        Modal = Antd.Modal,
+        Tag = Antd.Tag,
+        confirm = Modal.confirm;
 
-    var PreHeatTable = function (_React$Component) {
-        _inherits(PreHeatTable, _React$Component);
+    var LogTaskListTable = function (_React$Component) {
+        _inherits(LogTaskListTable, _React$Component);
 
-        function PreHeatTable(props, context) {
-            _classCallCheck(this, PreHeatTable);
+        function LogTaskListTable(props, context) {
+            _classCallCheck(this, LogTaskListTable);
 
-            var _this = _possibleConstructorReturn(this, (PreHeatTable.__proto__ || Object.getPrototypeOf(PreHeatTable)).call(this, props));
+            var _this = _possibleConstructorReturn(this, (LogTaskListTable.__proto__ || Object.getPrototypeOf(LogTaskListTable)).call(this, props));
 
             _this.onChangePage = _this.onChangePage.bind(_this);
-            _this.handleEditClick = _this.handleEditClick.bind(_this);
-            _this.handlePauseClick = _this.handlePauseClick.bind(_this);
-            _this.handleRestartClick = _this.handleRestartClick.bind(_this);
+            _this.handleStopClick = _this.handleStopClick.bind(_this);
+            _this.handleDeleteClick = _this.handleDeleteClick.bind(_this);
+
             _this.state = {
                 data: [],
                 isError: false,
@@ -49,40 +51,45 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
             return _this;
         }
 
-        _createClass(PreHeatTable, [{
+        _createClass(LogTaskListTable, [{
             key: 'componentDidMount',
             value: function componentDidMount() {
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                collection.on("get.preheat.success", $.proxy(this.onGetPreHeatListSuccess, this));
-                collection.on("get.preheat.error", $.proxy(this.onGetError, this));
-                collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));
+                var ltProps = this.props.ltProps;
+                var collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
+                collection.on("get.taskList.success", $.proxy(this.onTaskListSuccess, this));
+                collection.on("get.taskList.error", $.proxy(this.onGetError, this));
+                collection.on("fetching", $.proxy(this.onFetchingTaskList, this));
                 collection.trigger("fetching", queryCondition);
-                collection.on("refresh.pause.success", $.proxy(this.onGetOperateSuccess, this, "暂停"));
-                collection.on("refresh.pause.error", $.proxy(this.onOperateError, this));
-                collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
-                collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
+                collection.on("delete.task.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
+                collection.on("delete.task.error", $.proxy(this.onOperateError, this));
+                collection.on("stop.task.success", $.proxy(this.onGetOperateSuccess, this, "停止"));
+                collection.on("stop.task.error", $.proxy(this.onOperateError, this));
             }
         }, {
             key: 'componentWillUnmount',
             value: function componentWillUnmount() {
-                var collection = this.props.preHeatProps.collection;
-                collection.off("get.preheat.success");
-                collection.off("get.preheat.error");
+                var collection = this.props.ltProps.collection;
+                collection.off("get.taskList.success");
+                collection.off("get.taskList.error");
                 collection.off("fetching");
-                collection.off("refresh.pause.success");
-                collection.off("refresh.pause.error");
-                collection.off("refresh.restart.success");
-                collection.off("refresh.restart.error");
+                collection.off("delete.task.success");
+                collection.off("delete.task.error");
+                collection.off("stop.task.success");
+                collection.off("stop.task.error");
+            }
+        }, {
+            key: 'onCheckTplIsUsedSuccess',
+            value: function onCheckTplIsUsedSuccess(res) {
+                if (res.used) message.warning('有' + res.taskCount + '个任务正在使用此模板，请先停掉任务，再删除！', 5);
             }
         }, {
             key: 'onGetOperateSuccess',
             value: function onGetOperateSuccess(msg) {
                 Utility.alerts(msg + "成功!", "success", 2000);
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
+                var ltProps = this.props.ltProps;
+                var collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
 
                 collection.trigger("fetching", queryCondition);
             }
@@ -92,29 +99,22 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
         }, {
-            key: 'onFetchingPreHeatList',
-            value: function onFetchingPreHeatList(queryCondition) {
-                var collection = this.props.preHeatProps.collection;
+            key: 'onFetchingTaskList',
+            value: function onFetchingTaskList(queryCondition) {
+                var collection = this.props.ltProps.collection;
                 this.setState({
                     isFetching: true
                 });
-                collection.getPreheatList(queryCondition);
+                collection.getTaskList(queryCondition);
             }
         }, {
-            key: 'onGetPreHeatListSuccess',
-            value: function onGetPreHeatListSuccess() {
+            key: 'onTaskListSuccess',
+            value: function onTaskListSuccess() {
                 var data = [];
-                this.props.preHeatProps.collection.each(function (model) {
-                    var obj = Object.assign({}, model.attributes),
-                        nodeName = [];
-                    _.each(obj.batchTimeBandwidth, function (batch) {
-                        batch.nodeNameArray = batch.nodes.split(";");
-                        nodeName = nodeName.concat(batch.nodeNameArray);
-                    });
-                    obj.nodeName = nodeName;
+                this.props.ltProps.collection.each(function (model) {
+                    var obj = Object.assign({}, model.attributes);
                     data.push(obj);
                 });
-                console.log(data);
                 this.setState({
                     data: data,
                     isFetching: false
@@ -123,16 +123,16 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         }, {
             key: 'onChangePage',
             value: function onChangePage(page, pageSize) {
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                queryCondition.pageNo = page;
-                queryCondition.pageSize = pageSize;
+                var ltProps = this.props.ltProps;
+                var collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
+                queryCondition.page = page;
+                queryCondition.size = pageSize;
                 collection.trigger("fetching", queryCondition);
             }
         }, {
-            key: 'handlePauseClick',
-            value: function handlePauseClick(event) {
+            key: 'handleDeleteClick',
+            value: function handleDeleteClick(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -141,41 +141,48 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskPause({ taskId: id });
-            }
-        }, {
-            key: 'handleRestartClick',
-            value: function handleRestartClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskRestart({ taskId: id });
-            }
-        }, {
-            key: 'handleEditClick',
-            value: function handleEditClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
+
                 var model = _.find(this.state.data, function (obj) {
                     return obj.id == id;
                 }.bind(this));
-                var onClickEditCallback = this.props.preHeatProps.onClickEditCallback;
-                onClickEditCallback && onClickEditCallback(model);
+                if (model.taskStatus == "RUNNING") {
+                    message.warning('请先停掉任务，再删除！', 5);
+                    return;
+                }
+                confirm({
+                    title: '你确定要删除吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '算了，不删了',
+                    onOk: function () {
+                        var ltProps = this.props.ltProps;
+                        var collection = ltProps.collection;
+                        collection.deleteTask({ id: id });
+                    }.bind(this)
+                });
+            }
+        }, {
+            key: 'handleStopClick',
+            value: function handleStopClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                confirm({
+                    title: '你确定要停止吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '算了，不停了',
+                    onOk: function () {
+                        var ltProps = this.props.ltProps;
+                        var collection = ltProps.collection;
+                        collection.stopTask({ groupId: id });
+                    }.bind(this)
+                });
             }
         }, {
             key: 'handleViewClick',
@@ -191,7 +198,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 var model = _.find(this.state.data, function (obj) {
                     return obj.id == id;
                 }.bind(this));
-                var onClickViewCallback = this.props.preHeatProps.onClickViewCallback;
+                var onClickViewCallback = this.props.ltProps.onClickViewCallback;
                 onClickViewCallback && onClickViewCallback(model);
             }
         }, {
@@ -226,13 +233,52 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 }
 
                 var columns = [{
-                    title: '名称',
-                    dataIndex: 'taskName',
-                    key: 'taskName',
-                    fixed: 'left',
-                    width: 200,
+                    title: '任务名称',
+                    dataIndex: 'name',
+                    key: 'name'
+                }, {
+                    title: '客户ID',
+                    dataIndex: 'accountId',
+                    key: 'accountId'
+                }, {
+                    title: '模板名称',
+                    dataIndex: 'templateName',
+                    key: 'templateName'
+                }, {
+                    title: '回传地址',
+                    dataIndex: 'backUrl',
+                    key: 'backUrl'
+                }, {
+                    title: '任务启动时间',
+                    dataIndex: 'createTimeFormated',
+                    key: 'createTimeFormated'
+                }, {
+                    title: '任务状态',
+                    dataIndex: 'taskStatus',
+                    key: 'taskStatus',
                     render: function render(text, record) {
-                        return React.createElement(
+                        var tag = null;
+                        if (record.taskStatus == "STOPPED") tag = React.createElement(
+                            Tag,
+                            { color: "red" },
+                            '\u5DF2\u505C\u6B62'
+                        );else if (record.taskStatus == "RUNNING") tag = React.createElement(
+                            Tag,
+                            { color: "green" },
+                            '\u8FD0\u884C\u4E2D'
+                        );
+                        return tag;
+                    }
+                }, {
+                    title: '创建者',
+                    dataIndex: 'creator',
+                    key: 'creator'
+                }, {
+                    title: '操作',
+                    dataIndex: '',
+                    key: 'action',
+                    render: function render(text, record) {
+                        var detailButton = React.createElement(
                             Tooltip,
                             { placement: 'bottom', title: "查看详情" },
                             React.createElement(
@@ -240,192 +286,63 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                                 { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
                                         return _this2.handleViewClick(e);
                                     } },
-                                text
+                                React.createElement(Icon, { type: 'profile' })
                             )
                         );
-                    }
-                }, {
-                    title: '回源带宽',
-                    dataIndex: 'currentBandwidth',
-                    key: 'currentBandwidth'
-                }, {
-                    title: '预热节点',
-                    dataIndex: 'nodeName',
-                    key: 'nodeName',
-                    render: function render(text, record) {
-                        var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
-                        var content = void 0,
-                            temp = [];
-                        var random = void 0,
-                            nodeNameArray = record.currentNodes.split(";");
-                        for (var i = 0; i < nodeNameArray.length; i++) {
-                            random = Math.floor(Math.random() * colors.length);
-                            temp.push(React.createElement(
-                                Tag,
-                                { color: colors[random], key: i, style: { marginBottom: '5px' } },
-                                nodeNameArray[i]
-                            ));
-                        }
-                        content = React.createElement(
-                            'div',
-                            null,
-                            temp
-                        );
-                        return React.createElement(
-                            'div',
-                            null,
-                            React.createElement(
-                                'span',
-                                null,
-                                nodeNameArray[0],
-                                '...'
-                            ),
-                            React.createElement(
-                                'span',
-                                null,
-                                React.createElement(
-                                    Popover,
-                                    { content: content, title: '\u8282\u70B9\u8BE6\u60C5', trigger: 'click', placement: 'right', overlayStyle: { width: '300px' } },
-                                    React.createElement(
-                                        Badge,
-                                        { count: nodeNameArray.length, style: { backgroundColor: '#52c41a' } },
-                                        React.createElement(
-                                            'a',
-                                            { href: 'javascript:void(0)', id: record.id },
-                                            'more'
-                                        )
-                                    )
-                                )
-                            )
-                        );
-                    }
-                }, {
-                    title: '文件数',
-                    dataIndex: 'preloadUrlCount',
-                    key: 'preloadUrlCount'
-                }, {
-                    title: '当前预热批次',
-                    dataIndex: 'currentBatch',
-                    key: 'currentBatch',
-                    render: function render(text, record) {
-                        return text + "/" + record.batchTimeBandwidth.length;
-                    }
-                }, {
-                    title: '进度',
-                    dataIndex: 'progress',
-                    key: 'progress'
-                }, {
-                    title: '状态',
-                    dataIndex: 'status',
-                    key: 'status',
-                    render: function render(text, record) {
-                        var tag = null;
-                        if (record.status == 3) tag = React.createElement(
-                            Tag,
-                            { color: "red" },
-                            '\u5DF2\u6682\u505C'
-                        );else if (record.status == 2) tag = React.createElement(
-                            Tag,
-                            { color: "green" },
-                            '\u5DF2\u5B8C\u6210'
-                        );else if (record.status == 0) tag = React.createElement(
-                            Tag,
-                            { color: "blue" },
-                            '\u5F85\u9884\u70ED'
-                        );else if (record.status == 1) tag = React.createElement(
-                            Tag,
-                            { color: "orange" },
-                            '\u9884\u70ED\u4E2D'
-                        );else if (record.status == 4) tag = React.createElement(
-                            Tag,
-                            { color: "purple" },
-                            '\u6682\u505C\u4E2D'
-                        );
-                        return tag;
-                    }
-                }, {
-                    title: '成功率',
-                    dataIndex: 'successRate',
-                    key: 'successRate',
-                    render: function render(text, record) {
-                        return text * 100 + "%";
-                    }
-                }, {
-                    title: '创建人',
-                    dataIndex: 'committer',
-                    key: 'committer'
-                }, {
-                    title: '创建时间',
-                    dataIndex: 'commitTimeFormated',
-                    key: 'commitTimeFormated'
-                }, {
-                    title: '操作',
-                    dataIndex: 'id',
-                    key: 'action',
-                    fixed: 'right',
-                    width: 100,
-                    render: function render(text, record) {
-                        var editButton = React.createElement(
+                        var deleteButton = React.createElement(
                             Tooltip,
-                            { placement: 'bottom', title: "编辑" },
+                            { placement: 'bottom', title: "删除" },
                             React.createElement(
                                 'a',
                                 { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handleEditClick(e);
+                                        return _this2.handleDeleteClick(e);
                                     } },
-                                React.createElement(Icon, { type: 'edit' })
+                                React.createElement(Icon, { type: 'delete' })
                             )
                         );
-                        var playButton = React.createElement(
+                        var stopButton = React.createElement(
                             Tooltip,
-                            { placement: 'bottom', title: "开启" },
+                            { placement: 'bottom', title: "停止" },
                             React.createElement(
                                 'a',
                                 { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handleRestartClick(e);
+                                        return _this2.handleStopClick(e);
                                     } },
-                                React.createElement(Icon, { type: 'play-circle-o' })
+                                React.createElement(Icon, { type: 'poweroff' })
                             )
                         );
-                        var pauseButton = React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "暂停" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handlePauseClick(e);
-                                    } },
-                                React.createElement(Icon, { type: 'pause-circle-o' })
-                            )
-                        );
-                        var buttonGroup;
-                        if (record.status == 3) {
+                        var buttonGroup = "";
+                        if (record.taskStatus == "RUNNING") {
                             buttonGroup = React.createElement(
                                 'div',
                                 null,
-                                editButton,
+                                detailButton,
                                 React.createElement('span', { className: 'ant-divider' }),
-                                playButton
+                                stopButton,
+                                React.createElement('span', { className: 'ant-divider' }),
+                                deleteButton
                             );
-                        } else if (record.status == 1 || record.status == 0) {
+                        } else {
                             buttonGroup = React.createElement(
                                 'div',
                                 null,
-                                pauseButton
+                                detailButton,
+                                React.createElement('span', { className: 'ant-divider' }),
+                                deleteButton
                             );
                         }
                         return buttonGroup;
                     }
                 }];
-                var preHeatProps = this.props.preHeatProps;
+                var ltProps = this.props.ltProps;
                 var pagination = {
                     showSizeChanger: true,
                     showQuickJumper: true,
                     showTotal: function showTotal(total) {
                         return 'Total ' + total + ' items';
                     },
-                    current: preHeatProps.queryCondition.pageNo,
-                    total: preHeatProps.collection.total,
+                    current: ltProps.queryCondition.page,
+                    total: ltProps.collection.total,
                     onChange: this.onChangePage,
                     onShowSizeChange: this.onChangePage
                 };
@@ -434,310 +351,307 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                     dataSource: this.state.data,
                     loading: this.state.isFetching,
                     columns: columns,
-                    scroll: { x: 1500 },
                     pagination: pagination });
             }
         }]);
 
-        return PreHeatTable;
+        return LogTaskListTable;
     }(React.Component);
 
-    var SearchForm = React.createClass({
-        displayName: 'SearchForm',
+    var SearchForm = function (_React$Component2) {
+        _inherits(SearchForm, _React$Component2);
 
+        function SearchForm(props, context) {
+            _classCallCheck(this, SearchForm);
 
-        getInitialState: function getInitialState() {
-            var defaultState = {
-                dataSource: []
-            };
-            return defaultState;
-        },
+            var _this3 = _possibleConstructorReturn(this, (SearchForm.__proto__ || Object.getPrototypeOf(SearchForm)).call(this, props));
 
-        handleSearch: function handleSearch(value) {
-            var preHeatProps = this.props.preHeatProps;
-            var nodeArray = [],
-                nodeList = preHeatProps.nodeList;
-            if (value && nodeList) {
-                nodeArray = _.filter(nodeList, function (el) {
-                    return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1;
-                }.bind(this)).map(function (el) {
-                    return React.createElement(
-                        Option,
-                        { key: el.id },
-                        el.name
-                    );
-                });
+            _this3.onClickAddButton = _this3.onClickAddButton.bind(_this3);
+            _this3.handleSubmit = _this3.handleSubmit.bind(_this3);
+            _this3.state = {};
+            return _this3;
+        }
+
+        _createClass(SearchForm, [{
+            key: 'handleSubmit',
+            value: function handleSubmit(e) {
+                // "name": null,
+                // "domain": null,
+                // "templateName": null,
+                // "accountId": null,
+                // "backUrl": null,
+                e && e.preventDefault();
+                var fieldsValue = this.props.form.getFieldsValue(),
+                    ltProps = this.props.ltProps;
+                var collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
+                queryCondition.name = fieldsValue.name || null;
+                queryCondition.domain = fieldsValue.domain || null;
+                queryCondition.templateName = fieldsValue.templateName || null;
+                queryCondition.accountId = fieldsValue.accountId || null;
+                queryCondition.backUrl = fieldsValue.backUrl || null;
+                console.log(queryCondition);
+                collection.trigger("fetching", queryCondition);
             }
-
-            this.setState({
-                dataSource: nodeArray
-            });
-        },
-
-        handleSubmit: function handleSubmit(e) {
-            e.preventDefault();
-            var fieldsValue = this.props.form.getFieldsValue(),
-                preHeatProps = this.props.preHeatProps;
-            var collection = preHeatProps.collection,
-                queryCondition = preHeatProps.queryCondition,
-                nodes = [];
-            if (fieldsValue.nodeNames && fieldsValue.nodeNames.length > 0) {
-                _.each(fieldsValue.nodeNames, function (el) {
-                    nodes.push(el.label);
-                });
-                nodes = nodes.join(";");
-            } else {
-                nodes = null;
+        }, {
+            key: 'onClickAddButton',
+            value: function onClickAddButton() {
+                var onClickAddCallback = this.props.ltProps.onClickAddCallback;
+                onClickAddCallback && onClickAddCallback();
             }
-            queryCondition.taskName = fieldsValue.preheatNames || null;
-            queryCondition.nodes = nodes;
-            queryCondition.status = fieldsValue.preheatStatus == "all" ? null : parseInt(fieldsValue.preheatStatus);
-            collection.trigger("fetching", queryCondition);
-        },
+        }, {
+            key: 'onClickResetButton',
+            value: function onClickResetButton() {
+                var setFieldsValue = this.props.form.setFieldsValue;
 
-        onClickAddButton: function onClickAddButton() {
-            var onClickAddCallback = this.props.preHeatProps.onClickAddCallback;
-            onClickAddCallback && onClickAddCallback();
-        },
+                setFieldsValue({ "name": null });
+                setFieldsValue({ "domain": null });
+                setFieldsValue({ "templateName": null });
+                setFieldsValue({ "accountId": null });
+                setFieldsValue({ "backUrl": null });
+                this.handleSubmit();
+            }
+        }, {
+            key: 'render',
+            value: function render() {
+                var getFieldDecorator = this.props.form.getFieldDecorator;
+                var dataSource = this.state.dataSource;
 
-        render: function render() {
-            var getFieldDecorator = this.props.form.getFieldDecorator;
-            var dataSource = this.state.dataSource;
+                var ltProps = this.props.ltProps;
+                var formItemLayout = {
+                    labelCol: { span: 6 },
+                    wrapperCol: { span: 12 }
+                };
 
-            var preHeatProps = this.props.preHeatProps;
-            var nodeList = preHeatProps.nodeList;
-            //0:待预热 1:预热中 2:已完成 3:已暂停 4：暂停中
-            var HorizontalForm = React.createElement(
-                Form,
-                { layout: 'inline', onSubmit: this.handleSubmit },
-                React.createElement(
-                    FormItem,
-                    { label: "名称" },
-                    getFieldDecorator('preheatNames')(React.createElement(Input, null))
-                ),
-                React.createElement(
-                    FormItem,
-                    { label: "节点" },
-                    getFieldDecorator('nodeNames')(React.createElement(
-                        Select,
-                        { mode: 'multiple', allowClear: true,
-                            style: { width: 300 },
-                            labelInValue: true,
-                            notFoundContent: nodeList.length == 0 ? React.createElement(Spin, { size: 'small' }) : '请输入节点关键字',
-                            filterOption: false,
-                            onSearch: $.proxy(this.handleSearch, this) },
-                        dataSource
-                    ))
-                ),
-                React.createElement(
-                    FormItem,
-                    { label: '\u72B6\u6001' },
-                    getFieldDecorator('preheatStatus', {
-                        "initialValue": "all"
-                    })(React.createElement(
-                        Select,
+                var HorizontalForm = React.createElement(
+                    Form,
+                    { onSubmit: this.handleSubmit },
+                    React.createElement(
+                        Row,
                         null,
                         React.createElement(
-                            Option,
-                            { value: 'all' },
-                            '\u5168\u90E8'
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                _extends({}, formItemLayout, { label: "任务名称" }),
+                                getFieldDecorator('name')(React.createElement(Input, null))
+                            )
                         ),
                         React.createElement(
-                            Option,
-                            { value: '0' },
-                            '\u5F85\u9884\u70ED'
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                _extends({}, formItemLayout, { label: "域名" }),
+                                getFieldDecorator('domain')(React.createElement(Input, null))
+                            )
                         ),
                         React.createElement(
-                            Option,
-                            { value: '1' },
-                            '\u9884\u70ED\u4E2D'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '3' },
-                            '\u5DF2\u6682\u505C'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '4' },
-                            '\u6682\u505C\u4E2D'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '2' },
-                            '\u5DF2\u5B8C\u6210'
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                _extends({}, formItemLayout, { label: "模版名称" }),
+                                getFieldDecorator('templateName')(React.createElement(Input, null))
+                            )
                         )
-                    ))
-                ),
-                React.createElement(
-                    FormItem,
-                    null,
-                    React.createElement(
-                        Button,
-                        { type: 'primary', htmlType: 'submit', icon: 'search' },
-                        '\u67E5\u8BE2'
                     ),
                     React.createElement(
-                        Button,
-                        { style: { marginLeft: 8 }, icon: 'plus', onClick: this.onClickAddButton },
-                        '\u65B0\u5EFA'
+                        Row,
+                        null,
+                        React.createElement(
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                _extends({}, formItemLayout, { label: "客户ID" }),
+                                getFieldDecorator('accountId')(React.createElement(Input, null))
+                            )
+                        ),
+                        React.createElement(
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                _extends({}, formItemLayout, { label: "回传地址" }),
+                                getFieldDecorator('backUrl')(React.createElement(Input, null))
+                            )
+                        ),
+                        React.createElement(
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                null,
+                                React.createElement(
+                                    Button,
+                                    { type: 'primary', htmlType: 'submit', icon: 'search' },
+                                    '\u67E5\u8BE2'
+                                ),
+                                React.createElement(
+                                    Button,
+                                    { style: { marginLeft: 8 }, icon: 'plus', onClick: this.onClickAddButton },
+                                    '\u65B0\u5EFA'
+                                ),
+                                React.createElement(
+                                    Button,
+                                    { style: { marginLeft: 8 }, icon: 'reload', onClick: $.proxy(this.onClickResetButton, this) },
+                                    '\u91CD\u7F6E'
+                                )
+                            )
+                        )
                     )
-                )
-            );
-
-            return HorizontalForm;
-        }
-    });
-
-    var PreHeatManageList = React.createClass({
-        displayName: 'PreHeatManageList',
-
-        componentDidMount: function componentDidMount() {
-            require(['nodeManage.model'], function (NodeManageModel) {
-                var nodeManageModel = new NodeManageModel();
-                nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this));
-                nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this));
-                nodeManageModel.getNodeList({ page: 1, count: 9999 });
-            }.bind(this));
-        },
-
-        getInitialState: function getInitialState() {
-            var defaultState = {
-                nodeList: [],
-                curViewsMark: "list", // list: 列表界面，add: 新建，edit: 编辑
-                breadcrumbTxt: ["预热刷新", "预热管理"]
-            };
-            return defaultState;
-        },
-
-        onGetNodeListSuccess: function onGetNodeListSuccess(res) {
-            this.setState({
-                nodeList: res
-            });
-        },
-
-        onGetNodeListError: function onGetNodeListError(error) {
-            var msg = error ? error.message : "获取节点信息失败!";
-            Utility.alerts(msg);
-            this.setState({
-                nodeList: []
-            });
-        },
-
-        onClickAddCallback: function onClickAddCallback() {
-            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, isEdit: false });
-                this.setState({
-                    curViewsMark: "add",
-                    breadcrumbTxt: ["预热管理", "新建"]
-                });
-            }.bind(this));
-        },
-
-        onClickEditCallback: function onClickEditCallback(model) {
-            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, model: model, isEdit: true });
-                this.setState({
-                    curViewsMark: "edit",
-                    breadcrumbTxt: ["预热管理", "编辑"]
-                });
-            }.bind(this));
-        },
-
-        onClickViewCallback: function onClickViewCallback(model) {
-            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, model: model, isEdit: true, isView: true });
-                this.setState({
-                    curViewsMark: "view",
-                    breadcrumbTxt: ["预热管理", "查看"]
-                });
-            }.bind(this));
-        },
-
-        onClickCancelCallback: function onClickCancelCallback() {
-            this.setState({
-                curViewsMark: "list",
-                breadcrumbTxt: ["预热刷新", "预热管理"]
-            });
-        },
-
-        render: function render() {
-            var WrappedSearchForm = Form.create()(SearchForm);
-
-            this.queryCondition = {
-                "taskName": null,
-                "status": null,
-                "nodes": null,
-                "pageNo": 1,
-                "pageSize": 10
-            };
-
-            this.preHeatProps = {
-                collection: this.props.collection,
-                queryCondition: this.queryCondition,
-                nodeList: this.state.nodeList,
-                onClickAddCallback: $.proxy(this.onClickAddCallback, this),
-                onClickEditCallback: $.proxy(this.onClickEditCallback, this),
-                onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
-                onClickViewCallback: $.proxy(this.onClickViewCallback, this)
-            };
-
-            var curView = null;
-            if (this.state.curViewsMark == "list") {
-                curView = React.createElement(
-                    'div',
-                    null,
-                    React.createElement(WrappedSearchForm, { preHeatProps: this.preHeatProps }),
-                    React.createElement('hr', null),
-                    React.createElement(Alert, { style: { marginBottom: '20px' }, message: '\u56DE\u6E90\u5E26\u5BBD\u3001\u9884\u70ED\u8282\u70B9\u3001\u8FDB\u5EA6\u5C55\u793A\u5F53\u524D\u6267\u884C\u6279\u6B21\u4FE1\u606F\uFF0C\u6587\u4EF6\u6570\u3001\u72B6\u6001\u3001\u6210\u529F\u7387\u4E3A\u5F53\u524D\u4EFB\u52A1\u6574\u4F53\u4FE1\u606F', type: 'info', showIcon: true }),
-                    React.createElement(PreHeatTable, { preHeatProps: this.preHeatProps })
                 );
-            } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit" || this.state.curViewsMark == "view") {
-                curView = this.curView;
-            }
 
-            return React.createElement(
-                Layout,
-                null,
-                React.createElement(
-                    Content,
+                return HorizontalForm;
+            }
+        }]);
+
+        return SearchForm;
+    }(React.Component);
+
+    var LogTaskListManageList = function (_React$Component3) {
+        _inherits(LogTaskListManageList, _React$Component3);
+
+        function LogTaskListManageList(props, context) {
+            _classCallCheck(this, LogTaskListManageList);
+
+            var _this4 = _possibleConstructorReturn(this, (LogTaskListManageList.__proto__ || Object.getPrototypeOf(LogTaskListManageList)).call(this, props));
+
+            _this4.state = {
+                curViewsMark: "list", // list: 列表界面，add: 新建，edit: 编辑
+                breadcrumbTxt: ["日志管理", "任务管理"]
+            };
+            return _this4;
+        }
+
+        _createClass(LogTaskListManageList, [{
+            key: 'componentDidMount',
+            value: function componentDidMount() {}
+        }, {
+            key: 'onClickAddCallback',
+            value: function onClickAddCallback() {
+                require(['logTaskList.edit.view'], function (LogTaskListManageView) {
+                    this.curView = React.createElement(LogTaskListManageView, { ltProps: this.ltProps, isEdit: false });
+                    this.setState({
+                        curViewsMark: "add",
+                        breadcrumbTxt: ["任务管理", "新建"]
+                    });
+                }.bind(this));
+            }
+        }, {
+            key: 'onClickEditCallback',
+            value: function onClickEditCallback(model) {
+                require(['logTaskList.edit.view'], function (LogTaskListManageView) {
+                    this.curView = React.createElement(LogTaskListManageView, { ltProps: this.ltProps, model: model, isEdit: true });
+                    this.setState({
+                        curViewsMark: "edit",
+                        breadcrumbTxt: ["任务管理", "编辑"]
+                    });
+                }.bind(this));
+            }
+        }, {
+            key: 'onClickViewCallback',
+            value: function onClickViewCallback(model, backTarget) {
+                require(['logTaskList.edit.view'], function (LogTaskListManageView) {
+                    this.curView = React.createElement(LogTaskListManageView, { ltProps: this.ltProps, model: model, isEdit: true, isView: true });
+                    this.setState({
+                        curViewsMark: "view",
+                        breadcrumbTxt: ["任务管理", "查看"]
+                    });
+                }.bind(this));
+            }
+        }, {
+            key: 'onClickCancelCallback',
+            value: function onClickCancelCallback() {
+                this.setState({
+                    curViewsMark: "list",
+                    breadcrumbTxt: ["日志管理", "任务管理"]
+                });
+            }
+        }, {
+            key: 'render',
+            value: function render() {
+                var WrappedSearchForm = Form.create()(SearchForm);
+
+                this.queryCondition = {
+                    "name": null,
+                    "domain": null,
+                    "templateName": null,
+                    "accountId": null,
+                    "backUrl": null,
+                    "page": 1,
+                    "size": 10
+                };
+
+                this.ltProps = {
+                    collection: this.props.collection,
+                    queryCondition: this.queryCondition,
+                    onClickAddCallback: $.proxy(this.onClickAddCallback, this),
+                    onClickEditCallback: $.proxy(this.onClickEditCallback, this),
+                    onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
+                    onClickViewCallback: $.proxy(this.onClickViewCallback, this)
+                };
+
+                var curView = null;
+                if (this.state.curViewsMark == "list") {
+                    curView = React.createElement(
+                        'div',
+                        null,
+                        React.createElement(WrappedSearchForm, { ltProps: this.ltProps }),
+                        React.createElement('hr', null),
+                        React.createElement(LogTaskListTable, { ltProps: this.ltProps })
+                    );
+                } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit" || this.state.curViewsMark == "view") {
+                    curView = this.curView;
+                }
+
+                return React.createElement(
+                    Layout,
                     null,
                     React.createElement(
-                        Breadcrumb,
-                        { style: { margin: '16px 0' } },
+                        Content,
+                        null,
                         React.createElement(
-                            Breadcrumb.Item,
-                            null,
-                            this.state.breadcrumbTxt[0]
+                            Breadcrumb,
+                            { style: { margin: '16px 0' } },
+                            React.createElement(
+                                Breadcrumb.Item,
+                                null,
+                                this.state.breadcrumbTxt[0]
+                            ),
+                            React.createElement(
+                                Breadcrumb.Item,
+                                null,
+                                this.state.breadcrumbTxt[1]
+                            )
                         ),
                         React.createElement(
-                            Breadcrumb.Item,
-                            null,
-                            this.state.breadcrumbTxt[1]
+                            'div',
+                            { style: { background: '#fff', padding: 24, minHeight: 280 } },
+                            curView
                         )
-                    ),
-                    React.createElement(
-                        'div',
-                        { style: { background: '#fff', padding: 24, minHeight: 280 } },
-                        curView
                     )
-                )
-            );
-        }
-    });
+                );
+            }
+        }]);
 
-    var PreheatManageView = BaseView.extend({
+        return LogTaskListManageList;
+    }(React.Component);
+
+    var LogTaskListManageView = BaseView.extend({
         initialize: function initialize(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template('<div class="preheat-manage"></div>')());
+            this.$el = $(_.template('<div class="log-manage"></div>')());
 
-            var preHeatManageListFac = React.createFactory(PreHeatManageList);
-            var preHeatManageList = preHeatManageListFac({
+            var logTaskListFactory = React.createFactory(LogTaskListManageList);
+            var logTaskList = logTaskListFactory({
                 collection: this.collection
             });
-            ReactDOM.render(preHeatManageList, this.$el.get(0));
+            ReactDOM.render(logTaskList, this.$el.get(0));
         }
     });
-    return PreheatManageView;
+    return LogTaskListManageView;
 });

@@ -1,99 +1,96 @@
 'use strict';
 
-define("preheatManage.model", ['require', 'exports', 'utility'], function (require, exports, Utility) {
+define("logTaskList.model", ['require', 'exports', 'utility'], function (require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function initialize() {
-            var taskId = this.get("taskId");
-            if (taskId) this.set("id", taskId);
-
-            var commitTime = parseInt(this.get("commitTime")),
-                startTime = parseInt(this.get("startTime")),
-                endTime = parseInt(this.get("endTime")),
-                batchTimeBandwidth = this.get("batchTimeBandwidth");
-            if (commitTime) this.set("commitTimeFormated", new Date(commitTime).format("yyyy/MM/dd hh:mm"));
-            if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm"));
-            if (endTime) this.set("endTimeFormated", new Date(endTime).format("yyyy/MM/dd hh:mm"));
-            _.each(batchTimeBandwidth, function (el) {
-                _.each(el.timeWidth, function (time) {
-                    var batchEndTime = parseInt(time.batchEndTime),
-                        batchStartTime = parseInt(time.batchStartTime);
-                    time.batchEndTime = new Date(batchEndTime).format("hh:mm");
-                    time.batchStartTime = new Date(batchStartTime).format("hh:mm");
-                });
-            });
+            var updateTime = parseInt(this.get("updateTime")),
+                createTime = parseInt(this.get("createTime"));
+            if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
         }
     });
 
-    var PreheatManageCollection = Backbone.Collection.extend({
+    var logTaskListCollection = Backbone.Collection.extend({
 
         model: Model,
 
         initialize: function initialize() {},
 
-        getPreheatList: function getPreheatList(args) {
-            var url = BASE_URL + "/refresh/task/query",
+        getTaskList: function getTaskList(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/page",
                 successCallback = function (res) {
                 this.reset();
                 if (res) {
-                    _.each(res.rows, function (element, index, list) {
+                    _.each(res.list, function (element, index, list) {
                         this.push(new Model(element));
                     }.bind(this));
-                    this.total = res.total;
-                    this.trigger("get.preheat.success", res.rows);
+                    this.total = res.totalCount;
+                    this.trigger("get.taskList.success", res.list);
                 } else {
-                    this.trigger("get.preheat.error");
+                    this.trigger("get.taskList.error");
                 }
             }.bind(this),
                 errorCallback = function (response) {
-                this.trigger('get.preheat.error', response);
+                this.trigger('get.taskList.error', response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        commitTask: function commitTask(args) {
-            var url = BASE_URL + "/refresh/task/commit",
+        getTemplateByProductType: function getTemplateByProductType(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/select",
                 successCallback = function (res) {
-                this.trigger("refresh.commit.success", res);
+                this.trigger("template.selectList.success", res);
             }.bind(this),
                 errorCallback = function (response) {
-                this.trigger('refresh.commit.error', response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        taskModify: function taskModify(args) {
-            var url = BASE_URL + "/refresh/task/modify",
-                successCallback = function (res) {
-                this.trigger("refresh.commit.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('refresh.commit.error', response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        taskPause: function taskPause(args) {
-            var url = BASE_URL + "/refresh/task/pause",
-                successCallback = function (res) {
-                this.trigger("refresh.pause.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('refresh.pause.error', response);
+                this.trigger('template.selectList.error', response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        taskRestart: function taskRestart(args) {
-            var url = BASE_URL + "/refresh/task/restart",
+        addTask: function addTask(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/add",
                 successCallback = function (res) {
-                this.trigger("refresh.restart.success", res);
+                this.trigger("add.task.success", res);
             }.bind(this),
                 errorCallback = function (response) {
-                this.trigger('refresh.restart.error', response);
+                this.trigger('add.task.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        getTaskDetail: function getTaskDetail(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/detail",
+                successCallback = function (res) {
+                this.trigger("task.detail.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('task.detail.error', response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        stopTask: function stopTask(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/stop",
+                successCallback = function (res) {
+                this.trigger("stop.task.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('stop.task.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        deleteTask: function deleteTask(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/del",
+                successCallback = function (res) {
+                this.trigger("delete.task.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('delete.task.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 
-    return PreheatManageCollection;
+    return logTaskListCollection;
 });

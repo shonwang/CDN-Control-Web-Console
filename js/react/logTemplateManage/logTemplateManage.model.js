@@ -47,24 +47,13 @@ define("logTemplateManage.model", ['require', 'exports', 'utility'], function (r
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        commitTask: function commitTask(args) {
-            var url = BASE_URL + "/refresh/task/commit",
+        addTemplate: function addTemplate(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/add",
                 successCallback = function (res) {
-                this.trigger("refresh.commit.success", res);
+                this.trigger("add.template.success", res);
             }.bind(this),
                 errorCallback = function (response) {
-                this.trigger('refresh.commit.error', response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        taskModify: function taskModify(args) {
-            var url = BASE_URL + "/refresh/task/modify",
-                successCallback = function (res) {
-                this.trigger("refresh.commit.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('refresh.commit.error', response);
+                this.trigger('add.template.error', response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
@@ -78,6 +67,39 @@ define("logTemplateManage.model", ['require', 'exports', 'utility'], function (r
                 this.trigger('template.detail.error', response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        getTplHistoryList: function getTplHistoryList(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/history",
+                successCallback = function (res) {
+                this.trigger("template.history.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('template.history.error', response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
+
+        publishTemplate: function publishTemplate(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/publish",
+                successCallback = function (res) {
+                this.trigger("publish.template.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('publish.template.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        deleteTemplate: function deleteTemplate(args) {
+            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/delete",
+                successCallback = function (res) {
+                this.trigger("delete.template.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('delete.template.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

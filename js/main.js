@@ -227,6 +227,8 @@
   "logTaskStatistics.model": "react/logTaskStatistics/logTaskStatistics.model",
   "logTaskStatistics.view": "react/logTaskStatistics/logTaskStatistics.view",
   "logTemplateManage.edit.view": "react/logTemplateManage/logTemplateManage.edit.view",
+  "logTemplateManage.field.model": "react/logTemplateManage/logTemplateManage.field.model",
+  "logTemplateManage.history.view": "react/logTemplateManage/logTemplateManage.history.view",
   "logTemplateManage.model": "react/logTemplateManage/logTemplateManage.model",
   "logTemplateManage.view": "react/logTemplateManage/logTemplateManage.view",
   "preheatManage.edit.view": "react/preheatManage/preheatManage.edit.view",

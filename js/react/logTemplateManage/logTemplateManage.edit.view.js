@@ -6,8 +6,6 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -25,15 +23,8 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
         Option = Select.Option,
         Modal = Antd.Modal,
         Table = Antd.Table,
-        InputNumber = Antd.InputNumber,
-        Tag = Antd.Tag,
         Icon = Antd.Icon,
         Tooltip = Antd.Tooltip,
-        Upload = Antd.Upload,
-        List = Antd.List,
-        DatePicker = Antd.DatePicker,
-        TimePicker = Antd.TimePicker,
-        RangePicker = DatePicker.RangePicker,
         Col = Antd.Col,
         Alert = Antd.Alert,
         confirm = Modal.confirm;
@@ -51,6 +42,8 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
             _this.renderExportFieldTableView = _this.renderExportFieldTableView.bind(_this);
             _this.validateTemplateFieldList = _this.validateTemplateFieldList.bind(_this);
             _this.handleSubmit = _this.handleSubmit.bind(_this);
+            _this.convertEnumToShowStr = _this.convertEnumToShowStr.bind(_this);
+            _this.getFieldExample = _this.getFieldExample.bind(_this);
 
             _this.state = {
                 name: "",
@@ -64,16 +57,10 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                 fieldSepCusValueVisible: "none",
                 fieldModalVisible: false,
                 isEditField: false,
-                curEditField: {}
+                curEditField: {},
 
-                // //分时带宽
-                // timeBandList: [],
-                // timeModalVisible: false,
-                // isEditTime: false,
-                // curEditTime: {},
+                dataSourceOriginFieldTag: []
             };
-
-            moment.locale("zh");
             return _this;
         }
 
@@ -88,15 +75,28 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                     collection.on("template.detail.error", $.proxy(this.onGetError, this));
                     collection.getTemplateDetail({ id: model.id });
                 }
-                // collection.on("refresh.commit.success", $.proxy(this.onSubmitSuccess, this));
-                // collection.on("refresh.commit.error", $.proxy(this.onGetError, this));     
+                collection.on("add.template.success", $.proxy(this.onSubmitSuccess, this));
+                collection.on("add.template.error", $.proxy(this.onGetError, this));
+                require(['logTemplateManage.field.model'], function (LogTplManageOriginField) {
+                    this.logTplManageOriginField = LogTplManageOriginField;
+                    var originFieldTagArray = LogTplManageOriginField.map(function (el, index) {
+                        return React.createElement(
+                            Option,
+                            { key: el.id },
+                            el.field
+                        );
+                    });
+                    this.setState({
+                        dataSourceOriginFieldTag: originFieldTagArray
+                    });
+                }.bind(this));
             }
         }, {
             key: 'componentWillUnmount',
             value: function componentWillUnmount() {
                 var collection = this.props.ltProps.collection;
-                // collection.off("refresh.commit.success");
-                // collection.off("refresh.commit.error");
+                collection.off("add.template.success");
+                collection.off("add.template.error");
                 if (this.props.isEdit) {
                     collection.off("template.detail.success");
                     collection.off("template.detail.error");
@@ -105,6 +105,8 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
         }, {
             key: 'onGetTplDetailSuccess',
             value: function onGetTplDetailSuccess(res) {
+                this.groupId = res.groupId;
+                this.originCreateTime = res.groupId;
                 if (res.fieldSeparator != "    " && res.fieldSeparator != " " && res.fieldSeparator != "|") {
                     res.fieldSeparatorCusValue = res.fieldSeparator;
                     res.fieldSeparator = "custom";
@@ -125,6 +127,41 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                 });
             }
         }, {
+            key: 'convertEnumToShowStr',
+            value: function convertEnumToShowStr() {
+                var _state = this.state,
+                    productType = _state.productType,
+                    backType = _state.backType,
+                    fieldSeparator = _state.fieldSeparator,
+                    fieldSeparatorCusValue = _state.fieldSeparatorCusValue;
+
+                var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
+
+                var dataForShow = {
+                    productType: "",
+                    backType: "",
+                    fieldSeparator: ""
+                };
+
+                if (productType == "DOWNLOAD") {
+                    dataForShow.productType = "下载";
+                } else if (productType == "LIVE") {
+                    dataForShow.productType = "直播";
+                }
+                if (backType == "CENTER") {
+                    dataForShow.backType = "中心回传";
+                } else if (backType == "EDGE") {
+                    dataForShow.backType = "边缘回传";
+                }
+                if (fieldSeparator == "custom") {
+                    dataForShow.fieldSeparator = fieldSeparatorCusValue;
+                } else {
+                    dataForShow.fieldSeparator = fieldSeparator;
+                }
+
+                return dataForShow;
+            }
+        }, {
             key: 'renderBaseInfoView',
             value: function renderBaseInfoView(formItemLayout) {
                 var _props$form = this.props.form,
@@ -132,11 +169,11 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                     setFieldsValue = _props$form.setFieldsValue,
                     getFieldValue = _props$form.getFieldValue;
 
-                var baseInfoView = null,
-                    model = this.props.model;
-                // productType的取值类型 DOWNLOAD（下载）LIVE（直播） 
+                var baseInfoView = null;
+                // backType的取值类型 DOWNLOAD（下载）LIVE（直播） 
                 // backType的取值类型 CENTER（中心回传） EDGE（边缘回传）
                 if (this.props.isView) {
+                    var dataForShow = this.convertEnumToShowStr();
                     baseInfoView = React.createElement(
                         'div',
                         null,
@@ -155,7 +192,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             React.createElement(
                                 'span',
                                 { className: 'ant-form-text' },
-                                this.state.productType
+                                dataForShow.productType
                             )
                         ),
                         React.createElement(
@@ -164,7 +201,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             React.createElement(
                                 'span',
                                 { className: 'ant-form-text' },
-                                this.state.backType
+                                dataForShow.backType
                             )
                         ),
                         React.createElement(
@@ -173,7 +210,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             React.createElement(
                                 'span',
                                 { className: 'ant-form-text' },
-                                this.state.fieldSeparator
+                                dataForShow.fieldSeparator
                             )
                         ),
                         React.createElement(
@@ -360,14 +397,13 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
         }, {
             key: 'renderExportFieldTableView',
             value: function renderExportFieldTableView(formItemLayout) {
-                var _this2 = this,
-                    _React$createElement;
+                var _this2 = this;
 
                 var getFieldDecorator = this.props.form.getFieldDecorator;
-                var _state = this.state,
-                    templateFieldList = _state.templateFieldList,
-                    fieldModalVisible = _state.fieldModalVisible,
-                    curEditField = _state.curEditField;
+                var _state2 = this.state,
+                    templateFieldList = _state2.templateFieldList,
+                    fieldModalVisible = _state2.fieldModalVisible,
+                    curEditField = _state2.curEditField;
 
                 var exportFieldListView = "";
                 var _props = this.props,
@@ -401,7 +437,12 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                 }, {
                     title: '赋值类型',
                     dataIndex: 'valueType',
-                    key: 'valueType'
+                    key: 'valueType',
+                    render: function render(text, record) {
+                        var tag = null;
+                        if (record.valueType == "ORIGINAL_VALUE") tag = "原值";else if (record.valueType == "FIXED_VALUE") tag = "固定值";else if (record.valueType == "PREFIX_VALUE") tag = "前缀";else if (record.valueType == "SUFFIX_VALUE") tag = "后缀";else if (record.valueType == "PREFIX_AND_SUFFIX_VALUE") tag = "前后缀";
+                        return tag;
+                    }
                 }, {
                     title: '赋值参数',
                     dataIndex: 'param',
@@ -429,7 +470,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             { placement: 'bottom', title: "删除" },
                             React.createElement(
                                 'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this2.onClickDeleteNode, _this2) },
+                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this2.onClickDeleteField, _this2) },
                                 React.createElement(Icon, { type: 'delete' })
                             )
                         );
@@ -477,8 +518,11 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                         })(React.createElement(Table, { rowKey: 'order', columns: columns, pagination: false, size: 'small', dataSource: templateFieldList })),
                         React.createElement(
                             Modal,
-                            (_React$createElement = { title: '导出字段', destroyOnClose: true, width: 800
-                            }, _defineProperty(_React$createElement, 'destroyOnClose', true), _defineProperty(_React$createElement, 'visible', fieldModalVisible), _defineProperty(_React$createElement, 'onOk', $.proxy(this.handleFieldOk, this)), _defineProperty(_React$createElement, 'onCancel', $.proxy(this.handleModalCancel, this)), _React$createElement),
+                            { title: '导出字段', width: 800,
+                                destroyOnClose: true,
+                                visible: fieldModalVisible,
+                                onOk: $.proxy(this.handleFieldOk, this),
+                                onCancel: $.proxy(this.handleModalCancel, this) },
                             addEditFieldView
                         )
                     )
@@ -507,6 +551,8 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
         }, {
             key: 'handleFieldOk',
             value: function handleFieldOk(e) {
+                var _this3 = this;
+
                 // "order": 1,
                 // "originFieldTag": "log_type",
                 // "originFieldName": "日志类型",
@@ -517,40 +563,54 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                 // "param": "参数",
                 // "example": "${log_type}"
                 e.preventDefault();
-                var _state2 = this.state,
-                    templateFieldList = _state2.templateFieldList,
-                    isEditField = _state2.isEditField,
-                    curEditField = _state2.curEditField;
+                var _state3 = this.state,
+                    templateFieldList = _state3.templateFieldList,
+                    isEditField = _state3.isEditField,
+                    curEditField = _state3.curEditField;
                 var _props$form2 = this.props.form,
                     getFieldsValue = _props$form2.getFieldsValue,
                     validateFields = _props$form2.validateFields,
                     resetFields = _props$form2.resetFields;
 
-                var newField = null;
+                var newField = null,
+                    fieldObj = void 0;
                 validateFields(["originFieldTag", "exportFieldTag", "exportFieldName", "exportFieldType", "valueType", "param"], function (err, vals) {
-                    console.log(vals);
-                    console.log(getFieldsValue());
-                    // if (!err && !isEditField) {
-                    //     newField = {
-                    //         order: nodesList.length + 1,
-                    //         id: Utility.randomStr(8),
-                    //     }
-                    //     this.setState({
-                    //         templateFieldList: [...templateFieldList, newField],
-                    //         fieldModalVisible: false
-                    //     });
-                    // } else if (!err && isEditField) {
-                    //     _.find(templateFieldList, (el) => {
-                    //         if (el.id == curEditNode.id) {
+                    console.log("点击OK时的字段：", vals);
+                    if (!err && !isEditField) {
+                        fieldObj = _.find(_this3.logTplManageOriginField, function (el) {
+                            return el.id == vals.originFieldTag;
+                        });
+                        newField = {
+                            order: templateFieldList.length + 1,
+                            id: Utility.randomStr(8),
+                            originFieldTag: fieldObj.field,
+                            originFieldName: curEditField.originFieldName,
+                            exportFieldTag: vals.exportFieldTag,
+                            exportFieldName: vals.exportFieldName,
+                            exportFieldType: vals.exportFieldType,
+                            valueType: vals.valueType,
+                            param: vals.param,
+                            example: curEditField.example
+                        };
+                        _this3.setState({
+                            templateFieldList: [].concat(_toConsumableArray(templateFieldList), [newField]),
+                            fieldModalVisible: false
+                        });
+                    } else if (!err && isEditField) {
+                        fieldObj = _.find(_this3.logTplManageOriginField, function (el) {
+                            return el.id == vals.originFieldTag;
+                        });
+                        _.find(templateFieldList, function (el) {
+                            if (el.id == curEditField.id) {
+                                el.originFieldTag = fieldObj.field, el.originFieldName = curEditField.originFieldName, el.exportFieldTag = vals.exportFieldTag, el.exportFieldName = vals.exportFieldName, el.exportFieldType = vals.exportFieldType, el.valueType = vals.valueType, el.param = vals.param, el.example = curEditField.example;
+                            }
+                        });
 
-                    //         }
-                    //     })
-
-                    //     this.setState({
-                    //         templateFieldList: [...templateFieldList],
-                    //         fieldModalVisible: false
-                    //     });
-                    // }
+                        _this3.setState({
+                            templateFieldList: [].concat(_toConsumableArray(templateFieldList)),
+                            fieldModalVisible: false
+                        });
+                    }
                 });
             }
         }, {
@@ -581,8 +641,8 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                 });
             }
         }, {
-            key: 'onClickDeleteNode',
-            value: function onClickDeleteNode(event) {
+            key: 'onClickDeleteField',
+            value: function onClickDeleteField(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -613,9 +673,9 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
             key: 'renderAddEditFieldView',
             value: function renderAddEditFieldView(formItemLayout) {
                 var getFieldDecorator = this.props.form.getFieldDecorator;
-                var _state3 = this.state,
-                    curEditField = _state3.curEditField,
-                    isEditField = _state3.isEditField;
+                var _state4 = this.state,
+                    curEditField = _state4.curEditField,
+                    isEditField = _state4.isEditField;
 
                 var addEditNodesView = "";
                 addEditNodesView = React.createElement(
@@ -632,27 +692,14 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             {
                                 showSearch: true,
                                 allowClear: true,
-                                style: { width: 200 },
+                                style: { width: 300 },
                                 optionFilterProp: 'children',
                                 filterOption: function filterOption(input, option) {
                                     return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-                                }
+                                },
+                                onChange: $.proxy(this.onOriginFieldTagChange, this)
                             },
-                            React.createElement(
-                                Option,
-                                { value: 'jack' },
-                                'Jack'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'lucy' },
-                                'Lucy'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'tom' },
-                                'Tom'
-                            )
+                            this.state.dataSourceOriginFieldTag
                         ))
                     ),
                     React.createElement(
@@ -696,13 +743,18 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             ),
                             React.createElement(
                                 Option,
-                                { value: 'LIVE' },
-                                '\u76F4\u64AD'
+                                { value: 'string' },
+                                'string'
                             ),
                             React.createElement(
                                 Option,
-                                { value: 'DOWNLOAD' },
-                                '\u70B9\u64AD'
+                                { value: 'int' },
+                                'int'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'double' },
+                                'double'
                             )
                         ))
                     ),
@@ -714,7 +766,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             rules: [{ required: true, message: '请选择赋值类型!' }]
                         })(React.createElement(
                             Select,
-                            { style: { width: 200 } },
+                            { style: { width: 200 }, onChange: $.proxy(this.onValueTypeChange, this) },
                             React.createElement(
                                 Option,
                                 { value: '' },
@@ -722,13 +774,28 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             ),
                             React.createElement(
                                 Option,
-                                { value: 'LIVE' },
-                                '\u76F4\u64AD'
+                                { value: 'ORIGINAL_VALUE' },
+                                '\u539F\u503C'
                             ),
                             React.createElement(
                                 Option,
-                                { value: 'DOWNLOAD' },
-                                '\u70B9\u64AD'
+                                { value: 'FIXED_VALUE' },
+                                '\u56FA\u5B9A\u503C'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'PREFIX_VALUE' },
+                                '\u524D\u7F00'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'SUFFIX_VALUE' },
+                                '\u540E\u7F00'
+                            ),
+                            React.createElement(
+                                Option,
+                                { value: 'PREFIX_AND_SUFFIX_VALUE' },
+                                '\u524D\u540E\u7F00(\u8BF7\u4EE5","\u5206\u5272)'
                             )
                         ))
                     ),
@@ -738,7 +805,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                         getFieldDecorator('param', {
                             initialValue: curEditField.param || "",
                             rules: [{ required: true, message: '请输入赋值参数!' }]
-                        })(React.createElement(Input, null))
+                        })(React.createElement(Input, { onChange: $.proxy(this.onParamChange, this) }))
                     ),
                     React.createElement(
                         FormItem,
@@ -750,6 +817,101 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                 return addEditNodesView;
             }
         }, {
+            key: 'getFieldExample',
+            value: function getFieldExample(originField, valueType, param) {
+                var example = "",
+                    prefix,
+                    suffix;
+                if (valueType && param && originField) {
+                    if (valueType == "ORIGINAL_VALUE") {
+                        example = "${" + originField + "}";
+                    } else if (valueType == "FIXED_VALUE") {
+                        example = param;
+                    } else if (valueType == "PREFIX_VALUE") {
+                        example = param + "${" + originField + "}";
+                    } else if (valueType == "SUFFIX_VALUE") {
+                        example = "${" + originField + "}" + param;
+                    } else if (valueType == "PREFIX_AND_SUFFIX_VALUE") {
+                        prefix = param.split(",")[0];
+                        suffix = param.split(",")[1];
+                        example = prefix + "${" + originField + "}" + suffix;
+                    }
+                }
+                return example;
+            }
+        }, {
+            key: 'onOriginFieldTagChange',
+            value: function onOriginFieldTagChange(value) {
+                var _props$form3 = this.props.form,
+                    setFieldsValue = _props$form3.setFieldsValue,
+                    getFieldsValue = _props$form3.getFieldsValue;
+
+                var fieldObj,
+                    curEditField = this.state.curEditField,
+                    fieldFormObj = getFieldsValue(),
+                    valueType = fieldFormObj.valueType,
+                    param = fieldFormObj.param;
+
+                if (value) {
+                    fieldObj = _.find(this.logTplManageOriginField, function (el) {
+                        return el.id == value;
+                    });
+                    setFieldsValue({ "exportFieldType": fieldObj.type });
+                    curEditField.originFieldName = fieldObj.name;
+                    curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
+                } else {
+                    setFieldsValue({ "exportFieldType": "" });
+                    curEditField.originFieldName = "";
+                    curEditField.example = "";
+                }
+
+                this.setState({
+                    curEditField: curEditField
+                });
+            }
+        }, {
+            key: 'onParamChange',
+            value: function onParamChange(e) {
+                var _props$form4 = this.props.form,
+                    setFieldsValue = _props$form4.setFieldsValue,
+                    getFieldsValue = _props$form4.getFieldsValue;
+
+                var curEditField = this.state.curEditField,
+                    fieldFormObj = getFieldsValue(),
+                    valueType = fieldFormObj.valueType,
+                    param = e.target.value,
+                    originFieldTag = fieldFormObj.originFieldTag,
+                    fieldObj = _.find(this.logTplManageOriginField, function (el) {
+                    return el.id == originFieldTag;
+                });
+                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
+
+                this.setState({
+                    curEditField: curEditField
+                });
+            }
+        }, {
+            key: 'onValueTypeChange',
+            value: function onValueTypeChange(value) {
+                var _props$form5 = this.props.form,
+                    setFieldsValue = _props$form5.setFieldsValue,
+                    getFieldsValue = _props$form5.getFieldsValue;
+
+                var curEditField = this.state.curEditField,
+                    fieldFormObj = getFieldsValue(),
+                    valueType = value,
+                    param = fieldFormObj.param,
+                    originFieldTag = fieldFormObj.originFieldTag,
+                    fieldObj = _.find(this.logTplManageOriginField, function (el) {
+                    return el.id == originFieldTag;
+                });
+                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
+
+                this.setState({
+                    curEditField: curEditField
+                });
+            }
+        }, {
             key: 'onSubmitSuccess',
             value: function onSubmitSuccess() {
                 Utility.alerts("保存成功！", "success", 2000);
@@ -759,380 +921,42 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
             key: 'handleSubmit',
             value: function handleSubmit(e) {
                 e.preventDefault();
-                var _props$form3 = this.props.form,
-                    resetFields = _props$form3.resetFields,
-                    validateFields = _props$form3.validateFields;
+                var _props$form6 = this.props.form,
+                    resetFields = _props$form6.resetFields,
+                    validateFields = _props$form6.validateFields;
 
-                resetFields("nodesList");
-                var checkArray = ["taskName", "taskDomain", "rangeTimePicker", "nodesList", "fileList"];
+                resetFields("templateFieldList");
+                var checkArray = ["name", "productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', 'templateFieldList'];
                 if (this.props.isEdit) {
-                    checkArray = ["nodesList"];
+                    checkArray = ["productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', "templateFieldList"];
                 }
                 validateFields(checkArray, function (err, vals) {
-                    var _this3 = this;
-
                     var postParam,
-                        postNodesList = [],
                         model = this.props.model;
                     var collection = this.props.ltProps.collection;
                     if (!err) {
-                        _.each(this.state.nodesList, function (node) {
-                            var postNode = {
-                                id: node.id,
-                                sortnum: node.sortnum,
-                                nodes: node.nodeNameArray.join(";")
-                            },
-                                timeWidthList = [];
-
-                            if (!_this3.props.isEdit) delete postNode.id;
-
-                            _.each(node.timeWidth, function (time) {
-                                var timeObj = {
-                                    bandwidth: time.bandwidth,
-                                    batchEndTime: moment(time.batchEndTime, 'HH:mm').valueOf(),
-                                    id: time.id,
-                                    batchStartTime: moment(time.batchStartTime, 'HH:mm').valueOf()
-                                };
-                                if (!_this3.props.isEdit) delete timeObj.id;
-
-                                timeWidthList.push(timeObj);
-                            });
-                            postNode.timeWidth = timeWidthList;
-                            postNodesList.push(postNode);
-                        });
-
-                        if (!this.props.isEdit) {
-                            postParam = {
-                                taskName: vals.taskName,
-                                preloadChannel: vals.taskDomain,
-                                preloadFilePath: this.state.preloadFilePath,
-                                preloadUrlCount: this.state.preloadUrlCount,
-                                startTime: vals.rangeTimePicker[0].valueOf(),
-                                endTime: vals.rangeTimePicker[1].valueOf(),
-                                batchTimeBandwidth: postNodesList,
-                                committer: $(".user-name").html()
-                            };
-                            console.log(postParam);
-                            collection.commitTask(postParam);
-                        } else {
-
-                            postParam = {
-                                taskId: model.id,
-                                batchTimeBandwidth: postNodesList
-                            };
-                            console.log(postParam);
-                            collection.taskModify(postParam);
+                        postParam = {
+                            name: vals.name,
+                            productType: vals.productType,
+                            backType: vals.backType,
+                            fieldSeparator: vals.fieldSeparator == "custom" ? vals.fieldSeparatorCusValue : vals.fieldSeparator,
+                            lineBreak: vals.lineBreak,
+                            templateFieldList: this.state.templateFieldList
+                        };
+                        if (this.props.isEdit) {
+                            postParam.groupId = this.groupId, postParam.originCreateTime = this.originCreateTime;
                         }
+                        collection.addTemplate(postParam);
                     }
                 }.bind(this));
             }
         }, {
             key: 'onClickCancel',
             value: function onClickCancel() {
-                var onClickCancelCallback = this.props.ltProps.onClickCancelCallback;
-                onClickCancelCallback && onClickCancelCallback();
-            }
-        }, {
-            key: 'handleTimeCancel',
-            value: function handleTimeCancel() {
-                this.setState({
-                    timeModalVisible: false
-                });
-            }
-        }, {
-            key: 'handleNodeSearch',
-            value: function handleNodeSearch(value) {
-                var ltProps = this.props.ltProps;
-                var nodeArray = [],
-                    nodeList = ltProps.nodeList;
-                if (value && nodeList) {
-                    nodeArray = _.filter(nodeList, function (el) {
-                        return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1;
-                    }.bind(this)).map(function (el) {
-                        return React.createElement(
-                            Option,
-                            { key: el.name },
-                            el.name
-                        );
-                    });
-                }
+                var onClickCancelCallback = this.props.ltProps.onClickCancelCallback,
+                    onClickHistoryCallback = this.props.ltProps.onClickHistoryCallback;
 
-                this.setState({
-                    nodeDataSource: nodeArray
-                });
-            }
-        }, {
-            key: 'onClickAddTime',
-            value: function onClickAddTime(event) {
-                this.setState({
-                    isEditTime: false,
-                    curEditTime: {},
-                    timeModalVisible: true
-                });
-            }
-        }, {
-            key: 'handleTimeOk',
-            value: function handleTimeOk(e) {
-                var _this4 = this;
-
-                e.preventDefault();
-                var _state4 = this.state,
-                    timeBandList = _state4.timeBandList,
-                    isEditTime = _state4.isEditTime,
-                    curEditTime = _state4.curEditTime;
-                var _props$form4 = this.props.form,
-                    getFieldsValue = _props$form4.getFieldsValue,
-                    validateFields = _props$form4.validateFields,
-                    resetFields = _props$form4.resetFields;
-
-                var newTimeBand = null;
-                validateFields(["selectStartTime", "selectEndTime", "inputBand"], function (err, vals) {
-                    var format = 'HH:mm';
-                    if (!err && !isEditTime) {
-                        console.log(getFieldsValue());
-                        newTimeBand = {
-                            id: Utility.randomStr(8),
-                            batchStartTime: getFieldsValue().selectStartTime.format(format),
-                            batchEndTime: getFieldsValue().selectEndTime.format(format),
-                            bandwidth: getFieldsValue().inputBand
-                        };
-                        _this4.setState({
-                            timeBandList: [].concat(_toConsumableArray(timeBandList), [newTimeBand]),
-                            timeModalVisible: false
-                        });
-                    } else if (!err && isEditTime) {
-                        _.each(timeBandList, function (el) {
-                            if (el.id == curEditTime.id) {
-                                el.batchStartTime = getFieldsValue().selectStartTime.format(format);
-                                el.batchEndTime = getFieldsValue().selectEndTime.format(format);
-                                el.bandwidth = getFieldsValue().inputBand;
-                            }
-                        });
-                        _this4.setState({
-                            timeBandList: [].concat(_toConsumableArray(timeBandList)),
-                            timeModalVisible: false
-                        });
-                    }
-                });
-            }
-        }, {
-            key: 'handleEditTimeClick',
-            value: function handleEditTimeClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.timeBandList, function (obj) {
-                    return obj.id == id;
-                }.bind(this));
-                var format = 'HH:mm',
-                    selectStartTime = model.batchStartTime,
-                    selectEndTime = model.batchEndTime;
-                this.setState({
-                    timeModalVisible: true,
-                    isEditTime: true,
-                    curEditTime: {
-                        selectStartTime: moment(selectStartTime, format),
-                        selectEndTime: moment(selectEndTime, format),
-                        bandwidth: model.bandwidth,
-                        id: model.id
-                    }
-                });
-            }
-        }, {
-            key: 'handleDeleteTimeClick',
-            value: function handleDeleteTimeClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                confirm({
-                    title: '你确定要删除吗？',
-                    okText: '确定',
-                    okType: 'danger',
-                    cancelText: '算了，不删了',
-                    onOk: function () {
-                        var list = _.filter(this.state.timeBandList, function (obj) {
-                            return obj.id != id;
-                        }.bind(this));
-                        this.setState({
-                            timeBandList: list
-                        });
-                    }.bind(this)
-                });
-            }
-        }, {
-            key: 'renderTimeBandTableView',
-            value: function renderTimeBandTableView(formItemLayout) {
-                var _this5 = this,
-                    _React$createElement2;
-
-                var getFieldDecorator = this.props.form.getFieldDecorator;
-                var _state5 = this.state,
-                    timeModalVisible = _state5.timeModalVisible,
-                    curEditTime = _state5.curEditTime;
-
-                var timeBandView = "",
-                    model = this.props.model;
-                var columns = [{
-                    title: '执行时间',
-                    dataIndex: 'batchStartTime',
-                    key: 'batchStartTime',
-                    render: function render(text, record) {
-                        return text + "~" + record.batchEndTime;
-                    }
-                }, {
-                    title: '回源带宽',
-                    dataIndex: 'bandwidth',
-                    key: 'bandwidth',
-                    render: function render(text, record) {
-                        return text + "M";
-                    }
-                }, {
-                    title: '操作',
-                    dataIndex: 'id',
-                    key: 'action',
-                    render: function render(text, record) {
-                        var editButton = React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "编辑" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this5.handleEditTimeClick, _this5) },
-                                React.createElement(Icon, { type: 'edit' })
-                            )
-                        );
-                        var deleteButton = React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "删除" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this5.handleDeleteTimeClick, _this5) },
-                                React.createElement(Icon, { type: 'delete' })
-                            )
-                        );
-                        var buttonGroup;
-                        buttonGroup = React.createElement(
-                            'div',
-                            null,
-                            editButton,
-                            React.createElement('span', { className: 'ant-divider' }),
-                            deleteButton
-                        );
-                        return buttonGroup;
-                    }
-                }];
-
-                var format = 'HH:mm';
-
-                var addEditTimeView = React.createElement(
-                    Form,
-                    null,
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u6267\u884C\u65F6\u95F4', required: true }),
-                        React.createElement(
-                            Col,
-                            { span: 11 },
-                            React.createElement(
-                                FormItem,
-                                null,
-                                getFieldDecorator('selectStartTime', {
-                                    rules: [{ required: true, message: '请选择开始时间!' }],
-                                    initialValue: curEditTime.selectStartTime || moment('00:00', format)
-                                })(React.createElement(TimePicker, { format: format, minuteStep: 1 }))
-                            )
-                        ),
-                        React.createElement(
-                            Col,
-                            { span: 2 },
-                            React.createElement(
-                                'span',
-                                { style: { display: 'inline-block', width: '100%', textAlign: 'center' } },
-                                '-'
-                            )
-                        ),
-                        React.createElement(
-                            Col,
-                            { span: 11 },
-                            React.createElement(
-                                FormItem,
-                                null,
-                                getFieldDecorator('selectEndTime', {
-                                    rules: [{ required: true, message: '请选择结束时间!' }],
-                                    initialValue: curEditTime.selectEndTime || moment('23:59', format)
-                                })(React.createElement(TimePicker, { format: format, minuteStep: 1 }))
-                            )
-                        )
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u56DE\u6E90\u5E26\u5BBD' }),
-                        getFieldDecorator('inputBand', {
-                            initialValue: curEditTime.bandwidth || 100,
-                            rules: [{ required: true, message: '请输入带宽!' }]
-                        })(React.createElement(InputNumber, null)),
-                        React.createElement(
-                            'span',
-                            { style: { marginLeft: "10px" } },
-                            'M'
-                        )
-                    )
-                );
-
-                timeBandView = React.createElement(
-                    FormItem,
-                    _extends({}, formItemLayout, { label: '\u5206\u65F6\u4EFB\u52A1', required: true }),
-                    React.createElement(
-                        Button,
-                        { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddTime, this) },
-                        '\u65B0\u5EFA\u5206\u65F6\u4EFB\u52A1'
-                    ),
-                    React.createElement(Alert, { style: { marginBottom: '10px' }, message: '\u4EC5\u5728\u6DFB\u52A0\u7684\u5206\u65F6\u4EFB\u52A1\u65F6\u95F4\u6BB5\u5185\u8FDB\u884C\u9884\u70ED', type: 'info', showIcon: true }),
-                    getFieldDecorator('timeBand', {
-                        rules: [{ validator: this.validateTimeBand }]
-                    })(React.createElement(Table, { rowKey: 'id', columns: columns, pagination: false, size: 'small', dataSource: this.state.timeBandList })),
-                    React.createElement(
-                        Modal,
-                        (_React$createElement2 = { title: '分时任务', destroyOnClose: true
-                        }, _defineProperty(_React$createElement2, 'destroyOnClose', true), _defineProperty(_React$createElement2, 'visible', timeModalVisible), _defineProperty(_React$createElement2, 'onOk', $.proxy(this.handleTimeOk, this)), _defineProperty(_React$createElement2, 'onCancel', $.proxy(this.handleTimeCancel, this)), _React$createElement2),
-                        addEditTimeView
-                    )
-                );
-
-                return timeBandView;
-            }
-        }, {
-            key: 'disabledDate',
-            value: function disabledDate(current) {
-                return current && current < moment().add(-1, 'day');
-            }
-        }, {
-            key: 'disabledTime',
-            value: function disabledTime(type) {
-                function range(start, end) {
-                    var result = [];
-                    for (var i = start; i < end; i++) {
-                        result.push(i);
-                    }
-                    return result;
-                }
-
-                if (type === 'start') {
-                    return {
-                        disabledHours: function disabledHours() {
-                            return range(0, moment().hour() + 1);
-                        }
-                    };
-                }
+                if (this.props.backTarget != "history") onClickCancelCallback && onClickCancelCallback();else onClickHistoryCallback && onClickHistoryCallback({ groupId: this.groupId });
             }
         }, {
             key: 'onGetError',

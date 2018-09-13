@@ -1,4 +1,4 @@
-define("preheatManage.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], 
+define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], 
     function(require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
 
         var Layout = Antd.Layout,
@@ -8,25 +8,25 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             Input = Antd.Input,
             Form = Antd.Form,
             FormItem = Form.Item,
-            Select = Antd.Select,
-            Option = Select.Option,
-            AutoComplete = Antd.AutoComplete,
             Table = Antd.Table,
             Alert = Antd.Alert,
-            Tag = Antd.Tag,
-            Popover = Antd.Popover,
-            Badge = Antd.Badge,
             Icon = Antd.Icon,
             Spin = Antd.Spin,
-            Tooltip = Antd.Tooltip;
+            Tooltip = Antd.Tooltip,
+            Col = Antd.Col,
+            Row = Antd.Row,
+            message = Antd.message,
+            Modal = Antd.Modal,
+            Tag = Antd.Tag,
+            confirm = Modal.confirm;
 
-        class PreHeatTable extends React.Component {
+        class LogTaskListTable extends React.Component {
             constructor(props, context) {
                 super(props);
                 this.onChangePage = this.onChangePage.bind(this);
-                this.handleEditClick = this.handleEditClick.bind(this);
-                this.handlePauseClick = this.handlePauseClick.bind(this);
-                this.handleRestartClick = this.handleRestartClick.bind(this);
+                this.handleStopClick = this.handleStopClick.bind(this);
+                this.handleDeleteClick = this.handleDeleteClick.bind(this);
+                
                 this.state = {
                     data: [],
                     isError: false,
@@ -35,34 +35,39 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             }
 
             componentDidMount() {
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                collection.on("get.preheat.success", $.proxy(this.onGetPreHeatListSuccess, this));
-                collection.on("get.preheat.error", $.proxy(this.onGetError, this));
-                collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));   
+                var ltProps = this.props.ltProps;
+                var collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
+                collection.on("get.taskList.success", $.proxy(this.onTaskListSuccess, this));
+                collection.on("get.taskList.error", $.proxy(this.onGetError, this));
+                collection.on("fetching", $.proxy(this.onFetchingTaskList, this));   
                 collection.trigger("fetching", queryCondition);
-                collection.on("refresh.pause.success", $.proxy(this.onGetOperateSuccess, this, "暂停"));
-                collection.on("refresh.pause.error", $.proxy(this.onOperateError, this));
-                collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
-                collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
+                collection.on("delete.task.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
+                collection.on("delete.task.error", $.proxy(this.onOperateError, this));
+                collection.on("stop.task.success", $.proxy(this.onGetOperateSuccess, this, "停止"));
+                collection.on("stop.task.error", $.proxy(this.onOperateError, this));
             }
 
             componentWillUnmount() {
-                var collection = this.props.preHeatProps.collection;
-                collection.off("get.preheat.success");
-                collection.off("get.preheat.error");
+                var collection = this.props.ltProps.collection;
+                collection.off("get.taskList.success");
+                collection.off("get.taskList.error");
                 collection.off("fetching");
-                collection.off("refresh.pause.success");
-                collection.off("refresh.pause.error");
-                collection.off("refresh.restart.success");
-                collection.off("refresh.restart.error");    
+                collection.off("delete.task.success");
+                collection.off("delete.task.error");
+                collection.off("stop.task.success");
+                collection.off("stop.task.error");    
+            }
+
+            onCheckTplIsUsedSuccess (res) {
+                if (res.used)
+                    message.warning('有' + res.taskCount + '个任务正在使用此模板，请先停掉任务，再删除！', 5);
             }
 
             onGetOperateSuccess(msg){
                 Utility.alerts(msg + "成功!", "success", 2000);
-                const preHeatProps = this.props.preHeatProps;
-                const { collection, queryCondition } = preHeatProps;
+                const ltProps = this.props.ltProps;
+                const { collection, queryCondition } = ltProps;
                 collection.trigger("fetching", queryCondition);
             }
 
@@ -73,27 +78,20 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
 
-            onFetchingPreHeatList(queryCondition){
-                var collection = this.props.preHeatProps.collection;
+            onFetchingTaskList(queryCondition){
+                var collection = this.props.ltProps.collection;
                 this.setState({
                     isFetching: true
                 })
-                collection.getPreheatList(queryCondition)
+                collection.getTaskList(queryCondition)
             }
 
-            onGetPreHeatListSuccess() {
+            onTaskListSuccess() {
                 var data = [];
-                this.props.preHeatProps.collection.each((model) => {
-                    var obj = Object.assign({}, model.attributes),
-                        nodeName = [];
-                    _.each(obj.batchTimeBandwidth, (batch)=>{
-                        batch.nodeNameArray = batch.nodes.split(";");
-                        nodeName = nodeName.concat(batch.nodeNameArray);
-                    })
-                    obj.nodeName = nodeName;
+                this.props.ltProps.collection.each((model) => {
+                    var obj = Object.assign({}, model.attributes);
                     data.push(obj)
                 })
-                console.log(data)
                 this.setState({
                     data: data,
                     isFetching: false
@@ -101,15 +99,15 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             }
 
             onChangePage(page, pageSize){
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                queryCondition.pageNo = page;
-                queryCondition.pageSize = pageSize;
+                var ltProps = this.props.ltProps;
+                var collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
+                queryCondition.page = page;
+                queryCondition.size = pageSize;
                 collection.trigger("fetching", queryCondition);
             }
 
-            handlePauseClick(event) {
+            handleDeleteClick(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -118,39 +116,47 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskPause({taskId: id});
-            }
 
-            handleRestartClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskRestart({taskId: id});
-            }
-
-            handleEditClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
-                    }.bind(this))
-                var onClickEditCallback = this.props.preHeatProps.onClickEditCallback;
-                onClickEditCallback&&onClickEditCallback(model)
+                }.bind(this))
+                if (model.taskStatus == "RUNNING") {
+                    message.warning('请先停掉任务，再删除！', 5);
+                    return;
+                }
+                confirm({
+                    title: '你确定要删除吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '算了，不删了',
+                    onOk: function(){
+                        var ltProps = this.props.ltProps;
+                        var collection = ltProps.collection;
+                        collection.deleteTask({id: id});
+                    }.bind(this)
+                  });
+            }
+
+            handleStopClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                confirm({
+                    title: '你确定要停止吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '算了，不停了',
+                    onOk: function(){
+                        var ltProps = this.props.ltProps;
+                        var collection = ltProps.collection;
+                        collection.stopTask({groupId: id});
+                    }.bind(this)
+                  });
             }
 
             handleViewClick(event) {
@@ -165,7 +171,7 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
                     }.bind(this))
-                var onClickViewCallback = this.props.preHeatProps.onClickViewCallback;
+                var onClickViewCallback = this.props.ltProps.onClickViewCallback;
                 onClickViewCallback&&onClickViewCallback(model)
             }
 
@@ -201,145 +207,99 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 }
 
                 const columns = [{
-                    title: '名称',
-                    dataIndex: 'taskName',
-                    key: 'taskName',
-                    fixed: 'left',
-                    width: 200,
-                    render: (text, record) => {
-                        return  (
-                                <Tooltip placement="bottom" title={"查看详情"}>
-                                    <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleViewClick(e)}>
-                                        {text}
-                                    </a>
-                                </Tooltip>
-                            )
-                    }
+                    title: '任务名称',
+                    dataIndex: 'name',
+                    key: 'name'
                 },{
-                    title: '回源带宽',
-                    dataIndex: 'currentBandwidth',
-                    key: 'currentBandwidth',
+                    title: '客户ID',
+                    dataIndex: 'accountId',
+                    key: 'accountId'
                 },{
-                    title: '预热节点',
-                    dataIndex: 'nodeName',
-                    key: 'nodeName',
-                    render: (text, record) => {
-                        const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
-                        let content, temp = [];
-                        let random, nodeNameArray = record.currentNodes.split(";");
-                        for(var i = 0; i < nodeNameArray.length; i++) {
-                            random = Math.floor(Math.random() * colors.length)
-                            temp.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{nodeNameArray[i]}</Tag>))
-                        }
-                        content = <div>{temp}</div>
-                        return (
-                            <div>
-                                <span>{nodeNameArray[0]}...</span>
-                                <span>
-                                    <Popover content={content} title="节点详情" trigger="click" placement="right" overlayStyle={{width: '300px'}}>
-                                        <Badge count={nodeNameArray.length} style={{ backgroundColor: '#52c41a' }}>
-                                            <a href="javascript:void(0)" id={record.id}>more</a>
-                                        </Badge>
-                                    </Popover>
-                                </span>
-                            </div>)
-                    }
+                    title: '模板名称',
+                    dataIndex: 'templateName',
+                    key: 'templateName'
                 },{
-                    title: '文件数',
-                    dataIndex: 'preloadUrlCount',
-                    key: 'preloadUrlCount',
+                    title: '回传地址',
+                    dataIndex: 'backUrl',
+                    key: 'backUrl'
                 },{
-                    title: '当前预热批次',
-                    dataIndex: 'currentBatch',
-                    key: 'currentBatch',
-                    render: (text, record) => (text + "/" + record.batchTimeBandwidth.length)
+                    title: '任务启动时间',
+                    dataIndex: 'createTimeFormated',
+                    key: 'createTimeFormated'
                 },{
-                    title: '进度',
-                    dataIndex: 'progress',
-                    key: 'progress',
-                },{
-                    title: '状态',
-                    dataIndex: 'status',
-                    key: 'status',
+                    title: '任务状态',
+                    dataIndex: 'taskStatus',
+                    key: 'taskStatus',
                     render: (text, record) => {
                         var tag = null;
-                        if (record.status == 3)
-                            tag = (<Tag color={"red"}>已暂停</Tag>)
-                        else if (record.status == 2)
-                            tag = <Tag color={"green"}>已完成</Tag>
-                        else if (record.status == 0)
-                            tag = <Tag color={"blue"}>待预热</Tag>
-                        else if (record.status == 1)
-                            tag = <Tag color={"orange"}>预热中</Tag>
-                        else if (record.status == 4)
-                            tag = <Tag color={"purple"}>暂停中</Tag>
+                        if (record.taskStatus == "STOPPED")
+                            tag = (<Tag color={"red"}>已停止</Tag>)
+                        else if (record.taskStatus == "RUNNING")
+                            tag = <Tag color={"green"}>运行中</Tag>
                         return tag
                     }
                 },{
-                    title: '成功率',
-                    dataIndex: 'successRate',
-                    key: 'successRate',
-                    render: (text, record) => (text * 100 + "%")
-                },{
-                    title: '创建人',
-                    dataIndex: 'committer',
-                    key: 'committer',
-                },{
-                    title: '创建时间',
-                    dataIndex: 'commitTimeFormated',
-                    key: 'commitTimeFormated',
+                    title: '创建者',
+                    dataIndex: 'creator',
+                    key: 'creator'
                 },{
                     title: '操作',
-                    dataIndex: 'id',
+                    dataIndex: '',
                     key: 'action',
-                    fixed: 'right',
-                    width: 100,
                     render: (text, record) => {
-                        var editButton = (
-                            <Tooltip placement="bottom" title={"编辑"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleEditClick(e)}>
-                                    <Icon type="edit" />
+                        var detailButton = (
+                            <Tooltip placement="bottom" title={"查看详情"}>
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleViewClick(e)}>
+                                    <Icon type="profile" />
                                 </a>
                             </Tooltip>
                         );
-                        var playButton = (
-                            <Tooltip placement="bottom" title={"开启"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleRestartClick(e)}>
-                                    <Icon type="play-circle-o" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var pauseButton = (
-                            <Tooltip placement="bottom" title={"暂停"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handlePauseClick(e)}>
-                                    <Icon type="pause-circle-o" />
+                        var deleteButton = (
+                            <Tooltip placement="bottom" title={"删除"}>
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleDeleteClick(e)}>
+                                    <Icon type="delete" />
                                 </a>
                             </Tooltip>
                         )
-                        var buttonGroup;
-                        if (record.status == 3) {
+                        var stopButton = (
+                            <Tooltip placement="bottom" title={"停止"}>
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleStopClick(e)}>
+                                    <Icon type="poweroff" />
+                                </a>
+                            </Tooltip>
+                        );
+                        var buttonGroup = "";
+                        if (record.taskStatus == "RUNNING"){
                             buttonGroup = (
                                 <div>
-                                    {editButton}
+                                    {detailButton}
                                     <span className="ant-divider" />
-                                    {playButton}
+                                    {stopButton}
+                                    <span className="ant-divider" />
+                                    {deleteButton}
                                 </div>
                             )
-                        } else if (record.status == 1 || record.status == 0) {
-                            buttonGroup = (<div>{pauseButton}</div>)
+                        } else {
+                            buttonGroup = (
+                                <div>
+                                    {detailButton}
+                                    <span className="ant-divider" />
+                                    {deleteButton}
+                                </div>
+                            )
                         }
                         return buttonGroup
                     },
                 }];
-                var preHeatProps = this.props.preHeatProps;
+                var ltProps = this.props.ltProps;
                 var pagination = {
                     showSizeChanger: true,
                     showQuickJumper: true,
                         showTotal: function showTotal(total) {
                         return 'Total '+ total + ' items';
                     },
-                    current: preHeatProps.queryCondition.pageNo,
-                    total: preHeatProps.collection.total,
+                    current: ltProps.queryCondition.page,
+                    total: ltProps.collection.total,
                     onChange: this.onChangePage,
                     onShowSizeChange: this.onChangePage
                 }
@@ -348,196 +308,182 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                                 dataSource={this.state.data} 
                                 loading={this.state.isFetching} 
                                 columns={columns}
-                                scroll={{ x: 1500 }} 
                                 pagination = {pagination} /> )
             }
         }    
 
-        var SearchForm = React.createClass({
+        class SearchForm extends React.Component {
 
-            getInitialState: function () {
-                var defaultState = {
-                    dataSource: []
-                }
-                return defaultState;
-            },
+            constructor(props, context) {
+                super(props);
+                this.onClickAddButton = this.onClickAddButton.bind(this);
+                this.handleSubmit = this.handleSubmit.bind(this);
+                this.state = {}
+            }
 
-            handleSearch: function (value){
-                var preHeatProps = this.props.preHeatProps;
-                var nodeArray = [], nodeList = preHeatProps.nodeList;
-                if (value && nodeList) {
-                    nodeArray = _.filter(nodeList, function(el){
-                        return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1
-                    }.bind(this)).map((el) => {
-                        return <Option key={el.id}>{el.name}</Option>;
-                    })
-                }
-
-                this.setState({
-                    dataSource: nodeArray
-                });
-            },
-
-            handleSubmit: function(e){
-                e.preventDefault();
+            handleSubmit(e){
+                // "name": null,
+                // "domain": null,
+                // "templateName": null,
+                // "accountId": null,
+                // "backUrl": null,
+                e&&e.preventDefault();
                 var fieldsValue = this.props.form.getFieldsValue(),
-                    preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition,
-                    nodes = [];
-                if (fieldsValue.nodeNames && fieldsValue.nodeNames.length > 0) {
-                    _.each(fieldsValue.nodeNames, (el)=>{
-                        nodes.push(el.label)
-                    })
-                    nodes = nodes.join(";")
-                } else {
-                    nodes = null;
-                }    
-                queryCondition.taskName = fieldsValue.preheatNames || null;
-                queryCondition.nodes = nodes;
-                queryCondition.status = fieldsValue.preheatStatus == "all" ? null : parseInt(fieldsValue.preheatStatus);
+                    ltProps = this.props.ltProps;
+                var collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
+                queryCondition.name = fieldsValue.name || null;
+                queryCondition.domain = fieldsValue.domain || null;
+                queryCondition.templateName = fieldsValue.templateName || null;
+                queryCondition.accountId = fieldsValue.accountId || null;
+                queryCondition.backUrl = fieldsValue.backUrl || null;
+                console.log(queryCondition)
                 collection.trigger("fetching", queryCondition)
-            },
+            }
 
-            onClickAddButton: function(){
-                var onClickAddCallback = this.props.preHeatProps.onClickAddCallback;
+            onClickAddButton(){
+                var onClickAddCallback = this.props.ltProps.onClickAddCallback;
                 onClickAddCallback&&onClickAddCallback()
-            },
+            }
 
-            render: function(){
+            onClickResetButton() {
+                const { setFieldsValue } = this.props.form;
+                setFieldsValue({"name": null})
+                setFieldsValue({"domain": null})
+                setFieldsValue({"templateName": null})
+                setFieldsValue({"accountId": null})
+                setFieldsValue({"backUrl": null})
+                this.handleSubmit();
+            }
+
+            render(){
                 const { getFieldDecorator } = this.props.form;
                 const { dataSource } = this.state;
-                const preHeatProps = this.props.preHeatProps;
-                const nodeList = preHeatProps.nodeList;
-                //0:待预热 1:预热中 2:已完成 3:已暂停 4：暂停中
+                const ltProps = this.props.ltProps;
+                const formItemLayout = {
+                  labelCol: { span: 6 },
+                  wrapperCol: { span: 12 },
+                };
+
                 var HorizontalForm = (
-                    <Form layout="inline" onSubmit={this.handleSubmit}>
-                        <FormItem label={"名称"}>
-                            {getFieldDecorator('preheatNames')(
-                                <Input />
-                            )}
-                        </FormItem>
-                        <FormItem label={"节点"}>
-                            {getFieldDecorator('nodeNames')(
-                                <Select mode="multiple" allowClear={true} 
-                                        style={{ width: 300 }} 
-                                        labelInValue
-                                        notFoundContent={nodeList.length == 0 ? <Spin size="small" /> : '请输入节点关键字'}
-                                        filterOption={false}
-                                        onSearch={$.proxy(this.handleSearch, this)} >
-                                    {dataSource}         
-                                </Select>
-                            )}
-                        </FormItem>
-                        <FormItem label="状态">
-                            {getFieldDecorator('preheatStatus', {
-                                "initialValue": "all"
-                            })(
-                                <Select>
-                                    <Option value="all">全部</Option>
-                                    <Option value="0">待预热</Option>
-                                    <Option value="1">预热中</Option>
-                                    <Option value="3">已暂停</Option>
-                                    <Option value="4">暂停中</Option>
-                                    <Option value="2">已完成</Option>
-                                </Select>)}
-                        </FormItem>
-                        <FormItem>
-                            <Button type="primary" htmlType="submit" icon="search">查询</Button>
-                            <Button style={{ marginLeft: 8 }} icon="plus" onClick={this.onClickAddButton}>新建</Button>
-                        </FormItem>
+                    <Form onSubmit={this.handleSubmit}>
+                        <Row>
+                            <Col span={8}>
+                                <FormItem {...formItemLayout} label={"任务名称"}>
+                                    {getFieldDecorator('name')(
+                                        <Input />
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={8}>
+                                <FormItem {...formItemLayout} label={"域名"}>
+                                    {getFieldDecorator('domain')(
+                                        <Input />
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={8}>
+                                <FormItem {...formItemLayout} label={"模版名称"}>
+                                    {getFieldDecorator('templateName')(
+                                        <Input />
+                                    )}
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8}>
+                                <FormItem {...formItemLayout} label={"客户ID"}>
+                                    {getFieldDecorator('accountId')(
+                                        <Input />
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={8}>
+                                <FormItem {...formItemLayout} label={"回传地址"}>
+                                    {getFieldDecorator('backUrl')(
+                                        <Input />
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={8}>
+                                <FormItem>
+                                    <Button type="primary" htmlType="submit" icon="search">查询</Button>
+                                    <Button style={{ marginLeft: 8 }} icon="plus" onClick={this.onClickAddButton}>新建</Button>
+                                    <Button style={{ marginLeft: 8 }} icon="reload" onClick={$.proxy(this.onClickResetButton, this)}>重置</Button>
+                                </FormItem>
+                            </Col>
+                        </Row>
                     </Form>
                 );
 
                 return HorizontalForm
             }
-        });
+        }
 
-        var PreHeatManageList = React.createClass({
-            componentDidMount: function(){
-                require(['nodeManage.model'],function(NodeManageModel){
-                    var nodeManageModel = new NodeManageModel();
-                    nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this))
-                    nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this))
-                    nodeManageModel.getNodeList({page: 1,count: 9999});
-                }.bind(this));
-            },
-
-            getInitialState: function () {
-                var defaultState = {
-                    nodeList: [],
+        class LogTaskListManageList extends React.Component {
+            constructor(props, context) {
+                super(props);
+                this.state = {
                     curViewsMark: "list",// list: 列表界面，add: 新建，edit: 编辑
-                    breadcrumbTxt: ["预热刷新", "预热管理"]
+                    breadcrumbTxt: ["日志管理", "任务管理"]
                 }
-                return defaultState;
-            },
+            }
 
-            onGetNodeListSuccess: function(res){
-                this.setState({
-                    nodeList: res
-                })
-            },
+            componentDidMount(){}
 
-            onGetNodeListError: function(error){
-                var msg = error ? error.message : "获取节点信息失败!"
-                Utility.alerts(msg);
-                this.setState({
-                    nodeList: []
-                })
-            },
-
-            onClickAddCallback: function(){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} isEdit={false} />);
+            onClickAddCallback(){
+                require(['logTaskList.edit.view'], function(LogTaskListManageView){
+                    this.curView = (<LogTaskListManageView ltProps={this.ltProps} isEdit={false} />);
                     this.setState({
                         curViewsMark: "add",
-                        breadcrumbTxt: ["预热管理", "新建"]
+                        breadcrumbTxt: ["任务管理", "新建"]
                     })
                 }.bind(this));
-            },
+            }
 
-            onClickEditCallback: function(model){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} model={model} isEdit={true} />);
+            onClickEditCallback(model){
+                require(['logTaskList.edit.view'], function(LogTaskListManageView){
+                    this.curView = (<LogTaskListManageView ltProps={this.ltProps} model={model} isEdit={true} />);
                     this.setState({
                         curViewsMark: "edit",
-                        breadcrumbTxt: ["预热管理", "编辑"]
+                        breadcrumbTxt: ["任务管理", "编辑"]
                     })
                 }.bind(this));
-            },
+            }
 
-            onClickViewCallback: function(model){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} model={model} isEdit={true} isView={true} />);
+            onClickViewCallback(model, backTarget){
+                require(['logTaskList.edit.view'], function(LogTaskListManageView){
+                    this.curView = (<LogTaskListManageView ltProps={this.ltProps} model={model} isEdit={true} isView={true}/>);
                     this.setState({
                         curViewsMark: "view",
-                        breadcrumbTxt: ["预热管理", "查看"]
+                        breadcrumbTxt: ["任务管理", "查看"]
                     })
                 }.bind(this));
-            },
+            }
 
-            onClickCancelCallback: function(){
+            onClickCancelCallback(){
                 this.setState({
                     curViewsMark: "list",
-                    breadcrumbTxt: ["预热刷新", "预热管理"]
+                    breadcrumbTxt: ["日志管理", "任务管理"]
                 })
-            },
+            }
 
-            render: function(){
+            render(){
                 var WrappedSearchForm = Form.create()(SearchForm);
 
                 this.queryCondition = {
-                    "taskName": null,
-                    "status": null,
-                    "nodes": null,
-                    "pageNo": 1,
-                    "pageSize": 10
+                    "name": null,
+                    "domain": null,
+                    "templateName": null,
+                    "accountId": null,
+                    "backUrl": null,
+                    "page": 1,
+                    "size": 10,
                 }
 
-                this.preHeatProps = {
+                this.ltProps = {
                     collection: this.props.collection,
                     queryCondition: this.queryCondition,
-                    nodeList: this.state.nodeList,
                     onClickAddCallback: $.proxy(this.onClickAddCallback, this),
                     onClickEditCallback: $.proxy(this.onClickEditCallback, this),
                     onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
@@ -548,15 +494,14 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                 if (this.state.curViewsMark == "list") {
                     curView = (
                         <div>
-                            <WrappedSearchForm preHeatProps={this.preHeatProps} />
+                            <WrappedSearchForm ltProps={this.ltProps} />
                             <hr/>
-                            <Alert style={{ marginBottom: '20px' }} message="回源带宽、预热节点、进度展示当前执行批次信息，文件数、状态、成功率为当前任务整体信息" type="info" showIcon />
-                            <PreHeatTable preHeatProps={this.preHeatProps} />
+                            <LogTaskListTable ltProps={this.ltProps} />
                         </div>
                     )
                 } else if (this.state.curViewsMark == "add" ||
                            this.state.curViewsMark == "edit" ||
-                           this.state.curViewsMark == "view" ) {
+                           this.state.curViewsMark == "view") {
                     curView = this.curView;
                 }
 
@@ -574,21 +519,21 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                     </Layout>
                 )
             }
-        });
+        }
 
-        var PreheatManageView = BaseView.extend({
+        var LogTaskListManageView = BaseView.extend({
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
-                this.$el = $(_.template('<div class="preheat-manage"></div>')());
+                this.$el = $(_.template('<div class="log-manage"></div>')());
 
-                var preHeatManageListFac = React.createFactory(PreHeatManageList);
-                var preHeatManageList = preHeatManageListFac({
+                var logTaskListFactory = React.createFactory(LogTaskListManageList);
+                var logTaskList = logTaskListFactory({
                     collection: this.collection
                 });
-                ReactDOM.render(preHeatManageList, this.$el.get(0));
+                ReactDOM.render(logTaskList, this.$el.get(0));
             }
         })
-        return PreheatManageView;
+        return LogTaskListManageView;
     }
 );

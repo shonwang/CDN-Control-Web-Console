@@ -25,7 +25,10 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
         DatePicker = Antd.DatePicker,
         TimePicker = Antd.TimePicker,
         RangePicker = DatePicker.RangePicker,
-        message = Antd.message;
+        message = Antd.message,
+        Modal = Antd.Modal,
+        confirm = Modal.confirm,
+        Tag = Antd.Tag;
 
     var LogTemplateTable = function (_React$Component) {
         _inherits(LogTemplateTable, _React$Component);
@@ -38,6 +41,8 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
             _this.onChangePage = _this.onChangePage.bind(_this);
             _this.handleEditClick = _this.handleEditClick.bind(_this);
             _this.handleDeleteClick = _this.handleDeleteClick.bind(_this);
+            _this.handleHistoryClick = _this.handleHistoryClick.bind(_this);
+
             _this.state = {
                 data: [],
                 isError: false,
@@ -58,8 +63,8 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                 collection.trigger("fetching", queryCondition);
                 collection.on("template.used.success", $.proxy(this.onCheckTplIsUsedSuccess, this));
                 collection.on("template.used.error", $.proxy(this.onOperateError, this));
-                // collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
-                // collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
+                collection.on("delete.template.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
+                collection.on("delete.template.error", $.proxy(this.onOperateError, this));
             }
         }, {
             key: 'componentWillUnmount',
@@ -70,13 +75,26 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                 collection.off("fetching");
                 collection.off("template.used.success");
                 collection.off("template.used.error");
-                // collection.off("refresh.restart.success");
-                // collection.off("refresh.restart.error");    
+                collection.off("delete.template.success");
+                collection.off("delete.template.error");
             }
         }, {
             key: 'onCheckTplIsUsedSuccess',
             value: function onCheckTplIsUsedSuccess(res) {
-                if (res.used) message.warning('有' + res.taskCount + '个任务正在使用此模板，请先停掉任务，再删除！', 5);
+                var collection = this.props.ltProps.collection;
+                if (res.used) {
+                    message.warning('有' + res.taskCount + '个任务正在使用此模板，请先停掉任务，再删除！', 5);
+                } else {
+                    confirm({
+                        title: '你确定要删除吗？',
+                        okText: '确定',
+                        okType: 'danger',
+                        cancelText: '算了，不删了',
+                        onOk: function () {
+                            collection.deleteTemplate({ groupId: this.curDeleteGroupId });
+                        }.bind(this)
+                    });
+                }
             }
         }, {
             key: 'onGetOperateSuccess',
@@ -126,6 +144,23 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                 collection.trigger("fetching", queryCondition);
             }
         }, {
+            key: 'handleHistoryClick',
+            value: function handleHistoryClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = _.find(this.state.data, function (obj) {
+                    return obj.id == id;
+                }.bind(this));
+                var onClickHistoryCallback = this.props.ltProps.onClickHistoryCallback;
+                onClickHistoryCallback && onClickHistoryCallback(model);
+            }
+        }, {
             key: 'handleDeleteClick',
             value: function handleDeleteClick(event) {
                 var eventTarget = event.srcElement || event.target,
@@ -139,6 +174,7 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                 var ltProps = this.props.ltProps;
                 var collection = ltProps.collection;
                 collection.isTemplateUsed({ groupId: id });
+                this.curDeleteGroupId = id;
             }
         }, {
             key: 'handleEditClick',
@@ -216,7 +252,24 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                 }, {
                     title: '产品线标识',
                     dataIndex: 'productType',
-                    key: 'productType'
+                    key: 'productType',
+                    render: function render(text, record) {
+                        var tag = null;
+                        if (record.productType == 'LIVE') tag = React.createElement(
+                            Tag,
+                            { color: "green" },
+                            '\u76F4\u64AD'
+                        );else if (record.status == 'DOWNLOAD') tag = React.createElement(
+                            Tag,
+                            { color: "blue" },
+                            '\u4E0B\u8F7D'
+                        );else tag = React.createElement(
+                            Tag,
+                            { color: "red" },
+                            '\u672A\u77E5'
+                        );
+                        return tag;
+                    }
                 }, {
                     title: '创建人',
                     dataIndex: 'creator',
@@ -256,7 +309,7 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                                 React.createElement(Icon, { type: 'profile' })
                             )
                         );
-                        var pauseButton = React.createElement(
+                        var deleteButton = React.createElement(
                             Tooltip,
                             { placement: 'bottom', title: "删除" },
                             React.createElement(
@@ -267,6 +320,17 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                                 React.createElement(Icon, { type: 'delete' })
                             )
                         );
+                        var historyButton = React.createElement(
+                            Tooltip,
+                            { placement: 'bottom', title: "历史记录" },
+                            React.createElement(
+                                'a',
+                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
+                                        return _this2.handleHistoryClick(e);
+                                    } },
+                                React.createElement(Icon, { type: 'clock-circle' })
+                            )
+                        );
                         var buttonGroup = React.createElement(
                             'div',
                             null,
@@ -274,7 +338,9 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                             React.createElement('span', { className: 'ant-divider' }),
                             detailButton,
                             React.createElement('span', { className: 'ant-divider' }),
-                            pauseButton
+                            deleteButton,
+                            React.createElement('span', { className: 'ant-divider' }),
+                            historyButton
                         );
                         return buttonGroup;
                     }
@@ -408,8 +474,8 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
         }, {
             key: 'onClickAddCallback',
             value: function onClickAddCallback() {
-                require(['logTemplateManage.edit.view'], function (PreheatManageEditView) {
-                    this.curView = React.createElement(PreheatManageEditView, { ltProps: this.ltProps, isEdit: false });
+                require(['logTemplateManage.edit.view'], function (LogTemplateManageView) {
+                    this.curView = React.createElement(LogTemplateManageView, { ltProps: this.ltProps, isEdit: false });
                     this.setState({
                         curViewsMark: "add",
                         breadcrumbTxt: ["模版管理", "新建"]
@@ -419,8 +485,8 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
         }, {
             key: 'onClickEditCallback',
             value: function onClickEditCallback(model) {
-                require(['logTemplateManage.edit.view'], function (PreheatManageEditView) {
-                    this.curView = React.createElement(PreheatManageEditView, { ltProps: this.ltProps, model: model, isEdit: true });
+                require(['logTemplateManage.edit.view'], function (LogTemplateManageView) {
+                    this.curView = React.createElement(LogTemplateManageView, { ltProps: this.ltProps, model: model, isEdit: true });
                     this.setState({
                         curViewsMark: "edit",
                         breadcrumbTxt: ["模版管理", "编辑"]
@@ -429,9 +495,9 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
             }
         }, {
             key: 'onClickViewCallback',
-            value: function onClickViewCallback(model) {
-                require(['logTemplateManage.edit.view'], function (PreheatManageEditView) {
-                    this.curView = React.createElement(PreheatManageEditView, { ltProps: this.ltProps, model: model, isEdit: true, isView: true });
+            value: function onClickViewCallback(model, backTarget) {
+                require(['logTemplateManage.edit.view'], function (LogTemplateManageView) {
+                    this.curView = React.createElement(LogTemplateManageView, { ltProps: this.ltProps, model: model, isEdit: true, isView: true, backTarget: backTarget });
                     this.setState({
                         curViewsMark: "view",
                         breadcrumbTxt: ["模版管理", "查看"]
@@ -445,6 +511,17 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                     curViewsMark: "list",
                     breadcrumbTxt: ["日志管理", "模版管理"]
                 });
+            }
+        }, {
+            key: 'onClickHistoryCallback',
+            value: function onClickHistoryCallback(model) {
+                require(['logTemplateManage.history.view'], function (LogTemplateManageView) {
+                    this.curView = React.createElement(LogTemplateManageView, { ltProps: this.ltProps, model: model, isEdit: true });
+                    this.setState({
+                        curViewsMark: "history",
+                        breadcrumbTxt: ["模版管理", "历史记录"]
+                    });
+                }.bind(this));
             }
         }, {
             key: 'render',
@@ -465,7 +542,8 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                     onClickAddCallback: $.proxy(this.onClickAddCallback, this),
                     onClickEditCallback: $.proxy(this.onClickEditCallback, this),
                     onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
-                    onClickViewCallback: $.proxy(this.onClickViewCallback, this)
+                    onClickViewCallback: $.proxy(this.onClickViewCallback, this),
+                    onClickHistoryCallback: $.proxy(this.onClickHistoryCallback, this)
                 };
 
                 var curView = null;
@@ -477,7 +555,7 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                         React.createElement('hr', null),
                         React.createElement(LogTemplateTable, { ltProps: this.ltProps })
                     );
-                } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit" || this.state.curViewsMark == "view") {
+                } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit" || this.state.curViewsMark == "view" || this.state.curViewsMark == "history") {
                     curView = this.curView;
                 }
 

@@ -1,8 +1,9 @@
-define("preheatManage.edit.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "moment"], 
+define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "moment"], 
     function(require, exports, template, BaseView, Utility, Antd, React, moment) {
 
         var Button = Antd.Button,
             Input = Antd.Input,
+            InputNumber = Antd.InputNumber,
             Form = Antd.Form,
             Spin = Antd.Spin ,
             FormItem = Form.Item,
@@ -10,89 +11,1053 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
             Option = Select.Option,
             Modal = Antd.Modal,
             Table = Antd.Table,
-            InputNumber = Antd.InputNumber,
-            Tag = Antd.Tag,
             Icon = Antd.Icon,
             Tooltip = Antd.Tooltip,
-            Upload = Antd.Upload,
-            List = Antd.List,
-            DatePicker = Antd.DatePicker,
-            TimePicker = Antd.TimePicker,
-            RangePicker = DatePicker.RangePicker,
             Col = Antd.Col,
             Alert = Antd.Alert,
-            confirm = Modal.confirm;
+            confirm = Modal.confirm,
+            Popover = Antd.Popover,
+            Tag = Antd.Tag,
+            AutoComplete = Antd.AutoComplete;
 
-        class PreheatManageEditForm extends React.Component {
+        class logTaskListEditForm extends React.Component {
             constructor(props, context) {
                 super(props);
                 this.onClickCancel = this.onClickCancel.bind(this);
-                this.renderTaskNameView = this.renderTaskNameView.bind(this);
-                this.renderNodesTableView = this.renderNodesTableView.bind(this);
-                this.renderTimeBandTableView = this.renderTimeBandTableView.bind(this);
-                this.validateTimeBand = this.validateTimeBand.bind(this);
-                this.validateNodesList = this.validateNodesList.bind(this);
+                this.renderBaseInfoView = this.renderBaseInfoView.bind(this);
+                this.renderConditionTableView = this.renderConditionTableView.bind(this);
+                this.validateTemplateFieldList = this.validateTemplateFieldList.bind(this);
+                this.validateBackGetLogName = this.validateBackGetLogName.bind(this);
+                this.validateDomains = this.validateDomains.bind(this);
                 this.handleSubmit = this.handleSubmit.bind(this);
+                this.convertEnumToShowStr = this.convertEnumToShowStr.bind(this);
 
                 this.state = {
-                    //上传
-                    fileList: [],
-                    disabledUpload: false,
-                    preloadUrlCount: 0,
-                    preloadFilePath: "",
-                    //预热批次
-                    isLoadingNodesList: false,
-                    nodesList: [],
-                    nodeModalVisible: false,
-                    nodeDataSource: [],
-                    isEditNode: false,
-                    curEditNode: {},
-                    //分时带宽
-                    timeBandList: [],
-                    timeModalVisible: false,
-                    isEditTime: false,
-                    curEditTime: {},
+                    name: "",//"任务名称",
+                    templateName: "",//"模板名称",
+                    accountId: "",
+                    domainType: "", //DomainType 域名类型 FUULLSCALE（全量域名） CUSTOM（自定义域名）
+                    domains: [],
+                    backUrl: "",
+                    productType: "",
+
+                    backMethod: "", //回传方法
+                    senderType: "", 
+                    backGetLogName: "",
+                    batchCount: 100, //多条发送上限
+                    batchInterval: 60, //单批次最大延迟发送时间
+                    logRange: "", //日志范围  EDGE（边缘） EDGE_AND_UPPER （边缘+上层）
+                    compressMode: "", //压缩方式 TEXT（文本） LZ4（lz4）  GZ（gzip）
+                    userAgent: "",
+                    tokenKey: "",
+                    taskTokenType: "KEY_FIRST", //任务TOKEN类型   KEY_FIRST （key在前时间在后） KEY_LAST （key在后时间在前）
+                    taskTokenTimeType: "", //任务TOKEN日期类型 WITH_CROSS（有横线 例如 2010-08-12） NO_CROSS （无横线 例如 20100812）
+                    taskConditionList: [],
+
+                    dataSourceUserId: [],
+                    dataSourceTemplateName: [],
+                    dataSourceDomains: [],
+                    dataSourceOriginFieldTag: [],
+                    domainsVisible: "none",
+                    backGetLogNameVisible: "none",
+
+                    isLoadingTplDetail: true,
+                    fieldModalVisible: false,
+                    isEditField: false,
+                    curEditField: {}
                 };
 
-                if (props.isEdit) {
-                    this.state.nodesList = props.model.batchTimeBandwidth
-                }
-
-                this.isUploadDone = false;
-                moment.locale("zh");
+                this.userIdList = [];
             }
 
             componentDidMount() {
-                var preHeatProps = this.props.preHeatProps,
-                nodeList = preHeatProps.nodeList;
-                if (nodeList.length == 0) {
-                    require(['nodeManage.model'],function(NodeManageModel){
-                        var nodeManageModel = new NodeManageModel();
-                        nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this))
-                        nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this))
-                        nodeManageModel.getNodeList({page: 1,count: 9999});
-                        this.setState({
-                            isLoadingNodesList: true
-                        });
-                    }.bind(this));
-                }
-                const collection = this.props.preHeatProps.collection;
-                collection.on("refresh.commit.success", $.proxy(this.onSubmitSuccess, this));
-                collection.on("refresh.commit.error", $.proxy(this.onGetError, this));     
+                var ltProps = this.props.ltProps,
+                collection = ltProps.collection;
+                require(['customerSetup.model'],function(CustomerSetupModel){
+                    var customerSetup = new CustomerSetupModel();
+                    customerSetup.on("get.user.success", $.proxy(this.onGetUserListSuccess, this))
+                    customerSetup.on("get.user.error", $.proxy(this.onGetError, this))
+                    customerSetup.queryChannel({currentPage: 1,pageSize: 99999});
+                }.bind(this));
+                collection.on("template.selectList.success", $.proxy(this.onGetTplByProductTypeSuccess, this))
+                collection.on("template.selectList.error", $.proxy(this.onGetError, this))
+                collection.on("add.task.success", $.proxy(this.onSubmitSuccess, this))
+                collection.on("add.task.error", $.proxy(this.onGetError, this))
+                require(['logTemplateManage.field.model'],function(LogTplManageOriginField){
+                    this.logTplManageOriginField = LogTplManageOriginField
+                    var originFieldTagArray = LogTplManageOriginField.map((el, index) => {
+                            return (<Option key={el.id}>{el.field}</Option>)
+                        })
+                    this.setState({
+                        dataSourceOriginFieldTag: originFieldTagArray
+                    });
+                }.bind(this)); 
             }
 
             componentWillUnmount() {
-                const collection = this.props.preHeatProps.collection;
-                collection.off("refresh.commit.success");
-                collection.off("refresh.commit.error");   
-           
+                const collection = this.props.ltProps.collection;
+                if (this.props.isEdit) {   
+                    collection.off("task.detail.success");
+                    collection.off("task.detail.error");
+                }
+                collection.off("template.selectList.success")
+                collection.off("template.selectList.error")
+                collection.off("add.task.success")
+                collection.off("add.task.error")
             }
 
-            onGetNodeListSuccess(res) {
-                this.props.preHeatProps.nodeList = res
+            onGetUserListSuccess(res) {
+                _.each(res.data, function(el){
+                    this.userIdList.push(el.userId)
+                }.bind(this))
+
+                var ltProps = this.props.ltProps,
+                collection = ltProps.collection;
+                var model = this.props.model;
+                if (this.props.isEdit) {
+                    collection.on("task.detail.success", $.proxy(this.onGetTaskDetailSuccess, this))
+                    collection.on("task.detail.error", $.proxy(this.onGetError, this))
+                    collection.getTaskDetail({id: model.id});
+                } else {
+                    this.setState({
+                        isLoadingTplDetail: false,
+                    });
+                }
+            }
+
+            onSubmitSuccess (){
+                Utility.alerts("保存成功！", "success", 2000);
+                this.onClickCancel();
+            }
+
+            onGetTaskDetailSuccess(res) {
+                this.groupId = res.groupId;
+                this.originCreateTime = res.originCreateTime;
+
+                _.each(res.taskConditionList, (el) => {
+                    el.id = Utility.randomStr(8)
+                })
                 this.setState({
-                    isLoadingNodesList: false
+                    name: res.name,
+                    templateName: res.templateName,
+                    accountId: res.accountId,
+                    domainType: res.domainType,
+                    domains: res.domains,
+                    backUrl: res.backUrl,
+                    productType: res.productType,
+
+                    backMethod: res.taskFieldJson.backMethod,
+                    senderType: res.taskFieldJson.senderType, 
+                    backGetLogName: res.taskFieldJson.backGetLogName,
+                    batchCount: res.taskFieldJson.batchCount, 
+                    batchInterval: res.taskFieldJson.batchInterval,
+                    logRange: res.taskFieldJson.logRange,
+                    compressMode: res.taskFieldJson.compressMode,
+                    userAgent: res.taskFieldJson.userAgent,
+                    tokenKey: res.taskFieldJson.tokenKey,
+                    taskTokenType: res.taskFieldJson.taskTokenType, 
+                    taskTokenTimeType: res.taskFieldJson.taskTokenTimeType,
+                    taskConditionList: res.taskFieldJson.taskConditionList,
+
+                    isLoadingTplDetail: false,
                 });
+            }
+
+            convertEnumToShowStr() {
+                const { taskTokenTimeType, taskTokenType, backMethod, 
+                        tokenKey, backGetLogName, domainType, domains,
+                        logRange, compressMode } = this.state;
+                const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
+
+                var dataForShow = {
+                    token: "", 
+                    taskTokenTimeType: "", 
+                    backGetLogName: "", 
+                    domainType: "", 
+                    domainContent: "全量域名", 
+                    logRange: "", 
+                    compressMode: ""
+                };
+                if (taskTokenTimeType == "WITH_CROSS") {
+                    dataForShow.taskTokenTimeType = "yyyy-MM-dd"
+                } else if (taskTokenTimeType == "NO_CROSS") {
+                    dataForShow.taskTokenTimeType = "yyyyMMdd"
+                }
+                if (taskTokenType == "KEY_FIRST") {
+                    dataForShow.token = "方式一：md5({key:" + tokenKey + "}{time:" + dataForShow.taskTokenTimeType + "})"
+                } else if (taskTokenType == "KEY_LAST ") {
+                    dataForShow.token = "方式一：md5({time:" + dataForShow.taskTokenTimeType + "}{key:" + tokenKey + "})"
+                }
+                if (backMethod == "GET") {
+                    dataForShow.backGetLogName = ", Log参数名称：" + backGetLogName
+                }
+                if (domainType == "FULLSCALE") {
+                    dataForShow.domainType = "全量域名";
+                } else if (domainType == "CUSTOM") {
+                    dataForShow.domainType = "自定义域名";
+                    if (domains) {
+                        dataForShow.domainContent = domains.map((el, index) => {
+                            var random = Math.floor(Math.random() * colors.length)
+                            return (<Tag color={colors[random]} key={index} style={{marginBottom: '5px'}}>{el}</Tag>)
+                        })
+                    }
+                }
+                if (logRange == "EDGE") {
+                    dataForShow.logRange = "边缘"
+                } else if (logRange == "EDGE_AND_UPPER") {
+                    dataForShow.logRange = "边缘+上层"
+                }
+                if (compressMode == "TEXT") {
+                    dataForShow.compressMode = "文本"
+                } else if (compressMode == "LZ4") {
+                    dataForShow.compressMode = "lz4"
+                } else if (compressMode == "GZ") {
+                    dataForShow.compressMode = "gzip"
+                }
+                return dataForShow
+            }
+
+            renderBaseInfoView(formItemLayout) {
+                const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
+                var baseInfoView = null, dataShow = this.convertEnumToShowStr(), 
+                    wrapperCol204 = { span: 22, offset: 2 }, wrapperCol22= { span: 20 }, 
+                    tokenTypeTxt1 = "md5({key: TOKEN KEY}{time: TOKEN 日期})",
+                    tokenTypeTxt2 = "md5({time: TOKEN 日期}{key: TOKEN KEY})";
+                if (this.props.isView) {
+                    baseInfoView = (
+                        <div>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="任务名称">
+                                        <span className="ant-form-text">{this.state.name}</span>
+                                    </FormItem>
+                                </Col>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="客户ID">
+                                        <span className="ant-form-text">{this.state.accountId}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="产品线">
+                                        <span className="ant-form-text">{this.state.productType}</span>
+                                    </FormItem>
+                                </Col>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="模版名称">
+                                        <span className="ant-form-text">{this.state.templateName}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="域名标识">
+                                        <Popover content={dataShow.domainContent} trigger="click" placement="bottom">
+                                            <Tag color={"green"}>{dataShow.domainType}</Tag>
+                                        </Popover>
+                                    </FormItem>
+                                </Col>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="回传地址">
+                                        <span className="ant-form-text">{this.state.backUrl}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={24}>
+                                    <FormItem labelCol= {{ span: 4 }} wrapperCol={{ span: 20 }} label="回传方法">
+                                        <span className="ant-form-text">{this.state.backMethod}{dataShow.backGetLogName}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="多条发送上限">
+                                        <span className="ant-form-text">{this.state.batchCount}</span>
+                                    </FormItem>
+                                </Col>
+                                <Col span={8}>
+                                    <FormItem labelCol={{ span: 16 }} wrapperCol={{ span: 8 }} label="单批次最大延迟发送时间">
+                                        <span className="ant-form-text">{this.state.batchInterval}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="日志发送范围">
+                                        <span className="ant-form-text">{dataShow.logRange}</span>
+                                    </FormItem>
+                                </Col>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="压缩方式">
+                                        <span className="ant-form-text">{dataShow.compressMode}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={8}>
+                                    <FormItem {...formItemLayout} label="User-Agent">
+                                        <span className="ant-form-text">{this.state.userAgent}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol204}>
+                                <Col span={24}>
+                                    <FormItem labelCol = {{ span: 4 }} wrapperCol={{ span: 20 }} label="token">
+                                        <span className="ant-form-text">{dataShow.token}</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                        </div>
+                    )
+                } else {
+                    baseInfoView = (
+                        <div>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="任务名称" hasFeedback>
+                                        {getFieldDecorator('name', {
+                                                initialValue: this.state.name,
+                                                validateFirst: true,
+                                                rules: [
+                                                    { required: true, message: '请输入任务名称!' },
+                                                    //{ pattern: /^[0-9A-Za-z\_]+$/, message: '任务名称只能输入英文数字下划线!' },
+                                                ],
+                                            })(
+                                            <Input disabled={this.props.isEdit}/>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="客户ID">
+                                        {getFieldDecorator('accountId', {
+                                            initialValue: this.state.accountId,
+                                            rules: [{ required: true, message: '请输入客户ID!' }]
+                                        })(
+                                            <AutoComplete
+                                                style={{ width: 200 }}
+                                                onBlur={$.proxy(this.onAccountIdChange, this)}
+                                                onSearch={$.proxy(this.handleUserIdSearch, this)}>
+                                            {this.state.dataSourceUserId}
+                                            </AutoComplete>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="产品线">
+                                        {getFieldDecorator('productType', {
+                                            initialValue: this.state.productType,
+                                            rules: [{ required: true, message: '请选择产品线!' }]
+                                        })(
+                                            <Select style={{ width: 200 }} onChange={$.proxy(this.onProductTypeChange, this)}>
+                                                <Option value="">请选择</Option> 
+                                                <Option value="LIVE">直播</Option>
+                                                <Option value="DOWNLOAD">点播</Option>
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                     <FormItem {...formItemLayout} label="模版名称">
+                                        {getFieldDecorator('templateName', {
+                                            initialValue: this.state.templateName,
+                                            rules: [{ required: true, message: '请输入模版名称!' }]
+                                        })(
+                                            <Select style={{ width: 200 }} labelInValue>
+                                                <Option value="">请选择</Option> 
+                                               {this.state.dataSourceTemplateName}
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={(
+                                        <span>
+                                            域名标识&nbsp;
+                                            <Tooltip title="说明：（1）选择全量域名标识后，系统可通过客户ID关联出该客户的全量域名，并同步增减域，每次域名变化无需再次更改日志的配置（2）选择可配置域名后，需要继续配置客户回传域名，且后续可更改">
+                                                <Icon type="question-circle-o" />
+                                            </Tooltip>
+                                        </span>
+                                    )}>
+                                        {getFieldDecorator('domainType', {
+                                            initialValue: this.state.domainType,
+                                            rules: [{ required: true, message: '请选择域名标识!' }]
+                                        })(
+                                            <Select style={{ width: 200 }} onChange={$.proxy(this.onDomainTypeChange, this)}>
+                                                <Option value="">请选择</Option> 
+                                                <Option value="FULLSCALE">全量域名</Option>
+                                                <Option value="CUSTOM">自定义域名</Option>
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="客户回传域名设置" required={true} style={{display: this.state.domainsVisible}}>
+                                        {getFieldDecorator('domains', {
+                                            initialValue: this.state.domains,
+                                            rules: [
+                                                { validator: this.validateDomains },
+                                            ],
+                                        })(
+                                            <Select mode="multiple" allowClear={true}
+                                                    placeholder={'请选择'}
+                                                    maxTagCount={1}
+                                                    notFoundContent={<Spin size="small" />} 
+                                                    filterOption={false} >
+                                                    {this.state.dataSourceDomains}       
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="回传地址" hasFeedback>
+                                        {getFieldDecorator('backUrl', {
+                                                initialValue: this.state.name,
+                                                validateFirst: true,
+                                                rules: [
+                                                    { required: true, message: '请输入回传地址!' },
+                                                    //{ pattern: /^[0-9A-Za-z\_]+$/, message: '任务名称只能输入英文数字下划线!' },
+                                                ],
+                                            })(
+                                            <Input style={{width: "600px"}}/>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={"回传方法"}>
+                                        {getFieldDecorator('backMethod', {
+                                            initialValue: this.state.backMethod,
+                                            rules: [{ required: true, message: '请选择回传方法!' }]
+                                        })(
+                                            <Select style={{ width: 200 }} onChange={$.proxy(this.onBackMethodChange, this)}>
+                                                <Option value="">请选择</Option>  
+                                                <Option value="GET">GET</Option>
+                                                <Option value="POST">POST</Option>
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="参数名称" required={true} style={{display: this.state.backGetLogNameVisible}}>
+                                        {getFieldDecorator('backGetLogName', {
+                                            initialValue: this.state.backGetLogName,
+                                            rules: [
+                                                { validator: this.validateBackGetLogName },
+                                            ],
+                                        })(
+                                            <Input/>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={(
+                                        <span>
+                                            多条发送上限&nbsp;
+                                            <Tooltip title="最大发送上限1000条">
+                                                <Icon type="question-circle-o" />
+                                            </Tooltip>
+                                        </span>
+                                    )}>
+                                        {getFieldDecorator('batchCount', {
+                                            initialValue: this.state.batchCount,
+                                            rules: [
+                                                { required: true, message: '请输入多条发送上限!' },
+                                            ],
+                                        })(
+                                            <InputNumber min={1} max={1000}/>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={(
+                                        <span>
+                                            单批次最大延迟发送时间&nbsp;
+                                            <Tooltip title="该配置与多条发送上限满足一个即发送">
+                                                <Icon type="question-circle-o" />
+                                            </Tooltip>
+                                        </span>
+                                    )}>
+                                        {getFieldDecorator('batchInterval', {
+                                            initialValue: this.state.batchInterval,
+                                            rules: [
+                                                { required: true, message: '请输入单批次最大延迟发送时间!' }
+                                            ],
+                                        })(
+                                            <InputNumber/>
+                                        )}
+                                        <span style={{marginLeft: "10px"}}>S</span>
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={"日志发送范围"}>
+                                        {getFieldDecorator('logRange', {
+                                            initialValue: this.state.logRange,
+                                            rules: [{ required: true, message: '请选择日志发送范围!' }]
+                                        })(
+                                            <Select style={{ width: 200 }}>
+                                                <Option value="">请选择</Option>  
+                                                <Option value="EDGE">边缘</Option>
+                                                <Option value="EDGE_AND_UPPER">边缘+上层</Option>
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={"压缩方式"}>
+                                        {getFieldDecorator('compressMode', {
+                                            initialValue: this.state.compressMode,
+                                            rules: [{ required: true, message: '请选择压缩方式!' }]
+                                        })(
+                                            <Select style={{ width: 200 }}>
+                                                <Option value="">请选择</Option>  
+                                                <Option value="TEXT">文本</Option>
+                                                <Option value="LZ4">lz4</Option>
+                                                <Option value="GZ">gzip</Option>
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="User-Agent">
+                                        {getFieldDecorator('userAgent', {
+                                            initialValue: this.state.userAgent,
+                                            rules: [
+                                                { required: true, message: '请输入User-Agent!' },
+                                            ],
+                                        })(
+                                            <Input/>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={(
+                                        <span>
+                                            TOKEN类型&nbsp;
+                                            <Tooltip title="（1）token为32字节长度鉴权串;（2）id为8字节长度字符串，每次请求分配不同id，用于区分不同请求；（3）cdnkey为分配给cdn厂商的密钥；（4）time为时间戳，包含三种格式：UNIX时间戳，2018-05-08 14:00:00， 20180508141156">
+                                                <Icon type="question-circle-o" />
+                                            </Tooltip>
+                                        </span>
+                                    )}>
+                                        {getFieldDecorator('taskTokenType', {
+                                            initialValue: this.state.taskTokenType,
+                                            rules: [{ required: true, message: '请选择域名标识!' }]
+                                        })(
+                                            <Select style={{ width: 500 }}>
+                                                <Option value="KEY_FIRST">方式一：KEY在前时间在后 {tokenTypeTxt1}</Option>
+                                                <Option value="KEY_LAST">方式二：KEY在后时间在前 {tokenTypeTxt2}</Option>
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                            <FormItem wrapperCol={wrapperCol22}>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label="TOKEN KEY">
+                                        {getFieldDecorator('tokenKey', {
+                                            initialValue: this.state.tokenKey,
+                                            rules: [
+                                                { required: true, message: '请输入TOKEN KEY!' },
+                                            ],
+                                        })(
+                                            <Input/>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={"TOKEN日期类型"}>
+                                        {getFieldDecorator('taskTokenTimeType', {
+                                            initialValue: this.state.taskTokenTimeType,
+                                            rules: [{ required: true, message: '请选择TOKEN日期类型!' }]
+                                        })(
+                                            <Select style={{ width: 200 }}>
+                                                <Option value="">请选择</Option>
+                                                <Option value="WITH_CROSS">yyyy-MM-dd</Option>
+                                                <Option value="NO_CROSS">yyyyMMdd</Option>
+                                            </Select>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                            </FormItem>
+                        </div>
+                    )
+                }
+
+                return baseInfoView
+            }
+
+            handleUserIdSearch(value) {
+                if (value.length < 3) return;
+                var IdArray = [], userIdList = this.userIdList;
+                if (value && userIdList) {
+                    IdArray = _.filter(userIdList, function(el){
+                        var id = el + ""
+                        return id.indexOf(value) > -1
+                    }.bind(this)).map((el) => {
+                        el = el + ""
+                        return <Option key={el}>{el}</Option>;
+                    })
+                }
+
+                this.setState({
+                    dataSourceUserId: IdArray
+                });
+            }
+
+            onProductTypeChange(value) {
+                const { setFieldsValue, getFieldsValue } = this.props.form;
+                setFieldsValue({"templateName": ""})
+                this.setState({
+                    dataSourceTemplateName: []
+                })
+                var ltProps = this.props.ltProps,
+                collection = ltProps.collection,
+                applicationType = "", 
+                accountId = getFieldsValue().accountId;
+                if (value) {
+                    collection.getTemplateByProductType({productType: value});
+                    if (accountId) {
+                        applicationType = value == "LIVE" ? 203 : 202
+                        require(['domainList.model'],function(DomainListModel){
+                            var domainListModel = new DomainListModel();
+                            domainListModel.on("query.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                            domainListModel.on("query.domain.error", $.proxy(this.onGetError, this))
+                            domainListModel.getDomainInfoList({
+                                currentPage: 1,
+                                applicationType: applicationType,
+                                pageSize: 99999,
+                                userId: accountId
+                            });
+                        }.bind(this));
+                    }
+                }
+            }
+
+            onGetTplByProductTypeSuccess(res) {
+                var tplArray = res.map((el) => {
+                        return <Option key={el.groupId}>{el.name}</Option>;
+                    })
+                this.setState({
+                    dataSourceTemplateName: tplArray
+                })
+            }
+
+            onAccountIdChange(value) {
+                const { setFieldsValue, getFieldsValue } = this.props.form;
+                setFieldsValue({"domains": []})
+                this.setState({
+                    dataSourceDomains: []
+                })
+                var productType = getFieldsValue().productType,
+                    applicationType = productType == "LIVE" ? 203 : 202
+
+                if (!productType) applicationType = null;
+
+                if (value) {
+                    require(['domainList.model'],function(DomainListModel){
+                        var domainListModel = new DomainListModel();
+                        domainListModel.on("query.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                        domainListModel.on("query.domain.error", $.proxy(this.onGetError, this))
+                        domainListModel.getDomainInfoList({
+                            currentPage: 1,
+                            applicationType: applicationType,
+                            pageSize: 99999,
+                            userId: value
+                        });
+                    }.bind(this));
+                }
+            }
+
+            onGetDomainListSuccess(res) {
+                var domainArray = res.data.map((el) => {
+                        return <Option key={el.originDomain.domain}>{el.originDomain.domain}</Option>;
+                    })
+                this.setState({
+                    dataSourceDomains: domainArray
+                })
+            }
+
+            onDomainTypeChange(value) {
+                if (value == "CUSTOM") {
+                    this.setState({
+                        domainsVisible: "list-item"
+                    })
+                } else {
+                    this.setState({
+                        domainsVisible: "none"
+                    })
+                }
+            }
+
+            onBackMethodChange(value) {
+                if (value == "GET") {
+                    this.setState({
+                        backGetLogNameVisible: "list-item"
+                    })
+                } else {
+                    this.setState({
+                        backGetLogNameVisible: "none"
+                    })
+                }
+            }
+
+            renderConditionTableView(formItemLayout) {
+                const { getFieldDecorator } = this.props.form;
+                const { taskConditionList, fieldModalVisible, curEditField } = this.state;
+                var conditionListView = "";
+                const { isView, isEdit } = this.props;
+                var  columns = [{
+                    title: '原字段标识',
+                    dataIndex: 'originTag',
+                    key: 'originTag'
+                },{
+                    title: '关系',
+                    dataIndex: 'conditionType',
+                    key: 'conditionType',
+                    render: (text, record) => {
+                        var tag = null;
+                        if (record.conditionType == "NE")
+                            tag = (<Tag color={"red"}>不相等</Tag>)
+                        else if (record.conditionType == "EQ")
+                            tag = <Tag color={"green"}>相等</Tag>
+                        else if (record.conditionType == "IN")
+                            tag = <Tag color={"blue"}>包含</Tag>
+                        else if (record.conditionType == "NIN")
+                            tag = <Tag color={"orange"}>不包含</Tag>
+                        return tag
+                    }
+                },{
+                    title: '值',
+                    dataIndex: 'value',
+                    key: 'value'
+                },{
+                    title: '操作',
+                    dataIndex: '',
+                    key: 'action',
+                    render: (text, record) => {
+                        var editButton = (
+                            <Tooltip placement="bottom" title={"编辑"}>
+                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickEditField, this)}>
+                                    <Icon type="edit" />
+                                </a>
+                            </Tooltip>
+                        );
+                        var deleteButton = (
+                            <Tooltip placement="bottom" title={"删除"}>
+                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickDeleteField, this)}>
+                                    <Icon type="delete" />
+                                </a>
+                            </Tooltip>
+                        );
+                        var buttonGroup = null;
+                        if (isView && isEdit) {
+                            buttonGroup = "-"
+                        } else {
+                            buttonGroup = (
+                                <div>
+                                    {editButton}
+                                    <span className="ant-divider" />
+                                    {deleteButton}
+                                </div>
+                            )
+                        } 
+                        return buttonGroup
+                    },
+                }];
+
+                var addEditFieldView = "", addButton = "";
+
+                if (!this.props.isView){
+                    addEditFieldView =  this.renderAddEditFieldView({
+                      labelCol: { span: 6 },
+                      wrapperCol: { span: 12 },
+                    })
+                    addButton = (<Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddField, this)}>新增</Button>)
+                }
+                conditionListView = (
+                    <div>
+                        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 12 }} label="条件限制">
+                            {addButton}
+                        </FormItem>
+                        <FormItem wrapperCol={{ span: 16, offset: 4}}>
+                            {getFieldDecorator('taskConditionList', {
+                                rules: [
+                                   { validator: this.validateTemplateFieldList }
+                                ],
+                            })(
+                                <Table rowKey="id" columns={columns} pagination={false} size="small" dataSource={taskConditionList} />
+                            )}
+                            <Modal title={'条件限制'}
+                                   destroyOnClose={true}
+                                   visible={fieldModalVisible}
+                                   onOk={$.proxy(this.handleFieldOk, this)}
+                                   onCancel={$.proxy(this.handleModalCancel, this)}>
+                                   {addEditFieldView}
+                            </Modal>
+                        </FormItem>
+                    </div>
+                )
+
+                return conditionListView;
+            }
+
+            validateTemplateFieldList (rule, value, callback) {
+                //if (this.state.taskConditionList.length != 0) {
+                    callback();
+                // } else {
+                //     callback('请添加条件限制！');
+                // }
+            }
+
+            validateBackGetLogName (rule, value, callback) {
+                const { getFieldsValue } = this.props.form;
+                const backMethod = getFieldsValue().backMethod
+                if (backMethod == "GET" && value == ""){
+                    callback('请添加参数名称！');
+                } else {
+                    callback();
+                }
+            }
+
+            validateDomains(rule, value, callback) {
+                const { getFieldsValue } = this.props.form;
+                const domainType = getFieldsValue().domainType
+                if (domainType == "CUSTOM" && value.length == 0){
+                    callback('请选择域名！');
+                } else {
+                    callback();
+                }
+            }
+
+            onClickAddField (event) {
+                this.setState({
+                    isEditField:false,
+                    curEditField: {},
+                    fieldModalVisible: true,
+                });
+            }
+
+            handleFieldOk (e){
+                e.preventDefault();
+                const { taskConditionList, isEditField, curEditField } = this.state;
+                const { getFieldsValue, validateFields, resetFields } = this.props.form;
+                let newField = null, fieldObj;
+                validateFields(["originTag", "conditionType", "value"], (err, vals) => {
+                    if (!err && !isEditField) {
+                        fieldObj = _.find(this.logTplManageOriginField, (el)=>{
+                            return el.id == vals.originTag
+                        })
+                        newField = {
+                            id: Utility.randomStr(8),
+                            originTag: fieldObj.field,
+                            conditionType: vals.conditionType,
+                            value: vals.value
+                        }
+                        this.setState({
+                            taskConditionList: [...taskConditionList, newField],
+                            fieldModalVisible: false
+                        });
+                    } else if (!err && isEditField) {
+                        fieldObj = _.find(this.logTplManageOriginField, (el)=>{
+                            return el.id == vals.originTag
+                        })
+                        _.find(taskConditionList, (el) => {
+                            if (el.id == curEditField.id) {
+                                el.originTag = fieldObj.field
+                                el.conditionType = vals.conditionType
+                                el.value = vals.value
+                            }
+                        })
+
+                        this.setState({
+                            taskConditionList: [...taskConditionList],
+                            fieldModalVisible: false
+                        });
+                    }
+                })
+            }
+
+            handleModalCancel (){
+                this.setState({
+                    fieldModalVisible: false
+                });
+            }
+
+            onClickEditField(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                var model = _.find(this.state.taskConditionList, function(obj){
+                        return obj.id == id
+                    }.bind(this))
+                this.setState({
+                    fieldModalVisible: true,
+                    isEditField: true,
+                    curEditField: model
+                });
+            }
+
+            onClickDeleteField(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "I") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+                confirm({
+                    title: '你确定要删除吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '算了，不删了',
+                    onOk: function(){
+                        var list = _.filter(this.state.taskConditionList, function(obj){
+                                return obj.id !== id
+                            }.bind(this))
+                        this.setState({
+                            taskConditionList: list
+                        })
+                    }.bind(this)
+                  });
+            }
+
+            renderAddEditFieldView(formItemLayout) {
+                const { getFieldDecorator } = this.props.form;
+                const { curEditField, isEditField} = this.state;
+                var addEditNodesView = "";
+                addEditNodesView = (
+                    <Form>
+                        <FormItem {...formItemLayout} label="原字段标识">
+                            {getFieldDecorator('originTag', {
+                                initialValue: curEditField.originTag || "",
+                                rules: [{ required: true, message: '请选择原字段标识!' }]
+                            })(
+                                <Select
+                                    showSearch
+                                    allowClear={true}
+                                    style={{ width: 200 }}
+                                    optionFilterProp="children"
+                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                >
+                                {this.state.dataSourceOriginFieldTag}
+                                </Select>
+                            )}
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="关系">
+                            {getFieldDecorator('conditionType', {
+                                initialValue: curEditField.conditionType || "",
+                                rules: [{ required: true, message: '请选择关系!' }]
+                            })(
+                                <Select style={{ width: 200 }}>
+                                    <Option value="">请选择</Option> 
+                                    <Option value="NE">不相等</Option>
+                                    <Option value="EQ">相等</Option>
+                                    <Option value="IN">包含</Option>
+                                    <Option value="NIN">不包含</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="值" hasFeedback>
+                            {getFieldDecorator('value', {
+                                    initialValue: curEditField.value || "",
+                                    rules: [{ required: true, message: '请输入值!' }],
+                                })(
+                                <Input />
+                            )}
+                        </FormItem>
+                    </Form>
+                );
+
+                return addEditNodesView;
+            }                          
+
+            handleSubmit(e) {
+                e.preventDefault();
+                const { resetFields, validateFields } = this.props.form;
+                //resetFields("taskConditionList")
+                var checkArray = [
+                    "accountId",
+                    "backGetLogName",
+                    "backMethod",
+                    "backUrl",
+                    "batchCount",
+                    "batchInterval",
+                    "compressMode",
+                    "domainType",
+                    "domains",
+                    "logRange",
+                    "name",
+                    "productType",
+                    "taskTokenTimeType",
+                    "taskTokenType",
+                    "templateName",
+                    "tokenKey",
+                    "userAgent"
+                ]
+                validateFields(checkArray, function(err, vals) {
+                    var postParam, taskFieldJson, model = this.props.model;
+                    const collection = this.props.ltProps.collection;
+                    console.log(vals)
+                    if (!err) {
+                        taskFieldJson = {
+                            "backMethod": vals.backMethod,
+                            "backGetLogName": vals.backGetLogName,
+                            "batchCount": vals.batchCount,
+                            "batchInterval": vals.batchInterval,
+                            "logRange": vals.logRange,
+                            "compressMode": vals.compressMode,
+                            "userAgent": vals.userAgent,
+                            "tokenKey": vals.tokenKey,
+                            "taskTokenType": vals.taskTokenType,
+                            "taskTokenTimeType": vals.taskTokenTimeType
+                        }
+                        postParam = {
+                            accountId:vals.accountId,
+                            backUrl:vals.backUrl,
+                            domainType:vals.domainType,
+                            domains:vals.domains,
+                            name:vals.name,
+                            productType:vals.productType,
+                            groupId: vals.templateName.key,
+                            templateName: vals.templateName.label,//{key: "22991kskd91", label: "测试模板"}
+                            taskFieldJson: taskFieldJson,
+                            taskConditionList: this.state.taskConditionList,
+                        }
+                        collection.addTask(postParam);
+                    }
+                }.bind(this))
+            }
+
+            onClickCancel() {
+                const onClickCancelCallback = this.props.ltProps.onClickCancelCallback,
+                      onClickHistoryCallback = this.props.ltProps.onClickHistoryCallback;
+
+                if (this.props.backTarget != "history")
+                    onClickCancelCallback&&onClickCancelCallback();
+                else
+                    onClickHistoryCallback&&onClickHistoryCallback({groupId: this.groupId});
             }
 
             onGetError (error){
@@ -102,801 +1067,40 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
 
-            onSubmitSuccess (){
-                Utility.alerts("保存成功！", "success", 2000);
-                this.onClickCancel();
-            }
-
-            onGetNodeListError(error) {
-                var msg = error ? error.message : "获取节点信息失败!";
-                Utility.alerts(msg);
-            }
-
-            handleSubmit(e) {
-                e.preventDefault();
-                const { resetFields, validateFields } = this.props.form;
-                resetFields("nodesList")
-                var checkArray = ["taskName", "taskDomain", "rangeTimePicker", "nodesList", "fileList"];
-                if (this.props.isEdit) {
-                    checkArray = ["nodesList"];
-                }
-                validateFields(checkArray, function(err, vals) {
-                    var postParam, postNodesList = [], model = this.props.model;
-                    const collection = this.props.preHeatProps.collection;
-                    if (!err) {
-                        _.each(this.state.nodesList, (node) => {
-                            var postNode = {
-                                id: node.id,
-                                sortnum: node.sortnum,
-                                nodes: node.nodeNameArray.join(";"),
-                            }, timeWidthList = [];
-
-                            if (!this.props.isEdit) delete postNode.id;
-
-                            _.each(node.timeWidth, (time) => {
-                                var timeObj = {
-                                    bandwidth: time.bandwidth,
-                                    batchEndTime: moment(time.batchEndTime, 'HH:mm').valueOf(),
-                                    id: time.id,
-                                    batchStartTime: moment(time.batchStartTime, 'HH:mm').valueOf()
-                                }
-                                if (!this.props.isEdit) delete timeObj.id;
-
-                                timeWidthList.push(timeObj)
-                            })
-                            postNode.timeWidth = timeWidthList;
-                            postNodesList.push(postNode)
-                        })
-
-                        if (!this.props.isEdit) {
-                            postParam = {
-                                taskName: vals.taskName,
-                                preloadChannel: vals.taskDomain,
-                                preloadFilePath: this.state.preloadFilePath,
-                                preloadUrlCount: this.state.preloadUrlCount,
-                                startTime: vals.rangeTimePicker[0].valueOf(),
-                                endTime: vals.rangeTimePicker[1].valueOf(),
-                                batchTimeBandwidth: postNodesList,
-                                committer: $(".user-name").html()
-                            }
-                            console.log(postParam)
-                            collection.commitTask(postParam);
-                        } else {
-
-                            postParam = {
-                                taskId: model.id,
-                                batchTimeBandwidth: postNodesList
-                            }
-                            console.log(postParam)
-                            collection.taskModify(postParam);
-                        }
-                    }
-                }.bind(this))
-            }
-
-            onClickCancel() {
-                const onClickCancelCallback = this.props.preHeatProps.onClickCancelCallback;
-                onClickCancelCallback&&onClickCancelCallback();
-            }
-
-            onUploadFile (e) {
-                console.log('Upload event:', e);
-                if (e.fileList.length > 1) {
-                    return []
-                }
-                if (e) {
-                    if (e.file.status == "error") {
-                        this.onGetError(e.file.response)
-                    } else if (e.file.status == "done"){
-                        Utility.alerts("上传成功！", "success", 2000);
-                        var res = e.file.response
-                        this.setState({
-                            preloadUrlCount: res.preloadUrlCount,
-                            preloadFilePath: res.preloadFilePath
-                        })
-                    }
-                    if (!this.state.disabledUpload) {
-                        this.setState({
-                            disabledUpload: true
-                        });
-                    }
-
-                }
-                return e.fileList;
-            }
-
-            validateDomain (rule, value, callback) {
-                if (value&&Utility.isDomain(value)) {
-                    callback();
-                } else {
-                    callback('请输入正确的域名！');
-                }
-            }
-
-            validateNodesList (rule, value, callback) {
-                if (this.state.nodesList.length != 0) {
-                    callback();
-                } else {
-                    callback('请添加预热节点！');
-                }
-            }
-
-            validateTimeBand (rule, value, callback) {
-                if (this.state.timeBandList.length != 0) {
-                    callback();
-                } else {
-                    callback('请添加分时分时任务！');
-                }
-            }
-
-            renderTaskNameView(formItemLayout) {
-                const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
-                var taskNameView = "", model = this.props.model;
-
-                const uploadProps = {
-                    action: BASE_URL + "/refresh/task/upload",
-                    onRemove: (file) => {
-                        var fileList = getFieldValue("fileList");
-                        const index = fileList.indexOf(file);
-                        const newFileList = fileList.slice();
-                        newFileList.splice(index, 1);
-                        setFieldsValue({
-                            fileList: newFileList
-                        });
-                        this.setState({
-                            disabledUpload: false
-                        });
-                    },
-                    beforeUpload: (file, fileList) => {
-                        if (fileList.length > 1) {
-                            return false
-                        }
-                    },
-                    multiple: false,
-                    disabled: this.state.disabledUpload
-                };
-
-                if (this.props.isEdit) {
-                    taskNameView = (
-                        <div>
-                            <FormItem {...formItemLayout} label="任务名称" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{model.taskName}</span>
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="预热域名" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{model.channel}</span>
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="预热文件" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{model.preloadFilePath}</span>
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="预热文件数目" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{model.preloadUrlCount}</span>
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="起止时间">
-                                <span className="ant-form-text">{model.startTimeFormated}~{model.endTimeFormated}</span>
-                            </FormItem>
-                        </div>
-                    )
-                } else {
-                    taskNameView = (
-                        <div>
-                            <FormItem {...formItemLayout} label="任务名称" hasFeedback>
-                                {getFieldDecorator('taskName', {
-                                        rules: [{ required: true, message: '请输入任务名称!' }],
-                                    })(
-                                    <Input />
-                                )}
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="预热域名" hasFeedback>
-                                {getFieldDecorator('taskDomain', {
-                                        validateFirst: true,
-                                        rules: [{ 
-                                            required: true, message: '请输入预热域名!' }, {
-                                            validator: this.validateDomain,
-                                        }],
-                                    })(
-                                    <Input />
-                                )}
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="预热文件">
-                                <div className="dropbox">
-                                    {getFieldDecorator('fileList', {
-                                        valuePropName: 'fileList',
-                                        getValueFromEvent: $.proxy(this.onUploadFile, this),
-                                        initialValue: this.state.fileList,
-                                        rules: [{ type: "array", required: true, message: '请上传预热文件，只能上传一个!' }],
-                                    })(
-                                        <Upload.Dragger {...uploadProps}>
-                                            <p className="ant-upload-drag-icon">
-                                                <Icon type="inbox" />
-                                            </p>
-                                            <p className="ant-upload-text">支持点击或拖拽到框里上传</p>
-                                            <p className="ant-upload-hint">只能上传一个文件</p>
-                                        </Upload.Dragger>
-                                    )}
-                                </div>
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="预热文件数目" style={{marginBottom: "0px"}}>
-                                <span className="ant-form-text">{this.state.preloadUrlCount}</span>
-                            </FormItem>
-                            <FormItem {...formItemLayout} label="起止时间">
-                                {getFieldDecorator('rangeTimePicker', {
-                                        rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
-                                    })(
-                                    <RangePicker showTime={{ format: 'HH:mm', minuteStep: 30 }} 
-                                                format="YYYY/MM/DD HH:mm" 
-                                                disabledDate={this.disabledDate}
-                                                disabledTime={this.disabledTime} />
-                                )}
-                            </FormItem>
-                        </div>
-                    )
-                }
-
-                return taskNameView
-            }
-
-            handleCancel (){
-                this.setState({
-                    nodeModalVisible: false
-                });
-            }
-
-            handleTimeCancel (){
-                this.setState({
-                    timeModalVisible: false
-                });
-            }
-
-            onClickAddNodes (event) {
-                this.setState({
-                    isEditNode:false,
-                    curEditNode: {},
-                    nodeModalVisible: true,
-                    timeBandList: []
-                });
-            }
-
-            handleNodeOk (e){
-                e.preventDefault();
-                const { nodesList, isEditNode, curEditNode, timeBandList} = this.state;
-                const { getFieldsValue, validateFields, resetFields } = this.props.form;
-                let newNodes = null;
-                resetFields("timeBand")
-                validateFields(["selectNodes", "inputOriginBand", "timeBand"], (err, vals) => {
-                    if (!err && !isEditNode) {
-                        newNodes = {
-                            sortnum: nodesList.length + 1,
-                            id: Utility.randomStr(8),
-                            nodeNameArray: getFieldsValue().selectNodes,
-                            timeWidth: [...timeBandList]
-                        }
-                        this.setState({
-                            nodesList: [...nodesList, newNodes],
-                            nodeModalVisible: false
-                        });
-                    } else if (!err && isEditNode) {
-                        _.find(nodesList, (el) => {
-                            if (el.id == curEditNode.id) {
-                                el.nodeNameArray = getFieldsValue().selectNodes,
-                                el.timeWidth = [...timeBandList]
-                            }
-                        })
-
-                        this.setState({
-                            nodesList: [...nodesList],
-                            nodeModalVisible: false
-                        });
-                    }
-                })
-            }
-
-            handleNodeSearch (value) {
-                var preHeatProps = this.props.preHeatProps;
-                var nodeArray = [], nodeList = preHeatProps.nodeList;
-                if (value && nodeList) {
-                    nodeArray = _.filter(nodeList, function(el){
-                        return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1
-                    }.bind(this)).map((el) => {
-                        return <Option key={el.name}>{el.name}</Option>;
-                    })
-                }
-
-                this.setState({
-                    nodeDataSource: nodeArray
-                });
-            }
-
-            onClickEditNode(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.nodesList, function(obj){
-                        return obj.id == id
-                    }.bind(this))
-
-                this.setState({
-                    nodeModalVisible: true,
-                    isEditNode: true,
-                    curEditNode: model,
-                    timeBandList: model.timeWidth
-                });
-            }
-
-            onClickDeleteNode(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                confirm({
-                    title: '你确定要删除吗？',
-                    okText: '确定',
-                    okType: 'danger',
-                    cancelText: '算了，不删了',
-                    onOk: function(){
-                        var list = _.filter(this.state.nodesList, function(obj){
-                                return obj.id !== id
-                            }.bind(this))
-                        _.each(list, (el, index)=>{
-                            el.sortnum = index + 1
-                        })
-                        this.setState({
-                            nodesList: list
-                        })
-                    }.bind(this)
-                  });
-            }  
-
-            renderNodesTableView(formItemLayout) {
-                const { getFieldDecorator } = this.props.form;
-                const { nodesList, nodeModalVisible, nodeDataSource, curEditNode } = this.state;
-                var preheatNodesView = "";
-                const { isView, isEdit } = this.props;
-                var  columns = [{
-                    title: '批次',
-                    dataIndex: 'sortnum',
-                    key: 'sortnum',
-                },{
-                    title: '预热节点',
-                    dataIndex: 'nodeNameArray',
-                    key: 'nodeNameArray',
-                    width: 300,
-                    render: (text, record) => {
-                        const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
-                        let content = [];
-                        let random;
-                        for(var i = 0; i < record.nodeNameArray.length; i++) {
-                            random = Math.floor(Math.random() * colors.length)
-                            content.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{record.nodeNameArray[i]}</Tag>))
-                        }
-                        return content
-                    }
-                },{
-                    title: '进度',
-                    dataIndex: 'successed ',
-                    key: 'successed ',
-                    render: (text, record) => {
-                        if (record.successed != undefined && 
-                            record.failed != undefined) {
-                            var total = record.successed + record.failed;
-                            return total;
-                        } else {
-                            return "-"
-                        }
-                    }
-                },{
-                    title: '状态',
-                    dataIndex: 'status',
-                    key: 'status',
-                    render: (text, record) => {
-                        var tag = null;
-                        if (record.status == 3)
-                            tag = (<Tag color={"red"}>已暂停</Tag>)
-                        else if (record.status == 2)
-                            tag = <Tag color={"green"}>已完成</Tag>
-                        else if (record.status == 0)
-                            tag = <Tag color={"blue"}>待预热</Tag>
-                        else if (record.status == 1)
-                            tag = <Tag color={"orange"}>预热中</Tag>
-                        else if (record.status == 4)
-                            tag = <Tag color={"purple"}>暂停中</Tag>
-                        return tag
-                    }
-                },{
-                    title: '成功率',
-                    dataIndex: 'failed',
-                    key: 'failed',
-                    render: (text, record) => {
-                        if (record.successed != undefined && 
-                            record.failed != undefined) {
-                            var total = record.successed + record.failed;
-                            if (total != 0){
-                                return record.successed / total * 100 + "%"
-                            } else {
-                                return "0" 
-                            }
-                        } else {
-                            return "-"
-                        }
-                    }
-                },{
-                    title: '执行时间',
-                    dataIndex: 'timeWidth',
-                    key: 'timeWidth',
-                    render: (text, record) => {
-                        return <List size="small" dataSource={record.timeWidth} 
-                                renderItem={(item) => {
-                                    return <List.Item>{item.batchStartTime}~{item.batchEndTime}</List.Item>
-                                }} />
-                    }
-                },{
-                    title: '回源带宽',
-                    dataIndex: 'bandwidth',
-                    key: 'bandwidth',
-                    render: (text, record) => {
-                        return <List size="small" dataSource={record.timeWidth} renderItem={item => (<List.Item>{item.bandwidth}M</List.Item>)} />
-                    }
-                },{
-                    title: '操作',
-                    dataIndex: 'id',
-                    key: 'action',
-                    render: (text, record) => {
-                        var editButton = (
-                            <Tooltip placement="bottom" title={"编辑"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickEditNode, this)}>
-                                    <Icon type="edit" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var deleteButton = (
-                            <Tooltip placement="bottom" title={"删除"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickDeleteNode, this)}>
-                                    <Icon type="delete" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var buttonGroup = null;
-                        if (isView && isEdit) {
-                            buttonGroup = "-"
-                        } else if (!isEdit) {
-                            buttonGroup = (
-                                <div>
-                                    {editButton}
-                                    <span className="ant-divider" />
-                                    {deleteButton}
-                                </div>
-                            )
-                        } else if (isEdit){
-                            buttonGroup = editButton;
-                        }
-                        return buttonGroup
-                    },
-                }];
-
-                var addEditNodesView = null, addButton = null;
-                const timeBandView = this.renderTimeBandTableView(formItemLayout);
-
-                if (this.state.isLoadingNodesList) {
-                    addEditNodesView =  <div style={{textAlign: "center"}}><Spin /></div>
-                } else {
-                    addEditNodesView = (
-                        <Form>
-                            <FormItem {...formItemLayout} label="预热节点">
-                                {getFieldDecorator('selectNodes', {
-                                        initialValue: curEditNode.nodeNameArray || [],
-                                        rules: [{ type: "array", required: true, message: '请选择预热节点!' }],
-                                    })(
-                                    <Select mode="multiple" allowClear={true}
-                                            disabled={this.props.isEdit}
-                                            notFoundContent={'请输入节点关键字'}
-                                            filterOption={false}
-                                            onSearch={$.proxy(this.handleNodeSearch, this)} >
-                                        {nodeDataSource}         
-                                    </Select>
-                                )}
-                            </FormItem>
-                            {timeBandView}
-                            <FormItem {...formItemLayout} label="分时任务" style={{display:"none"}}>
-                                <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddNodes, this)}>新建分时任务</Button>
-                                {getFieldDecorator('inputOriginBand', {
-                                        initialValue: curEditNode.bandwidth || 100,
-                                        rules: [{ required: true, message: '请输入回源带宽!' }],
-                                    })(
-                                    <InputNumber/>
-                                )}
-                                <span style={{marginLeft: "10px"}}>M</span>
-                            </FormItem>
-                        </Form>
-                    );
-                }
-
-                if (!this.props.isEdit) {
-                    addButton = (<Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddNodes, this)}>新建预热批次</Button>)
-                } 
-
-                preheatNodesView = (
-                    <FormItem {...formItemLayout} label="预热批次" required={true}>
-                        {addButton}
-                        <Alert style={{ marginBottom: '10px' }} message="预热任务遵循预热批次自动执行" type="info" showIcon />
-                        {getFieldDecorator('nodesList', {
-                            rules: [{ validator: this.validateNodesList }],
-                        })(
-                            <Table rowKey="id" columns={columns} pagination={false} size="small" dataSource={nodesList} />
-                        )}
-                        <Modal title={'预热批次'} destroyOnClose={true} width={800}
-                               destroyOnClose={true}
-                               visible={nodeModalVisible}
-                               onOk={$.proxy(this.handleNodeOk, this)}
-                               onCancel={$.proxy(this.handleCancel, this)}>
-                               {addEditNodesView}
-                        </Modal>
-                    </FormItem>
-                )
-
-                return preheatNodesView;
-            }
-
-            onClickAddTime (event) {
-                this.setState({
-                    isEditTime: false,
-                    curEditTime: {},
-                    timeModalVisible: true
-                });
-            }
-
-            handleTimeOk (e){
-                e.preventDefault();
-                const { timeBandList, isEditTime, curEditTime} = this.state;
-                const { getFieldsValue, validateFields, resetFields } = this.props.form;
-                let newTimeBand = null;
-                validateFields(["selectStartTime","selectEndTime", "inputBand"], (err, vals) => {
-                    const format = 'HH:mm';
-                    if (!err && !isEditTime) {
-                        console.log(getFieldsValue())
-                        newTimeBand = {
-                            id: Utility.randomStr(8),
-                            batchStartTime: getFieldsValue().selectStartTime.format(format),
-                            batchEndTime: getFieldsValue().selectEndTime.format(format),
-                            bandwidth: getFieldsValue().inputBand
-                        }
-                        this.setState({
-                            timeBandList: [...timeBandList, newTimeBand],
-                            timeModalVisible: false
-                        });
-                    } else if (!err && isEditTime) {
-                        _.each(timeBandList, (el)=>{
-                            if (el.id == curEditTime.id) {
-                                el.batchStartTime = getFieldsValue().selectStartTime.format(format);
-                                el.batchEndTime = getFieldsValue().selectEndTime.format(format);
-                                el.bandwidth = getFieldsValue().inputBand
-                            }
-                        })
-                        this.setState({
-                            timeBandList: [...timeBandList],
-                            timeModalVisible: false
-                        });
-                    }
-                })
-            }
-
-            handleEditTimeClick (event){
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.timeBandList, function(obj){
-                        return obj.id == id
-                    }.bind(this))
-                const format = 'HH:mm',
-                      selectStartTime = model.batchStartTime,
-                      selectEndTime = model.batchEndTime;
-                this.setState({
-                    timeModalVisible: true,
-                    isEditTime: true,
-                    curEditTime: {
-                        selectStartTime:moment(selectStartTime, format), 
-                        selectEndTime: moment(selectEndTime, format), 
-                        bandwidth: model.bandwidth,
-                        id: model.id
-                    }
-                });
-            }
-
-            handleDeleteTimeClick (event){
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                confirm({
-                    title: '你确定要删除吗？',
-                    okText: '确定',
-                    okType: 'danger',
-                    cancelText: '算了，不删了',
-                    onOk: function(){
-                        var list = _.filter(this.state.timeBandList, function(obj){
-                                return obj.id != id
-                            }.bind(this))
-                        this.setState({
-                            timeBandList: list
-                        })
-                    }.bind(this)
-                  });
-            }
-
-            renderTimeBandTableView(formItemLayout) {
-                const { getFieldDecorator } = this.props.form;
-                const { timeModalVisible, curEditTime } = this.state;
-                var timeBandView = "", model = this.props.model;
-                var  columns = [{
-                    title: '执行时间',
-                    dataIndex: 'batchStartTime',
-                    key: 'batchStartTime',
-                    render: (text, record) => (text + "~" + record.batchEndTime)
-                },{
-                    title: '回源带宽',
-                    dataIndex: 'bandwidth',
-                    key: 'bandwidth',
-                    render: (text, record) => (text + "M")
-                }, {
-                    title: '操作',
-                    dataIndex: 'id',
-                    key: 'action',
-                    render: (text, record) => {
-                        var editButton = (
-                            <Tooltip placement="bottom" title={"编辑"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.handleEditTimeClick, this)}>
-                                    <Icon type="edit" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var deleteButton = (
-                            <Tooltip placement="bottom" title={"删除"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.handleDeleteTimeClick, this)}>
-                                    <Icon type="delete" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var buttonGroup;
-                        buttonGroup = (
-                            <div>
-                                {editButton}
-                                <span className="ant-divider" />
-                                {deleteButton}
-                            </div>
-                        )
-                        return buttonGroup
-                    },
-                }];
-
-                const format = 'HH:mm';
-
-                const addEditTimeView = (
-                    <Form>                            
-                        <FormItem {...formItemLayout} label="执行时间" required={true}>
-                            <Col span={11}>
-                                <FormItem>
-                                    {getFieldDecorator('selectStartTime', {
-                                            rules: [{ required: true, message: '请选择开始时间!' }],
-                                            initialValue: curEditTime.selectStartTime || moment('00:00', format)
-                                        })(
-                                            <TimePicker format={format} minuteStep={1} />
-                                    )}
-                                </FormItem>
-                            </Col>
-                            <Col span={2}>
-                                <span style={{ display: 'inline-block', width: '100%', textAlign: 'center' }}>
-                                -
-                                </span>
-                            </Col>
-                            <Col span={11}>
-                                <FormItem>
-                                    {getFieldDecorator('selectEndTime', {
-                                            rules: [{ required: true, message: '请选择结束时间!' }],
-                                            initialValue: curEditTime.selectEndTime  || moment('23:59', format)
-                                        })(
-                                            <TimePicker  format={format} minuteStep={1} />
-                                    )}
-                                </FormItem>
-                            </Col>
-                        </FormItem> 
-                        <FormItem {...formItemLayout} label="回源带宽">
-                            {getFieldDecorator('inputBand', {
-                                    initialValue: curEditTime.bandwidth || 100,
-                                    rules: [{ required: true, message: '请输入带宽!' }],
-                                })(
-                                <InputNumber/>
-                            )}
-                            <span style={{marginLeft: "10px"}}>M</span>
-                        </FormItem>
-                    </Form>
-                );
-
-                timeBandView = (
-                    <FormItem {...formItemLayout} label="分时任务" required={true}>
-                        <Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddTime, this)}>新建分时任务</Button>
-                        <Alert style={{ marginBottom: '10px' }} message="仅在添加的分时任务时间段内进行预热" type="info" showIcon />
-                        {getFieldDecorator('timeBand', {
-                            rules: [{ validator: this.validateTimeBand }],
-                        })(
-                            <Table rowKey="id" columns={columns} pagination={false} size="small" dataSource={this.state.timeBandList} />
-                        )}
-                        <Modal title={'分时任务'} destroyOnClose={true}
-                               destroyOnClose={true}
-                               visible={timeModalVisible}
-                               onOk={$.proxy(this.handleTimeOk, this)}
-                               onCancel={$.proxy(this.handleTimeCancel, this)}>
-                               {addEditTimeView}
-                        </Modal>
-                    </FormItem>
-                )
-
-                return timeBandView;
-            }
-
-            disabledDate(current) {
-                return current && current < moment().add(-1,'day')
-            }
-
-            disabledTime(type) {
-                function range(start, end) {
-                    const result = [];
-                        for (let i = start; i < end; i++) {
-                            result.push(i);
-                        }
-                    return result;
-                }
-
-                if (type === 'start') {
-                    return {
-                        disabledHours: () => range(0, moment().hour() + 1)
-                    }
-                }
-            }
-
             render() {
                 const { getFieldDecorator } = this.props.form;
                 const formItemLayout = {
-                  labelCol: { span: 4 },
-                  wrapperCol: { span: 16 },
+                  labelCol: { span: 12 },
+                  wrapperCol: { span: 12 },
                 };
-                const taskNameView = this.renderTaskNameView(formItemLayout);
-                const preheatNodesView = this.renderNodesTableView(formItemLayout);
-                let saveButton = null;
+                const baseInfoView = this.renderBaseInfoView(formItemLayout);
+                const conditionListView = this.renderConditionTableView(formItemLayout);
+                let saveButton = null, editView = null;
                 if (!this.props.isView)
                     saveButton = (<Button type="primary" htmlType="submit">保存</Button>)
 
-                return (
-                    <div>
-                        <Form onSubmit={this.handleSubmit}>
-                            {taskNameView}
-                            {preheatNodesView}
-                            <FormItem wrapperCol={{ span: 12, offset: 6 }}>
-                                {saveButton}
-                                <Button onClick={this.onClickCancel} style={{marginLeft: "10px"}}>取消</Button>
-                            </FormItem>
-                        </Form>
-                    </div>
-                );
+                if (this.state.isLoadingTplDetail) {
+                    editView =  <div style={{textAlign: "center"}}><Spin /></div>
+                } else { 
+                    editView = (
+                        <div>
+                            <Form onSubmit={this.handleSubmit}>
+                                {baseInfoView}
+                                {conditionListView}
+                                <FormItem wrapperCol={{ span: 12, offset: 6 }}>
+                                    {saveButton}
+                                    <Button onClick={this.onClickCancel} style={{marginLeft: "10px"}}>取消</Button>
+                                </FormItem>
+                            </Form>
+                        </div>
+                    );
+                }
+
+                return editView
             }
         }
 
-        const PreheatManageEditView = Form.create()(PreheatManageEditForm);    
-        return PreheatManageEditView;
+        const logTaskListEditView = Form.create()(logTaskListEditForm);    
+        return logTaskListEditView;
     }
 );

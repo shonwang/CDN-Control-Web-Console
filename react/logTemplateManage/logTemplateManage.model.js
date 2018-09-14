@@ -15,7 +15,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         initialize: function(){},
 
         getTemplateList: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/page",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/page",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {
@@ -35,7 +35,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         },
 
         isTemplateUsed: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/used",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/used",
                 successCallback = function(res) {
                     this.trigger("template.used.success", res);
                 }.bind(this),
@@ -46,7 +46,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         },
 
         addTemplate: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/add",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/add",
                 successCallback = function(res) {
                     this.trigger("add.template.success", res);
                 }.bind(this),
@@ -57,7 +57,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         },
 
         getTemplateDetail: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/detail",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/detail",
                 successCallback = function(res) {
                     this.trigger("template.detail.success", res);
                 }.bind(this),
@@ -68,7 +68,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         },
 
         getTplHistoryList: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/history",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/history",
                 successCallback = function(res) {
                     this.trigger("template.history.success", res);
                 }.bind(this),
@@ -79,7 +79,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         }, 
         
         publishTemplate: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/publish",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/publish",
                 successCallback = function(res) {
                     this.trigger("publish.template.success", res);
                 }.bind(this),
@@ -90,7 +90,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         },
 
         deleteTemplate: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/delete",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/delete",
                 successCallback = function(res) {
                     this.trigger("delete.template.success", res);
                 }.bind(this),

@@ -1,4 +1,4 @@
-define("preheatManage.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], 
+define("logTaskStatistics.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], 
     function(require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
 
         var Layout = Antd.Layout,
@@ -8,556 +8,257 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
             Input = Antd.Input,
             Form = Antd.Form,
             FormItem = Form.Item,
-            Select = Antd.Select,
-            Option = Select.Option,
-            AutoComplete = Antd.AutoComplete,
-            Table = Antd.Table,
             Alert = Antd.Alert,
-            Tag = Antd.Tag,
-            Popover = Antd.Popover,
-            Badge = Antd.Badge,
             Icon = Antd.Icon,
             Spin = Antd.Spin,
-            Tooltip = Antd.Tooltip;
+            Col = Antd.Col,
+            Row = Antd.Row,
+            Select = Antd.Select,
+            AutoComplete = Antd.AutoComplete,
+            Select = Antd.Select,
+            DatePicker = Antd.DatePicker,
+            RangePicker = DatePicker.RangePicker,
+            Option = Select.Option; 
 
-        class PreHeatTable extends React.Component {
+        class SearchForm extends React.Component {
+
             constructor(props, context) {
                 super(props);
-                this.onChangePage = this.onChangePage.bind(this);
-                this.handleEditClick = this.handleEditClick.bind(this);
-                this.handlePauseClick = this.handlePauseClick.bind(this);
-                this.handleRestartClick = this.handleRestartClick.bind(this);
+                this.handleSubmit = this.handleSubmit.bind(this);
                 this.state = {
-                    data: [],
-                    isError: false,
-                    isFetching: true
-                };
+                    dataSourceUserId: [],
+                    dataSourceDomains: [],
+                    dataSourceTaskName: [],
+                    isLoadingUserId: true
+                }
+                this.userIdList = [];
             }
 
             componentDidMount() {
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                collection.on("get.preheat.success", $.proxy(this.onGetPreHeatListSuccess, this));
-                collection.on("get.preheat.error", $.proxy(this.onGetError, this));
-                collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));   
-                collection.trigger("fetching", queryCondition);
-                collection.on("refresh.pause.success", $.proxy(this.onGetOperateSuccess, this, "暂停"));
-                collection.on("refresh.pause.error", $.proxy(this.onOperateError, this));
-                collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
-                collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
+                var ltProps = this.props.ltProps,
+                collection = ltProps.collection;
+                require(['customerSetup.model'],function(CustomerSetupModel){
+                    var customerSetup = new CustomerSetupModel();
+                    customerSetup.on("get.user.success", $.proxy(this.onGetUserListSuccess, this))
+                    customerSetup.on("get.user.error", $.proxy(this.onGetError, this))
+                    customerSetup.queryChannel({currentPage: 1,pageSize: 99999});
+                }.bind(this)); 
             }
 
-            componentWillUnmount() {
-                var collection = this.props.preHeatProps.collection;
-                collection.off("get.preheat.success");
-                collection.off("get.preheat.error");
-                collection.off("fetching");
-                collection.off("refresh.pause.success");
-                collection.off("refresh.pause.error");
-                collection.off("refresh.restart.success");
-                collection.off("refresh.restart.error");    
+            onGetUserListSuccess(res) {
+                _.each(res.data, function(el){
+                    this.userIdList.push(el.userId)
+                }.bind(this))
+
+                this.setState({
+                    isLoadingUserId: false,
+                });
             }
 
-            onGetOperateSuccess(msg){
-                Utility.alerts(msg + "成功!", "success", 2000);
-                const preHeatProps = this.props.preHeatProps;
-                const { collection, queryCondition } = preHeatProps;
-                collection.trigger("fetching", queryCondition);
+            handleSubmit(e){
+                e&&e.preventDefault();
+                const { getFieldsValue, validateFields} = this.props.form;
+                var fieldsValue = getFieldsValue(),
+                    ltProps = this.props.ltProps,
+                    collection = ltProps.collection,
+                    queryCondition = ltProps.queryCondition;
+                validateFields(["accountId", "rangeTimePicker"], (err, vals) => {
+                    queryCondition.accountId = vals.accountId || null;
+                    if (fieldsValue.rangeTimePicker) {
+                        queryCondition.startTime = vals.rangeTimePicker[0].valueOf();
+                        queryCondition.endTime = vals.rangeTimePicker[1].valueOf();
+                    } else {
+                        queryCondition.startTime = null;
+                        queryCondition.endTime = null;
+                    }
+                    queryCondition.taskName = fieldsValue.taskName || null;
+                    queryCondition.domains = fieldsValue.domains || null;
+                    console.log(queryCondition)
+                    collection.trigger("fetching", queryCondition)
+                })
             }
 
-            onOperateError(error){
+            onClickResetButton() {
+                const { setFieldsValue } = this.props.form;
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
+                setFieldsValue({"accountId": ""})
+                setFieldsValue({"domains": []})
+                setFieldsValue({"taskName": ""})
+                setFieldsValue({"rangeTimePicker": null})
+                collection.trigger("reset.chart")
+            }
+
+            handleUserIdSearch(value) {
+                if (value.length < 3) return;
+                var IdArray = [], userIdList = this.userIdList;
+                if (value && userIdList) {
+                    IdArray = _.filter(userIdList, function(el){
+                        var id = el + ""
+                        return id.indexOf(value) > -1
+                    }.bind(this)).map((el) => {
+                        el = el + ""
+                        return <Option key={el}>{el}</Option>;
+                    })
+                }
+
+                this.setState({
+                    dataSourceUserId: IdArray
+                });
+            }
+
+            onAccountIdChange(value) {
+                const { setFieldsValue, getFieldsValue } = this.props.form;
+                setFieldsValue({"domains": []})
+                this.setState({
+                    dataSourceDomains: []
+                })
+
+                if (value) {
+                    require(['domainList.model'],function(DomainListModel){
+                        var domainListModel = new DomainListModel();
+                        domainListModel.on("query.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                        domainListModel.on("query.domain.error", $.proxy(this.onGetError, this))
+                        domainListModel.getDomainInfoList({
+                            currentPage: 1,
+                            pageSize: 99999,
+                            userId: value
+                        });
+                    }.bind(this));
+                }
+            }
+
+            onGetDomainListSuccess(res) {
+                var domainArray = res.data.map((el) => {
+                        return <Option key={el.originDomain.domain}>{el.originDomain.domain}</Option>;
+                    })
+                this.setState({
+                    dataSourceDomains: domainArray
+                })
+            }
+
+            onGetError (error){
                 if (error && error.message)
                     Utility.alerts(error.message);
                 else
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
 
-            onFetchingPreHeatList(queryCondition){
-                var collection = this.props.preHeatProps.collection;
-                this.setState({
-                    isFetching: true
-                })
-                collection.getPreheatList(queryCondition)
-            }
-
-            onGetPreHeatListSuccess() {
-                var data = [];
-                this.props.preHeatProps.collection.each((model) => {
-                    var obj = Object.assign({}, model.attributes),
-                        nodeName = [];
-                    _.each(obj.batchTimeBandwidth, (batch)=>{
-                        batch.nodeNameArray = batch.nodes.split(";");
-                        nodeName = nodeName.concat(batch.nodeNameArray);
-                    })
-                    obj.nodeName = nodeName;
-                    data.push(obj)
-                })
-                console.log(data)
-                this.setState({
-                    data: data,
-                    isFetching: false
-                })
-            }
-
-            onChangePage(page, pageSize){
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                queryCondition.pageNo = page;
-                queryCondition.pageSize = pageSize;
-                collection.trigger("fetching", queryCondition);
-            }
-
-            handlePauseClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskPause({taskId: id});
-            }
-
-            handleRestartClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskRestart({taskId: id});
-            }
-
-            handleEditClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.data, function(obj){
-                        return obj.id == id
-                    }.bind(this))
-                var onClickEditCallback = this.props.preHeatProps.onClickEditCallback;
-                onClickEditCallback&&onClickEditCallback(model)
-            }
-
-            handleViewClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.data, function(obj){
-                        return obj.id == id
-                    }.bind(this))
-                var onClickViewCallback = this.props.preHeatProps.onClickViewCallback;
-                onClickViewCallback&&onClickViewCallback(model)
-            }
-
-            onGetError(error) {
-                var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！"
-                if (error && error.message)
-                    msgDes = error.message;
-
-                this.setState({
-                    isError: true,
-                    isFetching: false
-                })
-
-                this.errorView = (
-                    <Alert
-                        message="出错了"
-                        description={msgDes}
-                        type="error"
-                        showIcon
-                    />
-                );
-            }
-
-            render() {
-                if (this.state.isError) {
-                    return this.errorView || (
-                        <Alert
-                            message="出错了"
-                            type="error"
-                            showIcon
-                        />
-                    );
-                }
-
-                const columns = [{
-                    title: '名称',
-                    dataIndex: 'taskName',
-                    key: 'taskName',
-                    fixed: 'left',
-                    width: 200,
-                    render: (text, record) => {
-                        return  (
-                                <Tooltip placement="bottom" title={"查看详情"}>
-                                    <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleViewClick(e)}>
-                                        {text}
-                                    </a>
-                                </Tooltip>
-                            )
-                    }
-                },{
-                    title: '回源带宽',
-                    dataIndex: 'currentBandwidth',
-                    key: 'currentBandwidth',
-                },{
-                    title: '预热节点',
-                    dataIndex: 'nodeName',
-                    key: 'nodeName',
-                    render: (text, record) => {
-                        const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
-                        let content, temp = [];
-                        let random, nodeNameArray = record.currentNodes.split(";");
-                        for(var i = 0; i < nodeNameArray.length; i++) {
-                            random = Math.floor(Math.random() * colors.length)
-                            temp.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{nodeNameArray[i]}</Tag>))
-                        }
-                        content = <div>{temp}</div>
-                        return (
-                            <div>
-                                <span>{nodeNameArray[0]}...</span>
-                                <span>
-                                    <Popover content={content} title="节点详情" trigger="click" placement="right" overlayStyle={{width: '300px'}}>
-                                        <Badge count={nodeNameArray.length} style={{ backgroundColor: '#52c41a' }}>
-                                            <a href="javascript:void(0)" id={record.id}>more</a>
-                                        </Badge>
-                                    </Popover>
-                                </span>
-                            </div>)
-                    }
-                },{
-                    title: '文件数',
-                    dataIndex: 'preloadUrlCount',
-                    key: 'preloadUrlCount',
-                },{
-                    title: '当前预热批次',
-                    dataIndex: 'currentBatch',
-                    key: 'currentBatch',
-                    render: (text, record) => (text + "/" + record.batchTimeBandwidth.length)
-                },{
-                    title: '进度',
-                    dataIndex: 'progress',
-                    key: 'progress',
-                },{
-                    title: '状态',
-                    dataIndex: 'status',
-                    key: 'status',
-                    render: (text, record) => {
-                        var tag = null;
-                        if (record.status == 3)
-                            tag = (<Tag color={"red"}>已暂停</Tag>)
-                        else if (record.status == 2)
-                            tag = <Tag color={"green"}>已完成</Tag>
-                        else if (record.status == 0)
-                            tag = <Tag color={"blue"}>待预热</Tag>
-                        else if (record.status == 1)
-                            tag = <Tag color={"orange"}>预热中</Tag>
-                        else if (record.status == 4)
-                            tag = <Tag color={"purple"}>暂停中</Tag>
-                        return tag
-                    }
-                },{
-                    title: '成功率',
-                    dataIndex: 'successRate',
-                    key: 'successRate',
-                    render: (text, record) => (text * 100 + "%")
-                },{
-                    title: '创建人',
-                    dataIndex: 'committer',
-                    key: 'committer',
-                },{
-                    title: '创建时间',
-                    dataIndex: 'commitTimeFormated',
-                    key: 'commitTimeFormated',
-                },{
-                    title: '操作',
-                    dataIndex: 'id',
-                    key: 'action',
-                    fixed: 'right',
-                    width: 100,
-                    render: (text, record) => {
-                        var editButton = (
-                            <Tooltip placement="bottom" title={"编辑"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleEditClick(e)}>
-                                    <Icon type="edit" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var playButton = (
-                            <Tooltip placement="bottom" title={"开启"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleRestartClick(e)}>
-                                    <Icon type="play-circle-o" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var pauseButton = (
-                            <Tooltip placement="bottom" title={"暂停"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handlePauseClick(e)}>
-                                    <Icon type="pause-circle-o" />
-                                </a>
-                            </Tooltip>
-                        )
-                        var buttonGroup;
-                        if (record.status == 3) {
-                            buttonGroup = (
-                                <div>
-                                    {editButton}
-                                    <span className="ant-divider" />
-                                    {playButton}
-                                </div>
-                            )
-                        } else if (record.status == 1 || record.status == 0) {
-                            buttonGroup = (<div>{pauseButton}</div>)
-                        }
-                        return buttonGroup
-                    },
-                }];
-                var preHeatProps = this.props.preHeatProps;
-                var pagination = {
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                        showTotal: function showTotal(total) {
-                        return 'Total '+ total + ' items';
-                    },
-                    current: preHeatProps.queryCondition.pageNo,
-                    total: preHeatProps.collection.total,
-                    onChange: this.onChangePage,
-                    onShowSizeChange: this.onChangePage
-                }
-
-                return ( <Table rowKey="id" 
-                                dataSource={this.state.data} 
-                                loading={this.state.isFetching} 
-                                columns={columns}
-                                scroll={{ x: 1500 }} 
-                                pagination = {pagination} /> )
-            }
-        }    
-
-        var SearchForm = React.createClass({
-
-            getInitialState: function () {
-                var defaultState = {
-                    dataSource: []
-                }
-                return defaultState;
-            },
-
-            handleSearch: function (value){
-                var preHeatProps = this.props.preHeatProps;
-                var nodeArray = [], nodeList = preHeatProps.nodeList;
-                if (value && nodeList) {
-                    nodeArray = _.filter(nodeList, function(el){
-                        return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1
-                    }.bind(this)).map((el) => {
-                        return <Option key={el.id}>{el.name}</Option>;
-                    })
-                }
-
-                this.setState({
-                    dataSource: nodeArray
-                });
-            },
-
-            handleSubmit: function(e){
-                e.preventDefault();
-                var fieldsValue = this.props.form.getFieldsValue(),
-                    preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition,
-                    nodes = [];
-                if (fieldsValue.nodeNames && fieldsValue.nodeNames.length > 0) {
-                    _.each(fieldsValue.nodeNames, (el)=>{
-                        nodes.push(el.label)
-                    })
-                    nodes = nodes.join(";")
-                } else {
-                    nodes = null;
-                }    
-                queryCondition.taskName = fieldsValue.preheatNames || null;
-                queryCondition.nodes = nodes;
-                queryCondition.status = fieldsValue.preheatStatus == "all" ? null : parseInt(fieldsValue.preheatStatus);
-                collection.trigger("fetching", queryCondition)
-            },
-
-            onClickAddButton: function(){
-                var onClickAddCallback = this.props.preHeatProps.onClickAddCallback;
-                onClickAddCallback&&onClickAddCallback()
-            },
-
-            render: function(){
+            render(){
                 const { getFieldDecorator } = this.props.form;
                 const { dataSource } = this.state;
-                const preHeatProps = this.props.preHeatProps;
-                const nodeList = preHeatProps.nodeList;
-                //0:待预热 1:预热中 2:已完成 3:已暂停 4：暂停中
+                const ltProps = this.props.ltProps;
+                const formItemLayout = {
+                  labelCol: { span: 6 },
+                  wrapperCol: { span: 12 },
+                };
+
                 var HorizontalForm = (
-                    <Form layout="inline" onSubmit={this.handleSubmit}>
-                        <FormItem label={"名称"}>
-                            {getFieldDecorator('preheatNames')(
-                                <Input />
-                            )}
-                        </FormItem>
-                        <FormItem label={"节点"}>
-                            {getFieldDecorator('nodeNames')(
-                                <Select mode="multiple" allowClear={true} 
-                                        style={{ width: 300 }} 
-                                        labelInValue
-                                        notFoundContent={nodeList.length == 0 ? <Spin size="small" /> : '请输入节点关键字'}
-                                        filterOption={false}
-                                        onSearch={$.proxy(this.handleSearch, this)} >
-                                    {dataSource}         
-                                </Select>
-                            )}
-                        </FormItem>
-                        <FormItem label="状态">
-                            {getFieldDecorator('preheatStatus', {
-                                "initialValue": "all"
-                            })(
-                                <Select>
-                                    <Option value="all">全部</Option>
-                                    <Option value="0">待预热</Option>
-                                    <Option value="1">预热中</Option>
-                                    <Option value="3">已暂停</Option>
-                                    <Option value="4">暂停中</Option>
-                                    <Option value="2">已完成</Option>
-                                </Select>)}
-                        </FormItem>
-                        <FormItem>
-                            <Button type="primary" htmlType="submit" icon="search">查询</Button>
-                            <Button style={{ marginLeft: 8 }} icon="plus" onClick={this.onClickAddButton}>新建</Button>
-                        </FormItem>
+                    <Form onSubmit={this.handleSubmit}>
+                        <Row>
+                            <Col span={8}>
+                                <FormItem {...formItemLayout} label="客户ID">
+                                    {getFieldDecorator('accountId', {
+                                        initialValue: "",
+                                        rules: [{ required: true, message: '请输入客户ID!' }]
+                                    })(
+                                        <AutoComplete
+                                            style={{ width: 250 }}
+                                            onBlur={$.proxy(this.onAccountIdChange, this)}
+                                            onSearch={$.proxy(this.handleUserIdSearch, this)}>
+                                            {this.state.dataSourceUserId}
+                                        </AutoComplete>
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={10}>
+                                <FormItem {...formItemLayout} label={"域名"}>
+                                    {getFieldDecorator('domains', {
+                                        initialValue: [],
+                                    })(
+                                        <Select mode="multiple" allowClear={true} style={{ width: 300 }}
+                                            placeholder={'请选择'}
+                                            maxTagCount={1}
+                                            notFoundContent={<Spin size="small" />} 
+                                            filterOption={false} >
+                                            {this.state.dataSourceDomains}       
+                                        </Select>
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={6}>
+                                <FormItem {...formItemLayout} label={"任务名称"}>
+                                    {getFieldDecorator('taskName', {
+                                        initialValue: "",
+                                    })(
+                                        <Select
+                                            showSearch
+                                            allowClear={true}
+                                            style={{ width: 200 }}
+                                            optionFilterProp="children"
+                                            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                        >
+                                        {this.state.dataSourceTaskName}
+                                        </Select>
+                                    )}
+                                </FormItem>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8}>
+                                <FormItem {...formItemLayout} label={"时间"}>
+                                    {getFieldDecorator('rangeTimePicker', {
+                                            rules: [{ type: 'array', required: true, message: '请选择起止时间！' }],
+                                        })(
+                                        <RangePicker showTime={{ format: 'HH:mm', minuteStep: 30 }} 
+                                                    format="YYYY/MM/DD HH:mm" 
+                                                    disabledDate={this.disabledDate}
+                                                    disabledTime={this.disabledTime} />
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={2}></Col>
+                            <Col span={8}>
+                                <FormItem>
+                                    <Button type="primary" htmlType="submit" icon="search">查询</Button>
+                                    <Button style={{ marginLeft: 8 }} icon="reload" onClick={$.proxy(this.onClickResetButton, this)}>重置</Button>
+                                </FormItem>
+                            </Col>
+                        </Row>
                     </Form>
                 );
 
-                return HorizontalForm
+                var SearchFormView = null;
+                if (this.state.isLoadingUserId)
+                    SearchFormView = (<div style={{textAlign: "center"}}><Spin /></div>)
+                else
+                    SearchFormView = HorizontalForm;
+                return SearchFormView
             }
-        });
+        }
 
-        var PreHeatManageList = React.createClass({
-            componentDidMount: function(){
-                require(['nodeManage.model'],function(NodeManageModel){
-                    var nodeManageModel = new NodeManageModel();
-                    nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this))
-                    nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this))
-                    nodeManageModel.getNodeList({page: 1,count: 9999});
-                }.bind(this));
-            },
+        var WrappedSearchForm = Form.create()(SearchForm);
 
-            getInitialState: function () {
-                var defaultState = {
-                    nodeList: [],
-                    curViewsMark: "list",// list: 列表界面，add: 新建，edit: 编辑
-                    breadcrumbTxt: ["预热刷新", "预热管理"]
+        class LogTaskStatisticsChart extends React.Component {
+            constructor(props, context) {
+                super(props);
+                this.state = {
+                    breadcrumbTxt: ["日志管理", "任务统计"]
                 }
-                return defaultState;
-            },
+            }
 
-            onGetNodeListSuccess: function(res){
-                this.setState({
-                    nodeList: res
-                })
-            },
-
-            onGetNodeListError: function(error){
-                var msg = error ? error.message : "获取节点信息失败!"
-                Utility.alerts(msg);
-                this.setState({
-                    nodeList: []
-                })
-            },
-
-            onClickAddCallback: function(){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} isEdit={false} />);
-                    this.setState({
-                        curViewsMark: "add",
-                        breadcrumbTxt: ["预热管理", "新建"]
-                    })
-                }.bind(this));
-            },
-
-            onClickEditCallback: function(model){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} model={model} isEdit={true} />);
-                    this.setState({
-                        curViewsMark: "edit",
-                        breadcrumbTxt: ["预热管理", "编辑"]
-                    })
-                }.bind(this));
-            },
-
-            onClickViewCallback: function(model){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} model={model} isEdit={true} isView={true} />);
-                    this.setState({
-                        curViewsMark: "view",
-                        breadcrumbTxt: ["预热管理", "查看"]
-                    })
-                }.bind(this));
-            },
-
-            onClickCancelCallback: function(){
-                this.setState({
-                    curViewsMark: "list",
-                    breadcrumbTxt: ["预热刷新", "预热管理"]
-                })
-            },
-
-            render: function(){
-                var WrappedSearchForm = Form.create()(SearchForm);
-
+            render(){
                 this.queryCondition = {
                     "taskName": null,
-                    "status": null,
-                    "nodes": null,
-                    "pageNo": 1,
-                    "pageSize": 10
+                    "domains": null,
+                    "accountId": null,
+                    "startTime": null,
+                    "endTime": null
                 }
 
-                this.preHeatProps = {
+                this.ltProps = {
                     collection: this.props.collection,
-                    queryCondition: this.queryCondition,
-                    nodeList: this.state.nodeList,
-                    onClickAddCallback: $.proxy(this.onClickAddCallback, this),
-                    onClickEditCallback: $.proxy(this.onClickEditCallback, this),
-                    onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
-                    onClickViewCallback: $.proxy(this.onClickViewCallback, this)
-                }
-
-                var curView = null;
-                if (this.state.curViewsMark == "list") {
-                    curView = (
-                        <div>
-                            <WrappedSearchForm preHeatProps={this.preHeatProps} />
-                            <hr/>
-                            <Alert style={{ marginBottom: '20px' }} message="回源带宽、预热节点、进度展示当前执行批次信息，文件数、状态、成功率为当前任务整体信息" type="info" showIcon />
-                            <PreHeatTable preHeatProps={this.preHeatProps} />
-                        </div>
-                    )
-                } else if (this.state.curViewsMark == "add" ||
-                           this.state.curViewsMark == "edit" ||
-                           this.state.curViewsMark == "view" ) {
-                    curView = this.curView;
+                    queryCondition: this.queryCondition
                 }
 
                 return (     
@@ -568,27 +269,93 @@ define("preheatManage.view", ['require','exports', 'template', 'base.view', 'uti
                                 <Breadcrumb.Item>{this.state.breadcrumbTxt[1]}</Breadcrumb.Item>
                             </Breadcrumb>
                             <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
-                                {curView}
+                                <WrappedSearchForm ltProps={this.ltProps} />
+                                <hr/>
+                                <div className="charts-container">
+                                    <div className="row">
+                                      <div className="col-md-6 chart1-ctn"></div>
+                                      <div className="col-md-6 chart2-ctn"></div>
+                                    </div>
+                                </div>
                             </div>
                         </Content>
                     </Layout>
                 )
             }
-        });
+        }
 
-        var PreheatManageView = BaseView.extend({
+        var LogTaskStatisticsView = BaseView.extend({
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
-                this.$el = $(_.template('<div class="preheat-manage"></div>')());
+                this.$el = $(_.template('<div class="log-manage"></div>')());
 
-                var preHeatManageListFac = React.createFactory(PreHeatManageList);
-                var preHeatManageList = preHeatManageListFac({
+                this.collection.on("fetching", $.proxy(this.onSearch, this));
+                this.collection.on("get.chartData.success", $.proxy(this.initCharts, this));
+                this.collection.on("reset.chart", $.proxy(this.onResetChart, this))
+
+                var logTaskListFactory = React.createFactory(LogTaskStatisticsChart);
+                var logTaskList = logTaskListFactory({
                     collection: this.collection
                 });
-                ReactDOM.render(preHeatManageList, this.$el.get(0));
+                ReactDOM.render(logTaskList, this.$el.get(0));
+            },
+
+            onSearch: function(res) {
+                this.$el.find(".chart1-ctn").html(_.template(template['tpl/loading.html'])({}))
+                this.$el.find(".chart2-ctn").html(_.template(template['tpl/loading.html'])({}))
+            },
+
+            onResetChart: function() {
+                this.$el.find(".chart1-ctn").html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "No Data"
+                    }
+                }));
+                this.$el.find(".chart2-ctn").html(_.template(template['tpl/empty-2.html'])({
+                    data: {
+                        message: "No Data"
+                    }
+                }));
+            },
+
+            initCharts: function(res){
+                if (!res) {
+                    this.onResetChart();
+                    return
+                }
+                var option = {
+                    xAxis: {
+                        type: 'category',
+                        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data: [820, 932, 901, 934, 1290, 1330, 1320],
+                        type: 'line'
+                    }]
+                };
+                this.$el.find(".chart1-ctn").html('<div class="chart1" style="width: 100%;height:500px;"></div>');
+                this.$el.find(".chart2-ctn").html('<div class="chart2" style="width: 100%;height:500px;"></div>');
+                this.chart1 = echarts.init(this.$el.find(".chart1").get(0));
+                this.chart2 = echarts.init(this.$el.find(".chart2").get(0));
+                this.chart1.setOption(option);
+                this.chart2.setOption(option);
+            },
+
+            onResizeChart: function(){
+                if (this.chart1)
+                    this.chart1.resize();
+                if (this.chart2)
+                    this.chart2.resize();
+            },
+            render: function(target) {
+                this.$el.appendTo(target);
+                $(window).on('resize', $.proxy(this.onResizeChart, this));
             }
         })
-        return PreheatManageView;
+        return LogTaskStatisticsView;
     }
 );

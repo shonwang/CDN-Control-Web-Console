@@ -64,6 +64,8 @@ define("logTemplateManage.history.view", ['require','exports', 'template', 'base
             onOperateError(error){
                 if (error && error.message)
                     Utility.alerts(error.message);
+                else if (error && error.Error && error.Error.Message)
+                    Utility.alerts(error.Error.Message);
                 else
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
@@ -124,6 +126,8 @@ define("logTemplateManage.history.view", ['require','exports', 'template', 'base
                 var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！"
                 if (error && error.message)
                     msgDes = error.message;
+                else if (error && error.Error && error.Error.Message)
+                    msgDes = error.Error.Message;
 
                 this.setState({
                     isError: true,

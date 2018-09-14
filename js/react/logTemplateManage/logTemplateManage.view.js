@@ -214,7 +214,7 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
             key: 'onGetError',
             value: function onGetError(error) {
                 var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！";
-                if (error && error.message) msgDes = error.message;
+                if (error && error.message) msgDes = error.message;else if (error && error.Error && error.Error.Message) msgDes = error.Error.Message;
 
                 this.setState({
                     isError: true,
@@ -259,7 +259,7 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                             Tag,
                             { color: "green" },
                             '\u76F4\u64AD'
-                        );else if (record.status == 'DOWNLOAD') tag = React.createElement(
+                        );else if (record.productType == 'DOWNLOAD') tag = React.createElement(
                             Tag,
                             { color: "blue" },
                             '\u4E0B\u8F7D'

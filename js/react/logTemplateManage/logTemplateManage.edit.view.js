@@ -44,6 +44,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
             _this.handleSubmit = _this.handleSubmit.bind(_this);
             _this.convertEnumToShowStr = _this.convertEnumToShowStr.bind(_this);
             _this.getFieldExample = _this.getFieldExample.bind(_this);
+            _this.validateFieldSeparatorCusValue = _this.validateFieldSeparatorCusValue.bind(_this);
 
             _this.state = {
                 name: "",
@@ -348,7 +349,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                                     null,
                                     getFieldDecorator('fieldSeparatorCusValue', {
                                         initialValue: this.state.fieldSeparatorCusValue,
-                                        rules: [{ required: true, message: '请输入自定义字段间隔符!' }]
+                                        rules: [{ validator: this.validateFieldSeparatorCusValue }]
                                     })(React.createElement(Input, { style: { width: 200 },
                                         onChange: $.proxy(this.onfieldSeparatorCusValueChange, this) }))
                                 )
@@ -367,6 +368,18 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                 }
 
                 return baseInfoView;
+            }
+        }, {
+            key: 'validateFieldSeparatorCusValue',
+            value: function validateFieldSeparatorCusValue(rule, value, callback) {
+                var getFieldsValue = this.props.form.getFieldsValue;
+
+                var fieldSeparator = getFieldsValue().fieldSeparator;
+                if (fieldSeparator == "custom" && value == "") {
+                    callback('请输入自定义字段间隔符!');
+                } else {
+                    callback();
+                }
             }
         }, {
             key: 'onfieldSeparatorChange',
@@ -961,7 +974,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
         }, {
             key: 'onGetError',
             value: function onGetError(error) {
-                if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
+                if (error && error.message) Utility.alerts(error.message);else if (error && error.Error && error.Error.Message) Utility.alerts(error.Error.Message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
         }, {
             key: 'render',

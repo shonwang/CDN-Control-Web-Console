@@ -15,7 +15,7 @@ define("logTaskList.model", ['require','exports', 'utility'], function(require, 
         initialize: function(){},
 
         getTaskList: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/page",
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/page",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {
@@ -35,7 +35,7 @@ define("logTaskList.model", ['require','exports', 'utility'], function(require, 
         },
 
         getTemplateByProductType: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/select",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/select",
                 successCallback = function(res) {
                     this.trigger("template.selectList.success", res);
                 }.bind(this),
@@ -46,7 +46,7 @@ define("logTaskList.model", ['require','exports', 'utility'], function(require, 
         },
 
         addTask: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/add",
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/add",
                 successCallback = function(res) {
                     this.trigger("add.task.success", res);
                 }.bind(this),
@@ -57,7 +57,7 @@ define("logTaskList.model", ['require','exports', 'utility'], function(require, 
         },
 
         getTaskDetail: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/detail",
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/detail",
                 successCallback = function(res) {
                     this.trigger("task.detail.success", res);
                 }.bind(this),
@@ -68,7 +68,7 @@ define("logTaskList.model", ['require','exports', 'utility'], function(require, 
         },
 
         stopTask: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/stop",
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/stop",
                 successCallback = function(res) {
                     this.trigger("stop.task.success", res);
                 }.bind(this),
@@ -79,7 +79,7 @@ define("logTaskList.model", ['require','exports', 'utility'], function(require, 
         }, 
         
         deleteTask: function(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/del",
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/del",
                 successCallback = function(res) {
                     this.trigger("delete.task.success", res);
                 }.bind(this),

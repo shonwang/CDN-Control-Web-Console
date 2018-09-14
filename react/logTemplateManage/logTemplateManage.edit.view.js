@@ -26,6 +26,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 this.handleSubmit = this.handleSubmit.bind(this);
                 this.convertEnumToShowStr = this.convertEnumToShowStr.bind(this);
                 this.getFieldExample = this.getFieldExample.bind(this);
+                this.validateFieldSeparatorCusValue = this.validateFieldSeparatorCusValue.bind(this);
 
                 this.state = {
                     name: "",
@@ -225,7 +226,9 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                                     <FormItem>
                                         {getFieldDecorator('fieldSeparatorCusValue', {
                                             initialValue: this.state.fieldSeparatorCusValue,
-                                            rules: [{ required: true, message: '请输入自定义字段间隔符!' }],
+                                            rules: [
+                                                { validator: this.validateFieldSeparatorCusValue },
+                                            ],
                                         })(
                                             <Input style={{ width: 200}}
                                                    onChange={$.proxy(this.onfieldSeparatorCusValueChange, this)}/>
@@ -248,6 +251,16 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                 }
 
                 return baseInfoView
+            }
+
+            validateFieldSeparatorCusValue(rule, value, callback) {
+                const { getFieldsValue } = this.props.form;
+                const fieldSeparator = getFieldsValue().fieldSeparator
+                if (fieldSeparator == "custom" && value == ""){
+                    callback('请输入自定义字段间隔符!');
+                } else {
+                    callback();
+                }
             }
 
             onfieldSeparatorChange(value, option) {
@@ -739,6 +752,8 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
             onGetError (error){
                 if (error && error.message)
                     Utility.alerts(error.message);
+                else if (error && error.Error && error.Error.Message)
+                    Utility.alerts(error.Error.Message);
                 else
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }

@@ -40,6 +40,25 @@ define("routes.logManage", ['require', 'exports'],
                 }.bind(this));
             },
 
+            logTaskStatistics: function() {
+                require(['logTaskStatistics.view', 'logTaskStatistics.model'], function(LogTaskStatisticsView, LogTaskStatisticsModel) {
+                    this.curPage = 'logTaskStatistics';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.logTaskStatisticsModel)
+                        this.logTaskStatisticsModel = new LogTaskStatisticsModel();
+                    if (!this.logTaskStatisticsView) {
+                        var options = {
+                            collection: this.logTaskStatisticsModel
+                        };
+                        this.logTaskStatisticsView = new LogTaskStatisticsView(options);
+                        this.logTaskStatisticsView.render($('.ksc-content'));
+                    } else {
+                        this.logTaskStatisticsView.update($('.ksc-content'));
+                    }
+                    this.curView = this.logTaskStatisticsView;
+                }.bind(this));
+            },
+
         }
 
         return RouterLogManage

@@ -188,6 +188,8 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                 var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！"
                 if (error && error.message)
                     msgDes = error.message;
+                else if (error && error.Error && error.Error.Message)
+                    msgDes = error.Error.Message;
 
                 this.setState({
                     isError: true,
@@ -231,7 +233,7 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                         var tag = null;
                         if (record.productType == 'LIVE')
                             tag = (<Tag color={"green"}>直播</Tag>)
-                        else if (record.status == 'DOWNLOAD')
+                        else if (record.productType == 'DOWNLOAD')
                             tag = (<Tag color={"blue"}>下载</Tag>)
                         else
                             tag = (<Tag color={"red"}>未知</Tag>)

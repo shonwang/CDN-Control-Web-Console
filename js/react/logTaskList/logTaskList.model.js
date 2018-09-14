@@ -70,7 +70,7 @@ define("logTaskList.model", ['require', 'exports', 'utility'], function (require
         },
 
         stopTask: function stopTask(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/stop",
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/stop?id=" + args.id,
                 successCallback = function (res) {
                 this.trigger("stop.task.success", res);
             }.bind(this),
@@ -81,7 +81,7 @@ define("logTaskList.model", ['require', 'exports', 'utility'], function (require
         },
 
         deleteTask: function deleteTask(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/del",
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/del?id=" + args.id,
                 successCallback = function (res) {
                 this.trigger("delete.task.success", res);
             }.bind(this),

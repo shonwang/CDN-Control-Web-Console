@@ -180,7 +180,7 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
                     onOk: function () {
                         var ltProps = this.props.ltProps;
                         var collection = ltProps.collection;
-                        collection.stopTask({ groupId: id });
+                        collection.stopTask({ id: id });
                     }.bind(this)
                 });
             }

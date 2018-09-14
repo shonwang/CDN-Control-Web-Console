@@ -90,7 +90,7 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         },
 
         deleteTemplate: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/template/delete",
+            var url = BASE_URL + "/2018-08-30/realtimelog/template/delete?groupId=" + args.groupId,
                 successCallback = function(res) {
                     this.trigger("delete.template.success", res);
                 }.bind(this),

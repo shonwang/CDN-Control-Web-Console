@@ -245,7 +245,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                                 rules: [{ required: true, message: '请选择产品线标识!' }]
                             })(React.createElement(
                                 Select,
-                                { style: { width: 200 } },
+                                { style: { width: 200 }, disabled: this.props.isEdit },
                                 React.createElement(
                                     Option,
                                     { value: '' },

@@ -179,7 +179,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                                     initialValue: this.state.productType,
                                     rules: [{ required: true, message: '请选择产品线标识!' }]
                                 })(
-                                    <Select style={{ width: 200 }}>
+                                    <Select style={{ width: 200 }} disabled={this.props.isEdit}>
                                         <Option value="">请选择</Option> 
                                         <Option value="LIVE">直播</Option>
                                         <Option value="DOWNLOAD">点播</Option>

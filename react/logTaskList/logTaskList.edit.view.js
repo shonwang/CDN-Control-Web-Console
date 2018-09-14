@@ -1063,6 +1063,8 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
             onGetError (error){
                 if (error && error.message)
                     Utility.alerts(error.message);
+                else if (error && error.Error && error.Error.Message)
+                    Utility.alerts(error.Error.Message);
                 else
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }

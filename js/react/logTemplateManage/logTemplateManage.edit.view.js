@@ -108,7 +108,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
             value: function onGetTplDetailSuccess(res) {
                 this.groupId = res.groupId;
                 this.originCreateTime = res.groupId;
-                if (res.fieldSeparator != "    " && res.fieldSeparator != " " && res.fieldSeparator != "|") {
+                if (res.fieldSeparator != "\t" && res.fieldSeparator != " " && res.fieldSeparator != "|") {
                     res.fieldSeparatorCusValue = res.fieldSeparator;
                     res.fieldSeparator = "custom";
                 }
@@ -320,7 +320,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                                         ),
                                         React.createElement(
                                             Option,
-                                            { value: '    ' },
+                                            { value: '\\t' },
                                             'tab'
                                         ),
                                         React.createElement(

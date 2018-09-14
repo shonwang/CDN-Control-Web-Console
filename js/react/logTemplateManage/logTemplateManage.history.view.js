@@ -68,8 +68,6 @@ define("logTemplateManage.history.view", ['require', 'exports', 'template', 'bas
                 collection.off("fetching.history");
                 collection.off("publish.template.success");
                 collection.off("publish.template.error");
-                // collection.off("refresh.restart.success");
-                // collection.off("refresh.restart.error");    
             }
         }, {
             key: 'onGetOperateSuccess',

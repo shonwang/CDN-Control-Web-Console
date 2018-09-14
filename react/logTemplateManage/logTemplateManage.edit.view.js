@@ -81,7 +81,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
             onGetTplDetailSuccess(res) {
                 this.groupId = res.groupId;
                 this.originCreateTime = res.groupId;
-                if (res.fieldSeparator != "    " &&
+                if (res.fieldSeparator != "\t" &&
                     res.fieldSeparator != " " &&
                     res.fieldSeparator != "|") {
                     res.fieldSeparatorCusValue = res.fieldSeparator;
@@ -214,7 +214,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                                         })(
                                             <Select style={{ width: 200 }} onChange={$.proxy(this.onfieldSeparatorChange, this)}>
                                                 <Option value="">请选择</Option>
-                                                <Option value="    ">tab</Option>
+                                                <Option value="\t">tab</Option>
                                                 <Option value=" ">空格</Option>
                                                 <Option value="|">|</Option>
                                                 <Option value="custom">自定义</Option>

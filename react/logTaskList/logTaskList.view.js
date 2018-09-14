@@ -337,7 +337,7 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
                 var collection = ltProps.collection,
                     queryCondition = ltProps.queryCondition;
                 queryCondition.name = fieldsValue.name || null;
-                queryCondition.domain = fieldsValue.domain || null;
+                //queryCondition.domain = fieldsValue.domain || null;
                 queryCondition.templateName = fieldsValue.templateName || null;
                 queryCondition.accountId = fieldsValue.accountId || null;
                 queryCondition.backUrl = fieldsValue.backUrl || null;
@@ -379,7 +379,7 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
                                     )}
                                 </FormItem>
                             </Col>
-                            <Col span={8}>
+                            <Col span={8} style={{display:"none"}}>
                                 <FormItem {...formItemLayout} label={"域名"}>
                                     {getFieldDecorator('domain')(
                                         <Input />
@@ -477,7 +477,7 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
 
                 this.queryCondition = {
                     "name": null,
-                    "domain": null,
+                    //"domain": null,
                     "templateName": null,
                     "accountId": null,
                     "backUrl": null,

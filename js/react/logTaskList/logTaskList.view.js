@@ -386,7 +386,7 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
                 var collection = ltProps.collection,
                     queryCondition = ltProps.queryCondition;
                 queryCondition.name = fieldsValue.name || null;
-                queryCondition.domain = fieldsValue.domain || null;
+                //queryCondition.domain = fieldsValue.domain || null;
                 queryCondition.templateName = fieldsValue.templateName || null;
                 queryCondition.accountId = fieldsValue.accountId || null;
                 queryCondition.backUrl = fieldsValue.backUrl || null;
@@ -440,7 +440,7 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
                         ),
                         React.createElement(
                             Col,
-                            { span: 8 },
+                            { span: 8, style: { display: "none" } },
                             React.createElement(
                                 FormItem,
                                 _extends({}, formItemLayout, { label: "域名" }),
@@ -577,7 +577,7 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
 
                 this.queryCondition = {
                     "name": null,
-                    "domain": null,
+                    //"domain": null,
                     "templateName": null,
                     "accountId": null,
                     "backUrl": null,

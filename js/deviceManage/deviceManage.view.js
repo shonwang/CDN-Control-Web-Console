@@ -179,7 +179,9 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     this.onClickQueryButton();
                     this.queryDetailPopup.$el.modal("hide");
                 }.bind(this),
-                onHiddenCallback: function(){}
+                onHiddenCallback: function(){
+                    this.queryArgs.devicenames = null;
+                }.bind(this)
             }
             this.queryDetailPopup = new Modal(options);
         },

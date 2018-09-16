@@ -1,5 +1,25 @@
 define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
 
+    var DeviceQueryDetailView = Backbone.View.extend({
+        events: {
+            //"click .search-btn":"onClickSearch"
+        },
+
+        initialize: function(options) {
+            this.collection = options.collection;
+            this.$el = $(_.template(template['tpl/deviceManage/deviceManage.queryDetail.html'])());
+        },
+
+        getArgs: function(){
+            var queryKey = this.$el.find("#textarea-content").val();
+            return queryKey;
+        },
+
+        render: function(target) {
+            this.$el.appendTo(target);
+        }
+    });
+
     var DeviceManageView = Backbone.View.extend({
         events: {},
 
@@ -95,6 +115,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.$el.find(".opt-ctn .multi-stop").on("click", $.proxy(this.onClickMultiStop, this));
             this.$el.find(".opt-ctn .multi-delete").on("click", $.proxy(this.onClickMultiDelete, this));
 
+            this.$el.find(".btnQueryList").on("click", $.proxy(this.onClickQueryDeviceListButton, this));
+
             if (this.query !== "none"){
                 this.query = JSON.parse(this.query);
                 this.nodeId = this.query.nodeId;
@@ -117,10 +139,12 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.onClickQueryButton();
             this.collection.getDeviceTypeList();
         },
+
         onUpdateRemarkSuccess:function(){
             Utility.alerts("更新成功", "success", 5000);
             this.onClickQueryButton();
         },
+
         enterKeyBindQuery:function(){
             $(document).on('keydown', function(e){
                 if(e.keyCode == 13){
@@ -131,6 +155,35 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
         },
 
+        onClickQueryDeviceListButton: function(event){
+            if (this.queryDetailPopup) $("#" + this.queryDetailPopup.modalId).remove();
+
+            var detailView = new DeviceQueryDetailView({
+                collection: this.collection
+            });
+            var options = {
+                title: "查询设备",
+                body : detailView,
+                backdrop : 'static',
+                type     : 2,
+                onOKCallback:  function(){
+                    var options = detailView.getArgs();
+                    if(!options){
+                        this.queryArgs.devicenames = null;
+                    }
+                    else{
+                        this.queryArgs.devicenames = options.split(",");
+                    }
+                    this.isMultiIPSearch = true;
+                    this.currentPage = 1;
+                    this.onClickQueryButton();
+                    this.queryDetailPopup.$el.modal("hide");
+                }.bind(this),
+                onHiddenCallback: function(){}
+            }
+            this.queryDetailPopup = new Modal(options);
+        },
+
         onGetOperateTypeListSuccess: function(res){
             this.operateTypeList = [{
                 name: "全部",
@@ -139,15 +192,42 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             _.each(res, function(el, index){
                 this.operateTypeList.push({
                     name: el.name,
-                    value: el.id
+                    value: el.id,
+                    checked:true
                 })
-            }.bind(this))
-            Utility.initDropMenu(this.$el.find(".dropdown-reason"), this.operateTypeList, function(value) {
-                if (value !== "All")
-                    this.queryArgs.opType = parseInt(value)
-                else
-                    this.queryArgs.opType = null;
             }.bind(this));
+
+            var _list = [];
+            _.each(res, function(el, index){
+                _list.push({
+                    name: el.name,
+                    value: el.id,
+                    checked:true
+                })
+            }.bind(this));
+
+            var searchSelect = new SearchSelect({
+                containerID: this.$el.find('.dropdown-reason-list').get(0),
+                panelID: this.$el.find('#dropdown-reason-list').get(0),
+                isSingle: false,
+                openSearch: true,
+                selectWidth: 200,
+                isDataVisible: false,
+                onOk: function() {},
+                data: _list,
+                callback: function(data) {
+                    this.$el.find("#dropdown-reason-list .cur-value").html("选中个数："+data.length)
+                    this.queryArgs.opType = data;
+                }.bind(this)
+            });
+            this.$el.find("#dropdown-reason-list .cur-value").html("选中个数:"+_list.length);
+
+            // Utility.initDropMenu(this.$el.find(".dropdown-reason"), this.operateTypeList, function(value) {
+            //     if (value !== "All")
+            //         this.queryArgs.opType = parseInt(value)
+            //     else
+            //         this.queryArgs.opType = null;
+            // }.bind(this));
         },
 
         onGetError: function(error){
@@ -379,7 +459,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             this.clickStatus = status;
             this.name = name;
             var model = this.collection.get(deviceId);
-
+            var type =  model.get("type");
+            var isLive = (type == 203);
             if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
             
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
@@ -387,7 +468,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     type: 1,
                     model: model,
                     whoCallMe: 'device',
-                    operateTypeList: this.operateTypeList
+                    operateTypeList: this.operateTypeList,
+                    isLive:isLive
                 });
                 var options = {
                     title: "暂停设备",
@@ -470,7 +552,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     "ids":[this.clickDeviceId],
                     "status": this.clickStatus,
                     "reason": this.reason.opRemark,
-                    "opType": this.reason.opType  
+                    "opType": this.reason.opType,
+                    "relayStatus": this.reason.relayStatus
                  }
                 this.collection.modifyStatus(options);
                 this.nodeTipsPopup.$el.modal("hide");
@@ -648,6 +731,20 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var checkedList = this.collection.filter(function(model) {
                 return model.get("isChecked") === true;
             })
+            var firstType = checkedList[0].attributes.type;
+            var isSameType = true;
+            _.each(checkedList, function(el, index, list){
+                if(el.attributes.type != firstType){
+                    isSameType = false;
+                    return false;
+                }
+            })
+
+            if(!isSameType){
+                Utility.warning("您选择的类型不一致，不能进行批量暂停!");
+                return false;
+            }
+
             var ids = [];
             _.each(checkedList, function(el, index, list){
                 ids.push(el.attributes.id);
@@ -657,14 +754,15 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             var model = this.collection.get(checkedList[0].get("id"));
 
             if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
-            
+            var isLive = (firstType == 203);
             require(["nodeManage.operateDetail.view"], function(NodeTips) {
                 var stopNodeView = new NodeTips({
                     type: 1,
                     model: model,
                     isMulti: true,
                     whoCallMe: 'device',
-                    operateTypeList: this.operateTypeList
+                    operateTypeList: this.operateTypeList,
+                    isLive:isLive
                 });
                 var options = {
                     title: "暂停设备",

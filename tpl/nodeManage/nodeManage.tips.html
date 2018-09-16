@@ -14,6 +14,27 @@
 				</div>
 			</div>
 		<%}%>
+		<%if(data.whoCallMe == 'device' && data.isLive){%>
+			<div class="form-group dropdown-relay">
+				<label class="col-sm-2 control-label">deactive relay</label>
+				<div class="dropdown col-sm-8">
+					<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-relay" data-toggle="dropdown">
+						<span class="cur-value">否</span>
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu"></ul>
+				</div>
+			</div>
+			<div class="form-group comment-group">
+				<label for="comment" class="col-sm-2 control-label text-danger">注意</label>
+				<div class="col-sm-8 comment">
+					<div>1、暂停dns解析会同时执行cache的deactive</div>
+					<div>2、有lvs节点全部暂停解析会导致响应500，请暂停节点</div>
+					<div>3、设备网络故障必须下线relay</div>
+					<div>4、网络割接类不需要下线relay，只暂停dns解析</div>
+				</div>
+			</div>				
+		<%}%>	
 		<div class="form-group dropdown-reason">
 			<label class="col-sm-2 control-label">操作说明</label>
 			<div class="dropdown col-sm-8">

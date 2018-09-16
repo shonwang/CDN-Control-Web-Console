@@ -5,12 +5,16 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
             this.type = options.type; //type=1:暂停操作 type=2 查看详情,不可编辑
             this.model = options.model;
             this.whoCallMe = options.whoCallMe;// node: 节点管理；device：节点管理; block: 域名封禁
+            this.isLive = options.isLive || false;
             this.operateTypeList = options.operateTypeList;
             this.collection = options.collection;
+            this.parentFrom = options.parentFrom || null;
             this.args = {
                 opRemark: ''
             };
-
+            if(this.whoCallMe == 'device'){
+                this.args.relayStatus = 1;//默认否，此项是设备管理的字段，其它管理管理不需要
+            }
             var obj = {
                 type: options.type,
                 name: this.model.get("name") || "---",
@@ -18,7 +22,9 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
                 operator: this.model.attributes.operator || "---",
                 updateTime: this.model.attributes.updateTimeFormated || "---",
                 opRemark: this.model.attributes.opRemark || this.model.attributes.reason || "---",
-                placeHolder: options.placeHolder || "请输入暂停原因"
+                placeHolder: options.placeHolder || "请输入暂停原因",
+                whoCallMe:this.whoCallMe,
+                isLive:this.isLive
             };
 
             if (options.isMulti)
@@ -88,6 +94,20 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
                 this.$el.find(".dropdown-reason .cur-value").html(this.operateTypeList[0].name);
                 this.args.opType = this.operateTypeList[0].value;
             }
+            if(this.whoCallMe == 'device'){
+                this.setDeviceDelyDropdownMenu();
+            }
+        },
+
+        setDeviceDelyDropdownMenu:function(){
+            var delayList = [
+                {name:"否",value:1},
+                {name:"是",value:2}
+            ];
+            var ctn = this.$el.find(".dropdown-relay");
+            Utility.initDropMenu(ctn, delayList, function(value) {
+                this.args.relayStatus = parseInt(value)
+            }.bind(this));
         },
 
         onGetHistorySuccess: function(res){   

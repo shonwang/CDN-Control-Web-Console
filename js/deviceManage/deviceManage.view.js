@@ -775,6 +775,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                         var args = {
                             "ids": ids,
                             "status": 2,
+                            "relayStatus":options.relayStatus,
                             "reason": options.opRemark,
                             "opType": options.opType  
                          }

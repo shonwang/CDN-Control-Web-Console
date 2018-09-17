@@ -8,7 +8,6 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
             this.isLive = options.isLive || false;
             this.operateTypeList = options.operateTypeList;
             this.collection = options.collection;
-            this.parentFrom = options.parentFrom || null;
             this.args = {
                 opRemark: ''
             };

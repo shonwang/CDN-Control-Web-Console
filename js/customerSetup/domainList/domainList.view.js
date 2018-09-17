@@ -105,6 +105,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
             onClickModifyProject:function(){
                 var selectedList = this.getSelectedList();
                 if(selectedList.length == 0){
+                    Utility.alerts("请选择域名","danger",5000);
                     return false;
                 }
                 require(['domainList.project.view'], function(DomainListProjectView) {

@@ -16,77 +16,18 @@ define("logTaskStatistics.model", ['require', 'exports', 'utility'], function (r
 
         initialize: function initialize() {},
 
-        getTaskList: function getTaskList(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/page",
+        getTaskStatistics: function getTaskStatistics(args) {
+            this.param = args;
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/statistics",
                 successCallback = function (res) {
-                this.reset();
                 if (res) {
-                    _.each(res.list, function (element, index, list) {
-                        this.push(new Model(element));
-                    }.bind(this));
-                    this.total = res.totalCount;
-                    this.trigger("get.taskList.success", res.list);
+                    if (this.param.status200 === true) this.trigger("statistics.chart2.200.success", res);else if (this.param.status200 === false) this.trigger("statistics.chart2.not200.success", res);else if (this.param.status200 === null) this.trigger("statistics.chart1.success", res);
                 } else {
-                    this.trigger("get.taskList.error");
+                    this.trigger('statistics.chart.error', res);
                 }
             }.bind(this),
                 errorCallback = function (response) {
-                this.trigger('get.taskList.error', response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        getTemplateByProductType: function getTemplateByProductType(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/template/select",
-                successCallback = function (res) {
-                this.trigger("template.selectList.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('template.selectList.error', response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        addTask: function addTask(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/add",
-                successCallback = function (res) {
-                this.trigger("add.task.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('add.task.error', response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        getTaskDetail: function getTaskDetail(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/detail",
-                successCallback = function (res) {
-                this.trigger("task.detail.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('task.detail.error', response);
-            }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
-        },
-
-        stopTask: function stopTask(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/stop",
-                successCallback = function (res) {
-                this.trigger("stop.task.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('stop.task.error', response);
-            }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        deleteTask: function deleteTask(args) {
-            var url = BASE_URL + "/mock/32/2018-08-30/realtimelog/task/del",
-                successCallback = function (res) {
-                this.trigger("delete.task.success", res);
-            }.bind(this),
-                errorCallback = function (response) {
-                this.trigger('delete.task.error', response);
+                this.trigger('statistics.chart.error', response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         }

@@ -10,7 +10,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], function (require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
+define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom", "moment"], function (require, exports, template, BaseView, Utility, Antd, React, ReactDOM, moment) {
 
     var Layout = Antd.Layout,
         Content = Layout.Content,
@@ -63,6 +63,14 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
                 }.bind(this));
             }
         }, {
+            key: 'componentWillUnmount',
+            value: function componentWillUnmount() {
+                var collection = this.props.ltProps.collection;
+                collection.off("statistics.chart2.200.success");
+                collection.off("statistics.chart1.success");
+                collection.off("statistics.chart2.not200.success");
+            }
+        }, {
             key: 'onGetUserListSuccess',
             value: function onGetUserListSuccess(res) {
                 _.each(res.data, function (el) {
@@ -72,6 +80,56 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
                 this.setState({
                     isLoadingUserId: false
                 });
+
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
+                collection.on("statistics.chart2.200.success", $.proxy(this.onGetChart2Data200, this));
+                collection.on("statistics.chart1.success", $.proxy(this.onGetChart1Data, this));
+                collection.on("statistics.chart2.not200.success", $.proxy(this.onGetChart2DataNot200, this));
+            }
+        }, {
+            key: 'onGetChart1Data',
+            value: function onGetChart1Data(res) {
+                this.chart1Data = res;
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
+                this.queryCondition.status200 = true;
+                collection.getTaskStatistics(this.queryCondition);
+            }
+        }, {
+            key: 'onGetChart2Data200',
+            value: function onGetChart2Data200(res) {
+                this.chart2Data200 = res;
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
+                this.queryCondition.status200 = false;
+                collection.getTaskStatistics(this.queryCondition);
+            }
+        }, {
+            key: 'onGetChart2DataNot200',
+            value: function onGetChart2DataNot200(res) {
+                this.chart2DataNot200 = res;
+                this.queryCondition.status200 = null;
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
+                var timeDataChart1 = [],
+                    countDataChart1 = [],
+                    timeDataChart2 = [],
+                    count200DataChart2 = [],
+                    countNot200DataChart2 = [];
+                _.each(this.chart1Data, function (el) {
+                    timeDataChart1.push(el.logTimestamp);
+                    countDataChart1.push(el.count);
+                });
+                _.each(this.chart2Data200, function (el) {
+                    timeDataChart2.push(el.logTimestamp);
+                    count200DataChart2.push(el.count);
+                });
+                _.each(this.chart2DataNot200, function (el) {
+                    countNot200DataChart2.push(el.count);
+                });
+
+                collection.trigger("get.chartData.success", timeDataChart1, countDataChart1, timeDataChart2, count200DataChart2, countNot200DataChart2);
             }
         }, {
             key: 'handleSubmit',
@@ -85,20 +143,25 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
                     ltProps = this.props.ltProps,
                     collection = ltProps.collection,
                     queryCondition = ltProps.queryCondition;
-                validateFields(["accountId", "rangeTimePicker"], function (err, vals) {
-                    queryCondition.accountId = vals.accountId || null;
-                    if (fieldsValue.rangeTimePicker) {
-                        queryCondition.startTime = vals.rangeTimePicker[0].valueOf();
-                        queryCondition.endTime = vals.rangeTimePicker[1].valueOf();
-                    } else {
-                        queryCondition.startTime = null;
-                        queryCondition.endTime = null;
+                validateFields(["userId", "rangeTimePicker"], function (err, vals) {
+                    if (!err) {
+                        queryCondition.userId = vals.userId || null;
+                        if (fieldsValue.rangeTimePicker) {
+                            queryCondition.startTime = vals.rangeTimePicker[0].valueOf();
+                            queryCondition.endTime = vals.rangeTimePicker[1].valueOf();
+                        } else {
+                            queryCondition.startTime = null;
+                            queryCondition.endTime = null;
+                        }
+                        queryCondition.taskName = fieldsValue.taskName || null;
+                        queryCondition.domains = fieldsValue.domains || null;
+                        console.log(queryCondition);
+                        queryCondition.userId = "yy_custom";
+                        this.queryCondition = queryCondition;
+                        collection.getTaskStatistics(queryCondition);
+                        collection.trigger("fetching");
                     }
-                    queryCondition.taskName = fieldsValue.taskName || null;
-                    queryCondition.domains = fieldsValue.domains || null;
-                    console.log(queryCondition);
-                    collection.trigger("fetching", queryCondition);
-                });
+                }.bind(this));
             }
         }, {
             key: 'onClickResetButton',
@@ -107,7 +170,7 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
 
                 var ltProps = this.props.ltProps,
                     collection = ltProps.collection;
-                setFieldsValue({ "accountId": "" });
+                setFieldsValue({ "userId": "" });
                 setFieldsValue({ "domains": [] });
                 setFieldsValue({ "taskName": "" });
                 setFieldsValue({ "rangeTimePicker": null });
@@ -182,6 +245,11 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
                 if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
         }, {
+            key: 'disabledDate',
+            value: function disabledDate(current) {
+                return current && current < moment().add(-90, 'day');
+            }
+        }, {
             key: 'render',
             value: function render() {
                 var getFieldDecorator = this.props.form.getFieldDecorator;
@@ -205,7 +273,7 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
                             React.createElement(
                                 FormItem,
                                 _extends({}, formItemLayout, { label: '\u5BA2\u6237ID' }),
-                                getFieldDecorator('accountId', {
+                                getFieldDecorator('userId', {
                                     initialValue: "",
                                     rules: [{ required: true, message: '请输入客户ID!' }]
                                 })(React.createElement(
@@ -334,10 +402,11 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
             value: function render() {
                 this.queryCondition = {
                     "taskName": null,
-                    "domains": null,
-                    "accountId": null,
+                    "domain": null,
+                    "userId": null,
                     "startTime": null,
-                    "endTime": null
+                    "endTime": null,
+                    "status200": null
                 };
 
                 this.ltProps = {
@@ -396,7 +465,8 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
             this.$el = $(_.template('<div class="log-manage"></div>')());
 
             this.collection.on("fetching", $.proxy(this.onSearch, this));
-            this.collection.on("get.chartData.success", $.proxy(this.initCharts, this));
+            this.collection.on("get.chartData.success", $.proxy(this.initChart1, this));
+            this.collection.on("statistics.chart.error", $.proxy(this.onGetError, this));
             this.collection.on("reset.chart", $.proxy(this.onResetChart, this));
 
             var logTaskListFactory = React.createFactory(LogTaskStatisticsChart);
@@ -412,6 +482,12 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
         },
 
         onResetChart: function onResetChart() {
+            if (this.chart1) {
+                this.chart1.dispose();
+            }
+            if (this.chart2) {
+                this.chart2.dispose();
+            }
             this.$el.find(".chart1-ctn").html(_.template(template['tpl/empty-2.html'])({
                 data: {
                     message: "No Data"
@@ -424,29 +500,234 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
             }));
         },
 
-        initCharts: function initCharts(res) {
-            if (!res) {
-                this.onResetChart();
-                return;
-            }
+        initChart1: function initChart1(timeDataChart1, countDataChart1, timeDataChart2, count200DataChart2, countNot200DataChart2) {
             var option = {
-                xAxis: {
-                    type: 'category',
-                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                title: {
+                    text: '---',
+                    show: false
                 },
-                yAxis: {
-                    type: 'value'
+                backgroundColor: "#fcfcfc",
+                color: ["#56aff0"],
+                tooltip: {
+                    backgroundColor: "#fff",
+                    borderColor: "#bfbfbf",
+                    borderWidth: 1,
+                    extraCssText: 'box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3)',
+                    textStyle: {
+                        color: "#000"
+                    },
+                    trigger: 'axis',
+                    formatter: function formatter(param) {
+                        var arr = [];
+                        arr.push('<div>时间：' + new Date(param[0].name).format("yyyy年MM月dd日 hh:mm") + '</div>');
+                        arr.push('<div class="tooltip-content-value">总日指数：' + param[0].value + '</div>');
+                        return arr.join('');
+                    }
+                },
+                legend: {
+                    data: '---',
+                    top: 10
+                },
+                toolbox: {
+                    show: false
+                },
+                grid: {
+                    left: '50',
+                    right: '50',
+                    top: "50",
+                    containLabel: true,
+                    borderColor: "#ccc",
+                    show: true,
+                    borderWidth: 1
+                },
+                xAxis: [{
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: "#ccc",
+                            type: "solid"
+                        }
+                    },
+                    type: 'category',
+                    boundaryGap: false,
+                    data: timeDataChart1,
+                    axisTick: {
+                        show: true
+                    },
+                    splitLine: {
+                        show: true
+                    },
+                    axisLabel: {
+                        formatter: function formatter(value) {
+                            return new Date(value).format("MM/dd hh:mm");
+                        },
+                        textStyle: {
+                            color: "#000"
+                        }
+                    }
+                }],
+                yAxis: [{
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: "#ccc",
+                            type: "solid"
+                        }
+                    },
+                    type: 'value',
+                    axisTick: {
+                        show: false
+                    },
+                    splitLine: {
+                        show: true
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: "#000"
+                        }
+                    }
+                }],
+                dataZoom: {
+                    show: true,
+                    start: 0,
+                    labelFormatter: function labelFormatter(value) {
+                        return new Date(timeDataChart1[value]).format("MM/dd\nhh:mm");
+                    }
                 },
                 series: [{
-                    data: [820, 932, 901, 934, 1290, 1330, 1320],
-                    type: 'line'
+                    name: "",
+                    type: 'line',
+                    data: countDataChart1,
+                    smooth: true,
+                    itemStyle: {
+                        normal: {
+                            areaStyle: {
+                                type: 'default',
+                                color: 'rgba(40,154,244,0.5)'
+                            }
+                        }
+                    }
                 }]
             };
             this.$el.find(".chart1-ctn").html('<div class="chart1" style="width: 100%;height:500px;"></div>');
-            this.$el.find(".chart2-ctn").html('<div class="chart2" style="width: 100%;height:500px;"></div>');
+            if (this.chart1) {
+                this.chart1.dispose();
+            }
             this.chart1 = echarts.init(this.$el.find(".chart1").get(0));
-            this.chart2 = echarts.init(this.$el.find(".chart2").get(0));
             this.chart1.setOption(option);
+
+            this.initChart2(timeDataChart2, count200DataChart2, countNot200DataChart2);
+        },
+
+        initChart2: function initChart2(timeDataChart2, count200DataChart2, countNot200DataChart2) {
+            var option = {
+                title: {
+                    show: false
+                },
+                backgroundColor: "#fcfcfc",
+                color: ["#289af4", "#f64686"],
+                tooltip: {
+                    backgroundColor: "#fff",
+                    borderColor: "#bfbfbf",
+                    borderWidth: 1,
+                    extraCssText: 'box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3)',
+                    textStyle: {
+                        color: "#000"
+                    },
+                    trigger: 'axis',
+                    formatter: function formatter(params) {
+                        var arr = [];
+                        var time = new Date(params[0].name).format("yyyy/MM/dd hh:mm");
+                        arr.push('<div>' + time + '</div>');
+                        for (var i = 0; i < params.length; i++) {
+                            var _name = params[i].seriesName;
+                            var value = params[i].value;
+                            arr.push('<div class="tooltip-content-value">' + _name + "：" + value + '</div>');
+                        }
+                        return arr.join('');
+                    }
+                },
+                legend: {
+                    data: ["200", "非200"],
+                    top: 10
+                },
+                toolbox: {
+                    show: false
+                },
+                grid: {
+                    left: '50',
+                    right: '50',
+                    top: "50",
+                    containLabel: true,
+                    borderColor: "#ccc",
+                    show: true,
+                    borderWidth: 1
+                },
+                dataZoom: {
+                    show: true,
+                    start: 0,
+                    labelFormatter: function labelFormatter(value) {
+                        return new Date(timeDataChart2[value]).format("MM/dd\nhh:mm");
+                    }
+                },
+                xAxis: [{
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: "#ccc",
+                            type: "solid"
+                        }
+                    },
+                    type: 'category',
+                    boundaryGap: false,
+                    data: timeDataChart2,
+                    axisTick: { show: true },
+                    splitLine: {
+                        show: true
+                    },
+                    axisLabel: {
+                        formatter: function formatter(value) {
+                            return new Date(value).format("MM/dd hh:mm");
+                        },
+                        textStyle: {
+                            color: "#000"
+                        }
+                    }
+                }],
+                yAxis: [{
+                    axisLine: {
+                        show: true,
+                        lineStyle: {
+                            color: "#ccc",
+                            type: "solid"
+                        }
+                    },
+                    type: 'value',
+                    axisTick: { show: false },
+                    splitLine: {
+                        show: true
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            color: "#000"
+                        }
+                    }
+                }],
+                series: [{
+                    data: count200DataChart2,
+                    type: "line",
+                    name: "200"
+                }, {
+                    data: countNot200DataChart2,
+                    type: "line",
+                    name: "非200"
+                }]
+            };
+            this.$el.find(".chart2-ctn").html('<div class="chart2" style="width: 100%;height:500px;"></div>');
+            if (this.chart2) {
+                this.chart2.dispose();
+            }
+            this.chart2 = echarts.init(this.$el.find(".chart2").get(0));
             this.chart2.setOption(option);
         },
 
@@ -454,6 +735,7 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
             if (this.chart1) this.chart1.resize();
             if (this.chart2) this.chart2.resize();
         },
+
         render: function render(target) {
             this.$el.appendTo(target);
             $(window).on('resize', $.proxy(this.onResizeChart, this));

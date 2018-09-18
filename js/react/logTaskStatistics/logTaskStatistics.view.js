@@ -155,7 +155,7 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
                         }
                         queryCondition.taskName = fieldsValue.taskName || null;
                         queryCondition.domains = fieldsValue.domains || null;
-                        console.log(queryCondition);
+
                         queryCondition.userId = "yy_custom";
                         this.queryCondition = queryCondition;
                         collection.getTaskStatistics(queryCondition);
@@ -484,9 +484,11 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
         onResetChart: function onResetChart() {
             if (this.chart1) {
                 this.chart1.dispose();
+                this.chart1 = null;
             }
             if (this.chart2) {
                 this.chart2.dispose();
+                this.chart2 = null;
             }
             this.$el.find(".chart1-ctn").html(_.template(template['tpl/empty-2.html'])({
                 data: {
@@ -612,6 +614,7 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
             this.$el.find(".chart1-ctn").html('<div class="chart1" style="width: 100%;height:500px;"></div>');
             if (this.chart1) {
                 this.chart1.dispose();
+                this.chart1 = null;
             }
             this.chart1 = echarts.init(this.$el.find(".chart1").get(0));
             this.chart1.setOption(option);
@@ -726,6 +729,7 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
             this.$el.find(".chart2-ctn").html('<div class="chart2" style="width: 100%;height:500px;"></div>');
             if (this.chart2) {
                 this.chart2.dispose();
+                this.chart2 = null;
             }
             this.chart2 = echarts.init(this.$el.find(".chart2").get(0));
             this.chart2.setOption(option);

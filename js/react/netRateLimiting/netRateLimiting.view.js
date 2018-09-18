@@ -8,7 +8,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], function (require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
+define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], function (require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
 
     var Layout = Antd.Layout,
         Content = Layout.Content,
@@ -442,155 +442,8 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         return PreHeatTable;
     }(React.Component);
 
-    var SearchForm = React.createClass({
-        displayName: 'SearchForm',
-
-
-        getInitialState: function getInitialState() {
-            var defaultState = {
-                dataSource: []
-            };
-            return defaultState;
-        },
-
-        handleSearch: function handleSearch(value) {
-            var preHeatProps = this.props.preHeatProps;
-            var nodeArray = [],
-                nodeList = preHeatProps.nodeList;
-            if (value && nodeList) {
-                nodeArray = _.filter(nodeList, function (el) {
-                    return el.name.indexOf(value) > -1 || el.chName.indexOf(value) > -1;
-                }.bind(this)).map(function (el) {
-                    return React.createElement(
-                        Option,
-                        { key: el.id },
-                        el.name
-                    );
-                });
-            }
-
-            this.setState({
-                dataSource: nodeArray
-            });
-        },
-
-        handleSubmit: function handleSubmit(e) {
-            e.preventDefault();
-            var fieldsValue = this.props.form.getFieldsValue(),
-                preHeatProps = this.props.preHeatProps;
-            var collection = preHeatProps.collection,
-                queryCondition = preHeatProps.queryCondition,
-                nodes = [];
-            if (fieldsValue.nodeNames && fieldsValue.nodeNames.length > 0) {
-                _.each(fieldsValue.nodeNames, function (el) {
-                    nodes.push(el.label);
-                });
-                nodes = nodes.join(";");
-            } else {
-                nodes = null;
-            }
-            queryCondition.taskName = fieldsValue.preheatNames || null;
-            queryCondition.nodes = nodes;
-            queryCondition.status = fieldsValue.preheatStatus == "all" ? null : parseInt(fieldsValue.preheatStatus);
-            collection.trigger("fetching", queryCondition);
-        },
-
-        onClickAddButton: function onClickAddButton() {
-            var onClickAddCallback = this.props.preHeatProps.onClickAddCallback;
-            onClickAddCallback && onClickAddCallback();
-        },
-
-        render: function render() {
-            var getFieldDecorator = this.props.form.getFieldDecorator;
-            var dataSource = this.state.dataSource;
-
-            var preHeatProps = this.props.preHeatProps;
-            var nodeList = preHeatProps.nodeList;
-            //0:待预热 1:预热中 2:已完成 3:已暂停 4：暂停中
-            var HorizontalForm = React.createElement(
-                Form,
-                { layout: 'inline', onSubmit: this.handleSubmit },
-                React.createElement(
-                    FormItem,
-                    { label: "名称" },
-                    getFieldDecorator('preheatNames')(React.createElement(Input, null))
-                ),
-                React.createElement(
-                    FormItem,
-                    { label: "节点" },
-                    getFieldDecorator('nodeNames')(React.createElement(
-                        Select,
-                        { mode: 'multiple', allowClear: true,
-                            style: { width: 300 },
-                            labelInValue: true,
-                            notFoundContent: nodeList.length == 0 ? React.createElement(Spin, { size: 'small' }) : '请输入节点关键字',
-                            filterOption: false,
-                            onSearch: $.proxy(this.handleSearch, this) },
-                        dataSource
-                    ))
-                ),
-                React.createElement(
-                    FormItem,
-                    { label: '\u72B6\u6001' },
-                    getFieldDecorator('preheatStatus', {
-                        "initialValue": "all"
-                    })(React.createElement(
-                        Select,
-                        null,
-                        React.createElement(
-                            Option,
-                            { value: 'all' },
-                            '\u5168\u90E8'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '0' },
-                            '\u5F85\u9884\u70ED'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '1' },
-                            '\u9884\u70ED\u4E2D'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '3' },
-                            '\u5DF2\u6682\u505C'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '4' },
-                            '\u6682\u505C\u4E2D'
-                        ),
-                        React.createElement(
-                            Option,
-                            { value: '2' },
-                            '\u5DF2\u5B8C\u6210'
-                        )
-                    ))
-                ),
-                React.createElement(
-                    FormItem,
-                    null,
-                    React.createElement(
-                        Button,
-                        { type: 'primary', htmlType: 'submit', icon: 'search' },
-                        '\u67E5\u8BE2'
-                    ),
-                    React.createElement(
-                        Button,
-                        { style: { marginLeft: 8 }, icon: 'plus', onClick: this.onClickAddButton },
-                        '\u65B0\u5EFA'
-                    )
-                )
-            );
-
-            return HorizontalForm;
-        }
-    });
-
-    var PreHeatManageList = React.createClass({
-        displayName: 'PreHeatManageList',
+    var NetRateLimitingList = React.createClass({
+        displayName: 'NetRateLimitingList',
 
         componentDidMount: function componentDidMount() {
             require(['nodeManage.model'], function (NodeManageModel) {
@@ -662,8 +515,6 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         },
 
         render: function render() {
-            var WrappedSearchForm = Form.create()(SearchForm);
-
             this.queryCondition = {
                 "taskName": null,
                 "status": null,
@@ -687,8 +538,6 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                 curView = React.createElement(
                     'div',
                     null,
-                    React.createElement(WrappedSearchForm, { preHeatProps: this.preHeatProps }),
-                    React.createElement('hr', null),
                     React.createElement(Alert, { style: { marginBottom: '20px' }, message: '\u56DE\u6E90\u5E26\u5BBD\u3001\u9884\u70ED\u8282\u70B9\u3001\u8FDB\u5EA6\u5C55\u793A\u5F53\u524D\u6267\u884C\u6279\u6B21\u4FE1\u606F\uFF0C\u6587\u4EF6\u6570\u3001\u72B6\u6001\u3001\u6210\u529F\u7387\u4E3A\u5F53\u524D\u4EFB\u52A1\u6574\u4F53\u4FE1\u606F', type: 'info', showIcon: true }),
                     React.createElement(PreHeatTable, { preHeatProps: this.preHeatProps })
                 );
@@ -716,6 +565,7 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
                             this.state.breadcrumbTxt[1]
                         )
                     ),
+                    React.createElement('div', { className: 'opt-ctn well' }),
                     React.createElement(
                         'div',
                         { style: { background: '#fff', padding: 24, minHeight: 280 } },
@@ -726,18 +576,31 @@ define("preheatManage.view", ['require', 'exports', 'template', 'base.view', 'ut
         }
     });
 
-    var PreheatManageView = BaseView.extend({
-        initialize: function initialize(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.$el = $(_.template('<div class="preheat-manage"></div>')());
+    var NetRateLimitingView = BaseView.extend({
 
-            var preHeatManageListFac = React.createFactory(PreHeatManageList);
-            var preHeatManageList = preHeatManageListFac({
+        initialize: function initialize(options) {
+            this.collection = options.collection;
+            this.options = options;
+
+            this.$el = $(_.template('<div class="net-rate-limiting"><div class="list"></div></div>')());
+
+            var clientInfo = JSON.parse(options.query);
+            this.userInfo = {
+                clientName: clientInfo.clientName,
+                uid: clientInfo.uid
+            };
+
+            var NetRateLimitingListFac = React.createFactory(NetRateLimitingList);
+            var netRateLimitingList = NetRateLimitingListFac({
                 collection: this.collection
             });
-            ReactDOM.render(preHeatManageList, this.$el.get(0));
+            ReactDOM.render(netRateLimitingList, this.$el.find(".list").get(0));
+
+            this.optHeader = $(_.template(template['tpl/customerSetup/customerSetup.header.html'])({
+                data: this.userInfo
+            }));
+            this.optHeader.appendTo(this.$el.find(".opt-ctn"));
         }
     });
-    return PreheatManageView;
+    return NetRateLimitingView;
 });

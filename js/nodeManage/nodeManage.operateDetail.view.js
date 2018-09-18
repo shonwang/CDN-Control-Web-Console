@@ -11,7 +11,7 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
             this.args = {
                 opRemark: ''
             };
-            if(this.whoCallMe == 'device'){
+            if(this.whoCallMe == 'device' && this.isLive){
                 this.args.relayStatus = 1;//默认否，此项是设备管理的字段，其它管理管理不需要
             }
             var obj = {

@@ -294,8 +294,8 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             },
 
             onClickAddCallback: function(){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView limitProps={this.limitProps} isEdit={false} />);
+                require(['preheatManage.edit.view'],function(NetRateLimitingEditView){
+                    this.curView = (<NetRateLimitingEditView limitProps={this.limitProps} isEdit={false} />);
                     this.setState({
                         curViewsMark: "add",
                         breadcrumbTxt: ["全局限速", "新建"]
@@ -304,8 +304,8 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             },
 
             onClickEditCallback: function(model){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView limitProps={this.limitProps} model={model} isEdit={true} />);
+                require(['preheatManage.edit.view'],function(NetRateLimitingEditView){
+                    this.curView = (<NetRateLimitingEditView limitProps={this.limitProps} model={model} isEdit={true} />);
                     this.setState({
                         curViewsMark: "edit",
                         breadcrumbTxt: ["全局限速", "编辑"]
@@ -388,7 +388,16 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                     data: this.userInfo
                 }));
                 this.optHeader.appendTo(this.$el.find(".opt-ctn"));                
-            }
+            },
+
+            update: function(query, target) {
+                this.options.query = query;
+                this.collection.off();
+                this.collection.reset();
+                this.$el.remove();
+                this.initialize(this.options);
+                this.render(target);
+            },
         });
         return NetRateLimitingView;
     });

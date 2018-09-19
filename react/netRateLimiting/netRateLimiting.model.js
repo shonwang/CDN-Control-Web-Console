@@ -35,15 +35,15 @@ define("netRateLimiting.model", ['require', 'exports', 'utility'], function(requ
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        taskModify: function(args) {
-            var url = BASE_URL + "/refresh/task/modify",
+        getLimitRateDetailByGroupId: function(args) {
+            var url = BASE_URL + "/channelManager/globalLimitRate/getLimitRateDetailByGroupId",
                 successCallback = function(res) {
-                    this.trigger("refresh.commit.success", res);
+                    this.trigger("get.detail.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
-                    this.trigger('refresh.commit.error', response);
+                    this.trigger('get.detail.error', response);
                 }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }, 
 
         taskPause: function(args) {

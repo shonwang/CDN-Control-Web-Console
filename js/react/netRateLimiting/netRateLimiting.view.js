@@ -89,9 +89,9 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                 this.setState({
                     isFetching: true
                 });
-                collection.gettAllLimitRateGroup(queryCondition);
+                //collection.gettAllLimitRateGroup(queryCondition)
 
-                //this.onGetAllLimitRateGroupSuccess();
+                this.onGetAllLimitRateGroupSuccess();
             }
         }, {
             key: 'onGetAllLimitRateGroupSuccess',
@@ -117,17 +117,6 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                     "domains": ["jiasutest1.ksyunacc.com"]
                 }];
 
-                // this.props.limitProps.collection.each((model) => {
-                //     var obj = Object.assign({}, model.attributes),
-                //         nodeName = [];
-                //     _.each(obj.batchTimeBandwidth, (batch)=>{
-                //         batch.domainsNameArray = batch.nodes.split(";");
-                //         nodeName = nodeName.concat(batch.domainsNameArray);
-                //     })
-                //     obj.nodeName = nodeName;
-                //     data.push(obj)
-                // })
-                // console.log(data)
                 this.setState({
                     data: data,
                     isFetching: false
@@ -362,8 +351,8 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
         },
 
         onClickAddCallback: function onClickAddCallback() {
-            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { limitProps: this.limitProps, isEdit: false });
+            require(['preheatManage.edit.view'], function (NetRateLimitingEditView) {
+                this.curView = React.createElement(NetRateLimitingEditView, { limitProps: this.limitProps, isEdit: false });
                 this.setState({
                     curViewsMark: "add",
                     breadcrumbTxt: ["全局限速", "新建"]
@@ -372,8 +361,8 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
         },
 
         onClickEditCallback: function onClickEditCallback(model) {
-            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { limitProps: this.limitProps, model: model, isEdit: true });
+            require(['preheatManage.edit.view'], function (NetRateLimitingEditView) {
+                this.curView = React.createElement(NetRateLimitingEditView, { limitProps: this.limitProps, model: model, isEdit: true });
                 this.setState({
                     curViewsMark: "edit",
                     breadcrumbTxt: ["全局限速", "编辑"]
@@ -473,6 +462,15 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                 data: this.userInfo
             }));
             this.optHeader.appendTo(this.$el.find(".opt-ctn"));
+        },
+
+        update: function update(query, target) {
+            this.options.query = query;
+            this.collection.off();
+            this.collection.reset();
+            this.$el.remove();
+            this.initialize(this.options);
+            this.render(target);
         }
     });
     return NetRateLimitingView;

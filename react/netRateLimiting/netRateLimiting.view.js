@@ -5,28 +5,23 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             Content = Layout.Content,
             Breadcrumb = Antd.Breadcrumb,
             Button = Antd.Button,
-            Input = Antd.Input,
-            Form = Antd.Form,
-            FormItem = Form.Item,
-            Select = Antd.Select,
-            Option = Select.Option,
-            AutoComplete = Antd.AutoComplete,
             Table = Antd.Table,
-            Alert = Antd.Alert,
             Tag = Antd.Tag,
             Popover = Antd.Popover,
-            Badge = Antd.Badge,
+            Modal = Antd.Modal,
             Icon = Antd.Icon,
             Spin = Antd.Spin,
-            Tooltip = Antd.Tooltip;
+            Alert = Antd.Alert,
+            Tooltip = Antd.Tooltip,
+            confirm = Modal.confirm;
 
-        class PreHeatTable extends React.Component {
+        class LimitGroupTable extends React.Component {
             constructor(props, context) {
                 super(props);
-                this.onChangePage = this.onChangePage.bind(this);
+                //this.onChangePage = this.onChangePage.bind(this);
                 this.handleEditClick = this.handleEditClick.bind(this);
-                this.handlePauseClick = this.handlePauseClick.bind(this);
-                this.handleRestartClick = this.handleRestartClick.bind(this);
+                this.handleDeleteClick = this.handleDeleteClick.bind(this);
+                this.onGetAllLimitRateGroupSuccess = this.onGetAllLimitRateGroupSuccess.bind(this);
                 this.state = {
                     data: [],
                     isError: false,
@@ -35,34 +30,30 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             }
 
             componentDidMount() {
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                collection.on("get.preheat.success", $.proxy(this.onGetPreHeatListSuccess, this));
-                collection.on("get.preheat.error", $.proxy(this.onGetError, this));
-                collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));   
+                var limitProps = this.props.limitProps;
+                var collection = limitProps.collection,
+                    queryCondition = limitProps.queryCondition;
+                collection.on("get.allLimit.success", $.proxy(this.onGetAllLimitRateGroupSuccess, this));
+                collection.on("get.allLimit.error", $.proxy(this.onGetError, this));
+                collection.on("fetching", $.proxy(this.onFetchinAllLimitRateGroup, this));   
                 collection.trigger("fetching", queryCondition);
-                collection.on("refresh.pause.success", $.proxy(this.onGetOperateSuccess, this, "暂停"));
-                collection.on("refresh.pause.error", $.proxy(this.onOperateError, this));
-                collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
-                collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
+                collection.on("delete.limit.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
+                collection.on("delete.limit.error", $.proxy(this.onOperateError, this));
             }
 
             componentWillUnmount() {
-                var collection = this.props.preHeatProps.collection;
-                collection.off("get.preheat.success");
-                collection.off("get.preheat.error");
+                var collection = this.props.limitProps.collection;
+                collection.off("get.allLimit.success");
+                collection.off("get.allLimit.error");
                 collection.off("fetching");
-                collection.off("refresh.pause.success");
-                collection.off("refresh.pause.error");
-                collection.off("refresh.restart.success");
-                collection.off("refresh.restart.error");    
+                collection.off("delete.limit.success");
+                collection.off("delete.limit.error");   
             }
 
             onGetOperateSuccess(msg){
                 Utility.alerts(msg + "成功!", "success", 2000);
-                const preHeatProps = this.props.preHeatProps;
-                const { collection, queryCondition } = preHeatProps;
+                const limitProps = this.props.limitProps;
+                const { collection, queryCondition } = limitProps;
                 collection.trigger("fetching", queryCondition);
             }
 
@@ -73,27 +64,40 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
 
-            onFetchingPreHeatList(queryCondition){
-                var collection = this.props.preHeatProps.collection;
+            onFetchinAllLimitRateGroup(queryCondition){
+                var collection = this.props.limitProps.collection;
                 this.setState({
                     isFetching: true
                 })
-                collection.getPreheatList(queryCondition)
+                //collection.gettAllLimitRateGroup(queryCondition)
+
+                this.onGetAllLimitRateGroupSuccess();
             }
 
-            onGetPreHeatListSuccess() {
-                var data = [];
-                this.props.preHeatProps.collection.each((model) => {
-                    var obj = Object.assign({}, model.attributes),
-                        nodeName = [];
-                    _.each(obj.batchTimeBandwidth, (batch)=>{
-                        batch.nodeNameArray = batch.nodes.split(";");
-                        nodeName = nodeName.concat(batch.nodeNameArray);
-                    })
-                    obj.nodeName = nodeName;
-                    data.push(obj)
-                })
-                console.log(data)
+            onGetAllLimitRateGroupSuccess() {
+                //var data = [];
+
+                var data = [{
+                    "id": 19,
+                    "quotaUnits": "Gbps",
+                    "totalQuota": 100,
+                    "userId": 1241,
+                    "applicationType": 1,
+                    "creater": "1234",
+                    "createTime": 1537152256000,
+                    "updateTime": 1537152820000,
+                    "source": 2,
+                    "remark": "",
+                    "lastModifier": "",
+                    "defaultMode": 1,
+                    "defaultModeString": null,
+                    "active": "-1",
+                    "domainCount": 1,
+                    "domains": [
+                        "jiasutest1.ksyunacc.com"
+                    ]
+                }]
+
                 this.setState({
                     data: data,
                     isFetching: false
@@ -101,15 +105,15 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             }
 
             onChangePage(page, pageSize){
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
+                var limitProps = this.props.limitProps;
+                var collection = limitProps.collection,
+                    queryCondition = limitProps.queryCondition;
                 queryCondition.pageNo = page;
                 queryCondition.pageSize = pageSize;
                 collection.trigger("fetching", queryCondition);
             }
 
-            handlePauseClick(event) {
+            handleDeleteClick(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -118,23 +122,17 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskPause({taskId: id});
-            }
-
-            handleRestartClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskRestart({taskId: id});
+                confirm({
+                    title: '你确定要删除吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '算了，不删了',
+                    onOk: function(){
+                        var limitProps = this.props.limitProps,
+                            collection = limitProps.collection;
+                        collection.delLimitRateByGroupId({groupId: id})
+                    }.bind(this)
+                });
             }
 
             handleEditClick(event) {
@@ -149,24 +147,8 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
                     }.bind(this))
-                var onClickEditCallback = this.props.preHeatProps.onClickEditCallback;
+                var onClickEditCallback = this.props.limitProps.onClickEditCallback;
                 onClickEditCallback&&onClickEditCallback(model)
-            }
-
-            handleViewClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.data, function(obj){
-                        return obj.id == id
-                    }.bind(this))
-                var onClickViewCallback = this.props.preHeatProps.onClickViewCallback;
-                onClickViewCallback&&onClickViewCallback(model)
             }
 
             onGetError(error) {
@@ -199,101 +181,59 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                         />
                     );
                 }
-
                 const columns = [{
-                    title: '名称',
-                    dataIndex: 'taskName',
-                    key: 'taskName',
-                    fixed: 'left',
-                    width: 200,
-                    render: (text, record) => {
-                        return  (
-                                <Tooltip placement="bottom" title={"查看详情"}>
-                                    <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleViewClick(e)}>
-                                        {text}
-                                    </a>
-                                </Tooltip>
-                            )
-                    }
+                    title: 'ID',
+                    dataIndex: 'id',
+                    key: 'id'
                 },{
-                    title: '回源带宽',
-                    dataIndex: 'currentBandwidth',
-                    key: 'currentBandwidth',
-                },{
-                    title: '预热节点',
-                    dataIndex: 'nodeName',
-                    key: 'nodeName',
+                    title: '限速域名',
+                    dataIndex: 'domains',
+                    key: 'domains',
                     render: (text, record) => {
                         const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
                         let content, temp = [];
-                        let random, nodeNameArray = record.currentNodes.split(";");
-                        for(var i = 0; i < nodeNameArray.length; i++) {
+                        let random, domainsArray = record.domains;
+                        for(var i = 0; i < domainsArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length)
-                            temp.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{nodeNameArray[i]}</Tag>))
+                            temp.push((<Tag color={colors[random]} key={i} style={{marginBottom: '5px'}}>{domainsArray[i]}</Tag>))
                         }
                         content = <div>{temp}</div>
                         return (
                             <div>
-                                <span>{nodeNameArray[0]}...</span>
+                                <span>{domainsArray[0]}...</span>
                                 <span>
-                                    <Popover content={content} title="节点详情" trigger="click" placement="right" overlayStyle={{width: '300px'}}>
-                                        <Badge count={nodeNameArray.length} style={{ backgroundColor: '#52c41a' }}>
-                                            <a href="javascript:void(0)" id={record.id}>more</a>
-                                        </Badge>
+                                    <Popover content={content} title="域名详情" trigger="click" placement="right" overlayStyle={{width: '300px'}}>
+                                        <a href="javascript:void(0)" id={record.id}>more</a>
                                     </Popover>
                                 </span>
                             </div>)
                     }
                 },{
-                    title: '文件数',
-                    dataIndex: 'preloadUrlCount',
-                    key: 'preloadUrlCount',
+                    title: '域名个数',
+                    dataIndex: 'domainCount',
+                    key: 'domainCount',
                 },{
-                    title: '当前预热批次',
-                    dataIndex: 'currentBatch',
-                    key: 'currentBatch',
-                    render: (text, record) => (text + "/" + record.batchTimeBandwidth.length)
-                },{
-                    title: '进度',
-                    dataIndex: 'progress',
-                    key: 'progress',
-                },{
-                    title: '状态',
-                    dataIndex: 'status',
-                    key: 'status',
+                    title: '阈值',
+                    dataIndex: 'totalQuota',
+                    key: 'totalQuota',
                     render: (text, record) => {
-                        var tag = null;
-                        if (record.status == 3)
-                            tag = (<Tag color={"red"}>已暂停</Tag>)
-                        else if (record.status == 2)
-                            tag = <Tag color={"green"}>已完成</Tag>
-                        else if (record.status == 0)
-                            tag = <Tag color={"blue"}>待预热</Tag>
-                        else if (record.status == 1)
-                            tag = <Tag color={"orange"}>预热中</Tag>
-                        else if (record.status == 4)
-                            tag = <Tag color={"purple"}>暂停中</Tag>
-                        return tag
+                        return record.totalQuota + record.quotaUnits
                     }
                 },{
-                    title: '成功率',
-                    dataIndex: 'successRate',
-                    key: 'successRate',
-                    render: (text, record) => (text * 100 + "%")
-                },{
-                    title: '创建人',
-                    dataIndex: 'committer',
-                    key: 'committer',
+                    title: '超额策略',
+                    dataIndex: 'defaultModeString',
+                    key: 'defaultModeString',
                 },{
                     title: '创建时间',
-                    dataIndex: 'commitTimeFormated',
-                    key: 'commitTimeFormated',
+                    dataIndex: 'createTime',
+                    key: 'createTime',
+                    render: (text, record) => {
+                        return new Date(record.createTime).format("yyyy/MM/dd hh:mm:ss")
+                    }
                 },{
                     title: '操作',
-                    dataIndex: 'id',
+                    dataIndex: '',
                     key: 'action',
-                    fixed: 'right',
-                    width: 100,
                     render: (text, record) => {
                         var editButton = (
                             <Tooltip placement="bottom" title={"编辑"}>
@@ -302,116 +242,73 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                                 </a>
                             </Tooltip>
                         );
-                        var playButton = (
-                            <Tooltip placement="bottom" title={"开启"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleRestartClick(e)}>
-                                    <Icon type="play-circle-o" />
-                                </a>
-                            </Tooltip>
-                        );
-                        var pauseButton = (
-                            <Tooltip placement="bottom" title={"暂停"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handlePauseClick(e)}>
-                                    <Icon type="pause-circle-o" />
+                        var deleteButton = (
+                            <Tooltip placement="bottom" title={"删除"}>
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleDeleteClick(e)}>
+                                    <Icon type="delete" />
                                 </a>
                             </Tooltip>
                         )
-                        var buttonGroup;
-                        if (record.status == 3) {
-                            buttonGroup = (
+                        var buttonGroup = (
                                 <div>
                                     {editButton}
                                     <span className="ant-divider" />
-                                    {playButton}
+                                    {deleteButton}
                                 </div>
                             )
-                        } else if (record.status == 1 || record.status == 0) {
-                            buttonGroup = (<div>{pauseButton}</div>)
-                        }
                         return buttonGroup
                     },
                 }];
-                var preHeatProps = this.props.preHeatProps;
-                var pagination = {
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                        showTotal: function showTotal(total) {
-                        return 'Total '+ total + ' items';
-                    },
-                    current: preHeatProps.queryCondition.pageNo,
-                    total: preHeatProps.collection.total,
-                    onChange: this.onChangePage,
-                    onShowSizeChange: this.onChangePage
-                }
+                // var limitProps = this.props.limitProps;
+                // var pagination = {
+                //     showSizeChanger: true,
+                //     showQuickJumper: true,
+                //         showTotal: function showTotal(total) {
+                //         return 'Total '+ total + ' items';
+                //     },
+                //     current: limitProps.queryCondition.pageNo,
+                //     total: limitProps.collection.total,
+                //     onChange: this.onChangePage,
+                //     onShowSizeChange: this.onChangePage
+                // }
 
                 return ( <Table rowKey="id" 
                                 dataSource={this.state.data} 
                                 loading={this.state.isFetching} 
                                 columns={columns}
-                                scroll={{ x: 1500 }} 
-                                pagination = {pagination} /> )
+                                pagination = {false} /> )
             }
         }   
 
         var NetRateLimitingList = React.createClass({
             componentDidMount: function(){
-                require(['nodeManage.model'],function(NodeManageModel){
-                    var nodeManageModel = new NodeManageModel();
-                    nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this))
-                    nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this))
-                    nodeManageModel.getNodeList({page: 1,count: 9999});
-                }.bind(this));
             },
 
             getInitialState: function () {
                 var defaultState = {
                     nodeList: [],
                     curViewsMark: "list",// list: 列表界面，add: 新建，edit: 编辑
-                    breadcrumbTxt: ["预热刷新", "预热管理"]
+                    breadcrumbTxt: ["客户配置管理", "全局限速"]
                 }
                 return defaultState;
             },
 
-            onGetNodeListSuccess: function(res){
-                this.setState({
-                    nodeList: res
-                })
-            },
-
-            onGetNodeListError: function(error){
-                var msg = error ? error.message : "获取节点信息失败!"
-                Utility.alerts(msg);
-                this.setState({
-                    nodeList: []
-                })
-            },
-
             onClickAddCallback: function(){
                 require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} isEdit={false} />);
+                    this.curView = (<PreheatManageEditView limitProps={this.limitProps} isEdit={false} />);
                     this.setState({
                         curViewsMark: "add",
-                        breadcrumbTxt: ["预热管理", "新建"]
+                        breadcrumbTxt: ["全局限速", "新建"]
                     })
                 }.bind(this));
             },
 
             onClickEditCallback: function(model){
                 require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} model={model} isEdit={true} />);
+                    this.curView = (<PreheatManageEditView limitProps={this.limitProps} model={model} isEdit={true} />);
                     this.setState({
                         curViewsMark: "edit",
-                        breadcrumbTxt: ["预热管理", "编辑"]
-                    })
-                }.bind(this));
-            },
-
-            onClickViewCallback: function(model){
-                require(['preheatManage.edit.view'],function(PreheatManageEditView){
-                    this.curView = (<PreheatManageEditView preHeatProps={this.preHeatProps} model={model} isEdit={true} isView={true} />);
-                    this.setState({
-                        curViewsMark: "view",
-                        breadcrumbTxt: ["预热管理", "查看"]
+                        breadcrumbTxt: ["全局限速", "编辑"]
                     })
                 }.bind(this));
             },
@@ -419,40 +316,34 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             onClickCancelCallback: function(){
                 this.setState({
                     curViewsMark: "list",
-                    breadcrumbTxt: ["预热刷新", "预热管理"]
+                    breadcrumbTxt: ["客户配置管理", "全局限速"]
                 })
             },
 
             render: function(){
                 this.queryCondition = {
-                    "taskName": null,
-                    "status": null,
-                    "nodes": null,
-                    "pageNo": 1,
-                    "pageSize": 10
+                    "userId": null
                 }
 
-                this.preHeatProps = {
+                this.limitProps = {
                     collection: this.props.collection,
                     queryCondition: this.queryCondition,
-                    nodeList: this.state.nodeList,
                     onClickAddCallback: $.proxy(this.onClickAddCallback, this),
                     onClickEditCallback: $.proxy(this.onClickEditCallback, this),
-                    onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
-                    onClickViewCallback: $.proxy(this.onClickViewCallback, this)
+                    onClickCancelCallback: $.proxy(this.onClickCancelCallback, this)
                 }
 
                 var curView = null;
                 if (this.state.curViewsMark == "list") {
                     curView = (
                         <div>
-                            <Alert style={{ marginBottom: '20px' }} message="回源带宽、预热节点、进度展示当前执行批次信息，文件数、状态、成功率为当前任务整体信息" type="info" showIcon />
-                            <PreHeatTable preHeatProps={this.preHeatProps} />
+                            <Button icon="plus" onClick={this.onClickAddButton}>新建</Button>
+                            <hr />    
+                            <LimitGroupTable limitProps={this.limitProps} />
                         </div>
                     )
                 } else if (this.state.curViewsMark == "add" ||
-                           this.state.curViewsMark == "edit" ||
-                           this.state.curViewsMark == "view" ) {
+                           this.state.curViewsMark == "edit") {
                     curView = this.curView;
                 }
 

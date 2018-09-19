@@ -14,33 +14,28 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
         Content = Layout.Content,
         Breadcrumb = Antd.Breadcrumb,
         Button = Antd.Button,
-        Input = Antd.Input,
-        Form = Antd.Form,
-        FormItem = Form.Item,
-        Select = Antd.Select,
-        Option = Select.Option,
-        AutoComplete = Antd.AutoComplete,
         Table = Antd.Table,
-        Alert = Antd.Alert,
         Tag = Antd.Tag,
         Popover = Antd.Popover,
-        Badge = Antd.Badge,
+        Modal = Antd.Modal,
         Icon = Antd.Icon,
         Spin = Antd.Spin,
-        Tooltip = Antd.Tooltip;
+        Alert = Antd.Alert,
+        Tooltip = Antd.Tooltip,
+        confirm = Modal.confirm;
 
-    var PreHeatTable = function (_React$Component) {
-        _inherits(PreHeatTable, _React$Component);
+    var LimitGroupTable = function (_React$Component) {
+        _inherits(LimitGroupTable, _React$Component);
 
-        function PreHeatTable(props, context) {
-            _classCallCheck(this, PreHeatTable);
+        function LimitGroupTable(props, context) {
+            _classCallCheck(this, LimitGroupTable);
 
-            var _this = _possibleConstructorReturn(this, (PreHeatTable.__proto__ || Object.getPrototypeOf(PreHeatTable)).call(this, props));
+            //this.onChangePage = this.onChangePage.bind(this);
+            var _this = _possibleConstructorReturn(this, (LimitGroupTable.__proto__ || Object.getPrototypeOf(LimitGroupTable)).call(this, props));
 
-            _this.onChangePage = _this.onChangePage.bind(_this);
             _this.handleEditClick = _this.handleEditClick.bind(_this);
-            _this.handlePauseClick = _this.handlePauseClick.bind(_this);
-            _this.handleRestartClick = _this.handleRestartClick.bind(_this);
+            _this.handleDeleteClick = _this.handleDeleteClick.bind(_this);
+            _this.onGetAllLimitRateGroupSuccess = _this.onGetAllLimitRateGroupSuccess.bind(_this);
             _this.state = {
                 data: [],
                 isError: false,
@@ -49,40 +44,36 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
             return _this;
         }
 
-        _createClass(PreHeatTable, [{
+        _createClass(LimitGroupTable, [{
             key: 'componentDidMount',
             value: function componentDidMount() {
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
-                collection.on("get.preheat.success", $.proxy(this.onGetPreHeatListSuccess, this));
-                collection.on("get.preheat.error", $.proxy(this.onGetError, this));
-                collection.on("fetching", $.proxy(this.onFetchingPreHeatList, this));
+                var limitProps = this.props.limitProps;
+                var collection = limitProps.collection,
+                    queryCondition = limitProps.queryCondition;
+                collection.on("get.allLimit.success", $.proxy(this.onGetAllLimitRateGroupSuccess, this));
+                collection.on("get.allLimit.error", $.proxy(this.onGetError, this));
+                collection.on("fetching", $.proxy(this.onFetchinAllLimitRateGroup, this));
                 collection.trigger("fetching", queryCondition);
-                collection.on("refresh.pause.success", $.proxy(this.onGetOperateSuccess, this, "暂停"));
-                collection.on("refresh.pause.error", $.proxy(this.onOperateError, this));
-                collection.on("refresh.restart.success", $.proxy(this.onGetOperateSuccess, this, "开启"));
-                collection.on("refresh.restart.error", $.proxy(this.onOperateError, this));
+                collection.on("delete.limit.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
+                collection.on("delete.limit.error", $.proxy(this.onOperateError, this));
             }
         }, {
             key: 'componentWillUnmount',
             value: function componentWillUnmount() {
-                var collection = this.props.preHeatProps.collection;
-                collection.off("get.preheat.success");
-                collection.off("get.preheat.error");
+                var collection = this.props.limitProps.collection;
+                collection.off("get.allLimit.success");
+                collection.off("get.allLimit.error");
                 collection.off("fetching");
-                collection.off("refresh.pause.success");
-                collection.off("refresh.pause.error");
-                collection.off("refresh.restart.success");
-                collection.off("refresh.restart.error");
+                collection.off("delete.limit.success");
+                collection.off("delete.limit.error");
             }
         }, {
             key: 'onGetOperateSuccess',
             value: function onGetOperateSuccess(msg) {
                 Utility.alerts(msg + "成功!", "success", 2000);
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
+                var limitProps = this.props.limitProps;
+                var collection = limitProps.collection,
+                    queryCondition = limitProps.queryCondition;
 
                 collection.trigger("fetching", queryCondition);
             }
@@ -92,29 +83,51 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                 if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
             }
         }, {
-            key: 'onFetchingPreHeatList',
-            value: function onFetchingPreHeatList(queryCondition) {
-                var collection = this.props.preHeatProps.collection;
+            key: 'onFetchinAllLimitRateGroup',
+            value: function onFetchinAllLimitRateGroup(queryCondition) {
+                var collection = this.props.limitProps.collection;
                 this.setState({
                     isFetching: true
                 });
-                collection.getPreheatList(queryCondition);
+                collection.gettAllLimitRateGroup(queryCondition);
+
+                //this.onGetAllLimitRateGroupSuccess();
             }
         }, {
-            key: 'onGetPreHeatListSuccess',
-            value: function onGetPreHeatListSuccess() {
-                var data = [];
-                this.props.preHeatProps.collection.each(function (model) {
-                    var obj = Object.assign({}, model.attributes),
-                        nodeName = [];
-                    _.each(obj.batchTimeBandwidth, function (batch) {
-                        batch.nodeNameArray = batch.nodes.split(";");
-                        nodeName = nodeName.concat(batch.nodeNameArray);
-                    });
-                    obj.nodeName = nodeName;
-                    data.push(obj);
-                });
-                console.log(data);
+            key: 'onGetAllLimitRateGroupSuccess',
+            value: function onGetAllLimitRateGroupSuccess() {
+                //var data = [];
+
+                var data = [{
+                    "id": 19,
+                    "quotaUnits": "Gbps",
+                    "totalQuota": 100,
+                    "userId": 1241,
+                    "applicationType": 1,
+                    "creater": "1234",
+                    "createTime": 1537152256000,
+                    "updateTime": 1537152820000,
+                    "source": 2,
+                    "remark": "",
+                    "lastModifier": "",
+                    "defaultMode": 1,
+                    "defaultModeString": null,
+                    "active": "-1",
+                    "domainCount": 1,
+                    "domains": ["jiasutest1.ksyunacc.com"]
+                }];
+
+                // this.props.limitProps.collection.each((model) => {
+                //     var obj = Object.assign({}, model.attributes),
+                //         nodeName = [];
+                //     _.each(obj.batchTimeBandwidth, (batch)=>{
+                //         batch.domainsNameArray = batch.nodes.split(";");
+                //         nodeName = nodeName.concat(batch.domainsNameArray);
+                //     })
+                //     obj.nodeName = nodeName;
+                //     data.push(obj)
+                // })
+                // console.log(data)
                 this.setState({
                     data: data,
                     isFetching: false
@@ -123,16 +136,16 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
         }, {
             key: 'onChangePage',
             value: function onChangePage(page, pageSize) {
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection,
-                    queryCondition = preHeatProps.queryCondition;
+                var limitProps = this.props.limitProps;
+                var collection = limitProps.collection,
+                    queryCondition = limitProps.queryCondition;
                 queryCondition.pageNo = page;
                 queryCondition.pageSize = pageSize;
                 collection.trigger("fetching", queryCondition);
             }
         }, {
-            key: 'handlePauseClick',
-            value: function handlePauseClick(event) {
+            key: 'handleDeleteClick',
+            value: function handleDeleteClick(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -141,24 +154,17 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskPause({ taskId: id });
-            }
-        }, {
-            key: 'handleRestartClick',
-            value: function handleRestartClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var preHeatProps = this.props.preHeatProps;
-                var collection = preHeatProps.collection;
-                collection.taskRestart({ taskId: id });
+                confirm({
+                    title: '你确定要删除吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '算了，不删了',
+                    onOk: function () {
+                        var limitProps = this.props.limitProps,
+                            collection = limitProps.collection;
+                        collection.delLimitRateByGroupId({ groupId: id });
+                    }.bind(this)
+                });
             }
         }, {
             key: 'handleEditClick',
@@ -174,25 +180,8 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                 var model = _.find(this.state.data, function (obj) {
                     return obj.id == id;
                 }.bind(this));
-                var onClickEditCallback = this.props.preHeatProps.onClickEditCallback;
+                var onClickEditCallback = this.props.limitProps.onClickEditCallback;
                 onClickEditCallback && onClickEditCallback(model);
-            }
-        }, {
-            key: 'handleViewClick',
-            value: function handleViewClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
-                    id = $(eventTarget).attr("id");
-                }
-                var model = _.find(this.state.data, function (obj) {
-                    return obj.id == id;
-                }.bind(this));
-                var onClickViewCallback = this.props.preHeatProps.onClickViewCallback;
-                onClickViewCallback && onClickViewCallback(model);
             }
         }, {
             key: 'onGetError',
@@ -224,46 +213,26 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                         showIcon: true
                     });
                 }
-
                 var columns = [{
-                    title: '名称',
-                    dataIndex: 'taskName',
-                    key: 'taskName',
-                    fixed: 'left',
-                    width: 200,
-                    render: function render(text, record) {
-                        return React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "查看详情" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handleViewClick(e);
-                                    } },
-                                text
-                            )
-                        );
-                    }
+                    title: 'ID',
+                    dataIndex: 'id',
+                    key: 'id'
                 }, {
-                    title: '回源带宽',
-                    dataIndex: 'currentBandwidth',
-                    key: 'currentBandwidth'
-                }, {
-                    title: '预热节点',
-                    dataIndex: 'nodeName',
-                    key: 'nodeName',
+                    title: '限速域名',
+                    dataIndex: 'domains',
+                    key: 'domains',
                     render: function render(text, record) {
                         var colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
                         var content = void 0,
                             temp = [];
                         var random = void 0,
-                            nodeNameArray = record.currentNodes.split(";");
-                        for (var i = 0; i < nodeNameArray.length; i++) {
+                            domainsArray = record.domains;
+                        for (var i = 0; i < domainsArray.length; i++) {
                             random = Math.floor(Math.random() * colors.length);
                             temp.push(React.createElement(
                                 Tag,
                                 { color: colors[random], key: i, style: { marginBottom: '5px' } },
-                                nodeNameArray[i]
+                                domainsArray[i]
                             ));
                         }
                         content = React.createElement(
@@ -277,7 +246,7 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                             React.createElement(
                                 'span',
                                 null,
-                                nodeNameArray[0],
+                                domainsArray[0],
                                 '...'
                             ),
                             React.createElement(
@@ -285,85 +254,42 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                                 null,
                                 React.createElement(
                                     Popover,
-                                    { content: content, title: '\u8282\u70B9\u8BE6\u60C5', trigger: 'click', placement: 'right', overlayStyle: { width: '300px' } },
+                                    { content: content, title: '\u57DF\u540D\u8BE6\u60C5', trigger: 'click', placement: 'right', overlayStyle: { width: '300px' } },
                                     React.createElement(
-                                        Badge,
-                                        { count: nodeNameArray.length, style: { backgroundColor: '#52c41a' } },
-                                        React.createElement(
-                                            'a',
-                                            { href: 'javascript:void(0)', id: record.id },
-                                            'more'
-                                        )
+                                        'a',
+                                        { href: 'javascript:void(0)', id: record.id },
+                                        'more'
                                     )
                                 )
                             )
                         );
                     }
                 }, {
-                    title: '文件数',
-                    dataIndex: 'preloadUrlCount',
-                    key: 'preloadUrlCount'
+                    title: '域名个数',
+                    dataIndex: 'domainCount',
+                    key: 'domainCount'
                 }, {
-                    title: '当前预热批次',
-                    dataIndex: 'currentBatch',
-                    key: 'currentBatch',
+                    title: '阈值',
+                    dataIndex: 'totalQuota',
+                    key: 'totalQuota',
                     render: function render(text, record) {
-                        return text + "/" + record.batchTimeBandwidth.length;
+                        return record.totalQuota + record.quotaUnits;
                     }
                 }, {
-                    title: '进度',
-                    dataIndex: 'progress',
-                    key: 'progress'
-                }, {
-                    title: '状态',
-                    dataIndex: 'status',
-                    key: 'status',
-                    render: function render(text, record) {
-                        var tag = null;
-                        if (record.status == 3) tag = React.createElement(
-                            Tag,
-                            { color: "red" },
-                            '\u5DF2\u6682\u505C'
-                        );else if (record.status == 2) tag = React.createElement(
-                            Tag,
-                            { color: "green" },
-                            '\u5DF2\u5B8C\u6210'
-                        );else if (record.status == 0) tag = React.createElement(
-                            Tag,
-                            { color: "blue" },
-                            '\u5F85\u9884\u70ED'
-                        );else if (record.status == 1) tag = React.createElement(
-                            Tag,
-                            { color: "orange" },
-                            '\u9884\u70ED\u4E2D'
-                        );else if (record.status == 4) tag = React.createElement(
-                            Tag,
-                            { color: "purple" },
-                            '\u6682\u505C\u4E2D'
-                        );
-                        return tag;
-                    }
-                }, {
-                    title: '成功率',
-                    dataIndex: 'successRate',
-                    key: 'successRate',
-                    render: function render(text, record) {
-                        return text * 100 + "%";
-                    }
-                }, {
-                    title: '创建人',
-                    dataIndex: 'committer',
-                    key: 'committer'
+                    title: '超额策略',
+                    dataIndex: 'defaultModeString',
+                    key: 'defaultModeString'
                 }, {
                     title: '创建时间',
-                    dataIndex: 'commitTimeFormated',
-                    key: 'commitTimeFormated'
+                    dataIndex: 'createTime',
+                    key: 'createTime',
+                    render: function render(text, record) {
+                        return new Date(record.createTime).format("yyyy/MM/dd hh:mm:ss");
+                    }
                 }, {
                     title: '操作',
-                    dataIndex: 'id',
+                    dataIndex: '',
                     key: 'action',
-                    fixed: 'right',
-                    width: 100,
                     render: function render(text, record) {
                         var editButton = React.createElement(
                             Tooltip,
@@ -376,133 +302,81 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                                 React.createElement(Icon, { type: 'edit' })
                             )
                         );
-                        var playButton = React.createElement(
+                        var deleteButton = React.createElement(
                             Tooltip,
-                            { placement: 'bottom', title: "开启" },
+                            { placement: 'bottom', title: "删除" },
                             React.createElement(
                                 'a',
                                 { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handleRestartClick(e);
+                                        return _this2.handleDeleteClick(e);
                                     } },
-                                React.createElement(Icon, { type: 'play-circle-o' })
+                                React.createElement(Icon, { type: 'delete' })
                             )
                         );
-                        var pauseButton = React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "暂停" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: function onClick(e) {
-                                        return _this2.handlePauseClick(e);
-                                    } },
-                                React.createElement(Icon, { type: 'pause-circle-o' })
-                            )
+                        var buttonGroup = React.createElement(
+                            'div',
+                            null,
+                            editButton,
+                            React.createElement('span', { className: 'ant-divider' }),
+                            deleteButton
                         );
-                        var buttonGroup;
-                        if (record.status == 3) {
-                            buttonGroup = React.createElement(
-                                'div',
-                                null,
-                                editButton,
-                                React.createElement('span', { className: 'ant-divider' }),
-                                playButton
-                            );
-                        } else if (record.status == 1 || record.status == 0) {
-                            buttonGroup = React.createElement(
-                                'div',
-                                null,
-                                pauseButton
-                            );
-                        }
                         return buttonGroup;
                     }
                 }];
-                var preHeatProps = this.props.preHeatProps;
-                var pagination = {
-                    showSizeChanger: true,
-                    showQuickJumper: true,
-                    showTotal: function showTotal(total) {
-                        return 'Total ' + total + ' items';
-                    },
-                    current: preHeatProps.queryCondition.pageNo,
-                    total: preHeatProps.collection.total,
-                    onChange: this.onChangePage,
-                    onShowSizeChange: this.onChangePage
-                };
+                // var limitProps = this.props.limitProps;
+                // var pagination = {
+                //     showSizeChanger: true,
+                //     showQuickJumper: true,
+                //         showTotal: function showTotal(total) {
+                //         return 'Total '+ total + ' items';
+                //     },
+                //     current: limitProps.queryCondition.pageNo,
+                //     total: limitProps.collection.total,
+                //     onChange: this.onChangePage,
+                //     onShowSizeChange: this.onChangePage
+                // }
 
                 return React.createElement(Table, { rowKey: 'id',
                     dataSource: this.state.data,
                     loading: this.state.isFetching,
                     columns: columns,
-                    scroll: { x: 1500 },
-                    pagination: pagination });
+                    pagination: false });
             }
         }]);
 
-        return PreHeatTable;
+        return LimitGroupTable;
     }(React.Component);
 
     var NetRateLimitingList = React.createClass({
         displayName: 'NetRateLimitingList',
 
-        componentDidMount: function componentDidMount() {
-            require(['nodeManage.model'], function (NodeManageModel) {
-                var nodeManageModel = new NodeManageModel();
-                nodeManageModel.on("get.node.success", $.proxy(this.onGetNodeListSuccess, this));
-                nodeManageModel.on("get.node.error", $.proxy(this.onGetNodeListError, this));
-                nodeManageModel.getNodeList({ page: 1, count: 9999 });
-            }.bind(this));
-        },
+        componentDidMount: function componentDidMount() {},
 
         getInitialState: function getInitialState() {
             var defaultState = {
                 nodeList: [],
                 curViewsMark: "list", // list: 列表界面，add: 新建，edit: 编辑
-                breadcrumbTxt: ["预热刷新", "预热管理"]
+                breadcrumbTxt: ["客户配置管理", "全局限速"]
             };
             return defaultState;
         },
 
-        onGetNodeListSuccess: function onGetNodeListSuccess(res) {
-            this.setState({
-                nodeList: res
-            });
-        },
-
-        onGetNodeListError: function onGetNodeListError(error) {
-            var msg = error ? error.message : "获取节点信息失败!";
-            Utility.alerts(msg);
-            this.setState({
-                nodeList: []
-            });
-        },
-
         onClickAddCallback: function onClickAddCallback() {
             require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, isEdit: false });
+                this.curView = React.createElement(PreheatManageEditView, { limitProps: this.limitProps, isEdit: false });
                 this.setState({
                     curViewsMark: "add",
-                    breadcrumbTxt: ["预热管理", "新建"]
+                    breadcrumbTxt: ["全局限速", "新建"]
                 });
             }.bind(this));
         },
 
         onClickEditCallback: function onClickEditCallback(model) {
             require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, model: model, isEdit: true });
+                this.curView = React.createElement(PreheatManageEditView, { limitProps: this.limitProps, model: model, isEdit: true });
                 this.setState({
                     curViewsMark: "edit",
-                    breadcrumbTxt: ["预热管理", "编辑"]
-                });
-            }.bind(this));
-        },
-
-        onClickViewCallback: function onClickViewCallback(model) {
-            require(['preheatManage.edit.view'], function (PreheatManageEditView) {
-                this.curView = React.createElement(PreheatManageEditView, { preHeatProps: this.preHeatProps, model: model, isEdit: true, isView: true });
-                this.setState({
-                    curViewsMark: "view",
-                    breadcrumbTxt: ["预热管理", "查看"]
+                    breadcrumbTxt: ["全局限速", "编辑"]
                 });
             }.bind(this));
         },
@@ -510,27 +384,21 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
         onClickCancelCallback: function onClickCancelCallback() {
             this.setState({
                 curViewsMark: "list",
-                breadcrumbTxt: ["预热刷新", "预热管理"]
+                breadcrumbTxt: ["客户配置管理", "全局限速"]
             });
         },
 
         render: function render() {
             this.queryCondition = {
-                "taskName": null,
-                "status": null,
-                "nodes": null,
-                "pageNo": 1,
-                "pageSize": 10
+                "userId": null
             };
 
-            this.preHeatProps = {
+            this.limitProps = {
                 collection: this.props.collection,
                 queryCondition: this.queryCondition,
-                nodeList: this.state.nodeList,
                 onClickAddCallback: $.proxy(this.onClickAddCallback, this),
                 onClickEditCallback: $.proxy(this.onClickEditCallback, this),
-                onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
-                onClickViewCallback: $.proxy(this.onClickViewCallback, this)
+                onClickCancelCallback: $.proxy(this.onClickCancelCallback, this)
             };
 
             var curView = null;
@@ -538,10 +406,15 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                 curView = React.createElement(
                     'div',
                     null,
-                    React.createElement(Alert, { style: { marginBottom: '20px' }, message: '\u56DE\u6E90\u5E26\u5BBD\u3001\u9884\u70ED\u8282\u70B9\u3001\u8FDB\u5EA6\u5C55\u793A\u5F53\u524D\u6267\u884C\u6279\u6B21\u4FE1\u606F\uFF0C\u6587\u4EF6\u6570\u3001\u72B6\u6001\u3001\u6210\u529F\u7387\u4E3A\u5F53\u524D\u4EFB\u52A1\u6574\u4F53\u4FE1\u606F', type: 'info', showIcon: true }),
-                    React.createElement(PreHeatTable, { preHeatProps: this.preHeatProps })
+                    React.createElement(
+                        Button,
+                        { icon: 'plus', onClick: this.onClickAddButton },
+                        '\u65B0\u5EFA'
+                    ),
+                    React.createElement('hr', null),
+                    React.createElement(LimitGroupTable, { limitProps: this.limitProps })
                 );
-            } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit" || this.state.curViewsMark == "view") {
+            } else if (this.state.curViewsMark == "add" || this.state.curViewsMark == "edit") {
                 curView = this.curView;
             }
 

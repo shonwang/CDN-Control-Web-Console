@@ -14,6 +14,8 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
             Tooltip = Antd.Tooltip,
             Col = Antd.Col,
             Alert = Antd.Alert,
+            InputNumber = Antd.InputNumber,
+            Switch = Antd.Switch, 
             confirm = Modal.confirm;
 
         class NetRateLimitingEditForm extends React.Component {
@@ -21,46 +23,52 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                 super(props);
                 this.onClickCancel = this.onClickCancel.bind(this);
                 this.renderBaseInfoView = this.renderBaseInfoView.bind(this);
-                this.renderExportFieldTableView = this.renderExportFieldTableView.bind(this);
-                this.validateTemplateFieldList = this.validateTemplateFieldList.bind(this);
+                this.renderFieldTableView = this.renderFieldTableView.bind(this);
                 this.handleSubmit = this.handleSubmit.bind(this);
-                this.convertEnumToShowStr = this.convertEnumToShowStr.bind(this);
-                this.getFieldExample = this.getFieldExample.bind(this);
-                this.validateFieldSeparatorCusValue = this.validateFieldSeparatorCusValue.bind(this);
 
                 this.state = {
                     currentSubType: -1,
                     origins: [],
                     quotaUnits: "",
                     totalQuota: "",               
-                    strategys: [],
+                    advanceStrategy: [],
+                    defaultStrategy: {},
+                    isAdvance: false,
 
                     isLoadingDetail: props.isEdit ? true : false,
                     fieldModalVisible: false,
                     isEditField: false,
                     curEditField: {},
 
-                    dataSourceOriginFieldTag: []
+                    dataSourceDomains: []
                 };
             }
 
             componentDidMount() {
                 var limitProps = this.props.limitProps,
                 collection = limitProps.collection;
+                collection.on("get.domain.success", $.proxy(this.onGetDomainSuccess, this))
+                collection.on("get.domain.error", $.proxy(this.onGetError, this))
                 if (this.props.isEdit) {
                     var model = this.props.model;
                     collection.on("get.detail.success", $.proxy(this.onGetDetailSuccess, this))
                     collection.on("get.detail.error", $.proxy(this.onGetError, this))
                     collection.getLimitRateDetailByGroupId({groupId: model.id});
+                } else {
+                    collection.getDomainsBySubType({
+                        userId: this.props.limitProps.userInfo.uid,
+                        groupId: this.props.model.id,
+                        subType: this.state.currentSubType
+                    })
                 }
-                collection.on("add.template.success", $.proxy(this.onSubmitSuccess, this));
-                collection.on("add.template.error", $.proxy(this.onGetError, this));
+                // collection.on("add.template.success", $.proxy(this.onSubmitSuccess, this));
+                // collection.on("add.template.error", $.proxy(this.onGetError, this));
             }
 
             componentWillUnmount() {
                 const collection = this.props.limitProps.collection;
-                collection.off("add.template.success");
-                collection.off("add.template.error");
+                // collection.off("add.template.success");
+                // collection.off("add.template.error");
                 if (this.props.isEdit) {   
                     collection.off("get.detail.success");
                     collection.off("get.detail.error");
@@ -68,58 +76,105 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
             }
 
             onGetDetailSuccess(res) {
-                res = {
-                    "group": {
-                        "id": "",
-                        "quotaUnits": "",
-                        "totalQuota": "",
-                        "userId": "",
-                        "applicationType": "",
-                        "creater": "",
-                        "createTime": "",
-                        "updateTime": "",
-                        "source": "",
-                        "remark": "",
-                        "lastModifier": "",
-                        "defaultMode": "",
-                        "defaultModeString": "",
-                        "active": "",
-                        "domainCount": "",
-                        "domains": []
-
-                    },
-                    "origins": [{
-                        "id": "",
-                        "originId": "",
-                        "groupId": "",
-                        "userId": "",
-                        "domain": "",
-                        "domainId": ""
-                    }],
-                    "strategys": [{
-                        "id": "",
-                        "groupId": "",
-                        "fileType": "",
-                        "currentMode": "",
-                        "currentModeString": "",
-                        "currentValue": "",
-                        "sort": ""
-                    }],
-                    "domainSubTypes": [],
-                    "currentSubType": -1 //-1:全部类型，1:下载 2:直播拉流域名 3:直播上行加速域名 4：
-                }
+                var origins = [], 
+                    defaultStrategy = res.strategys.shift(), 
+                    advanceStrategy = res.strategys;
+                _.each(res.origins, function(el){
+                    origins.push(el.domain)
+                }.bind(this))
 
                 this.setState({
                     currentSubType: res.currentSubType,
-                    origins: res.origins,
+                    origins: origins,
                     quotaUnits: res.group.quotaUnits,
                     totalQuota: res.group.totalQuota,               
-                    strategys: res.strategys,
+                    advanceStrategy: advanceStrategy,
+                    defaultStrategy: defaultStrategy,
+                    isAdvance:  advanceStrategy.length > 0 ? true : false
+                });
 
+                var collection = this.props.limitProps.collection;
+                collection.getDomainsBySubType({
+                    userId: this.props.limitProps.userInfo.uid,
+                    groupId: this.props.model.id,
+                    subType: this.state.currentSubType
+                })
+            }
+
+            onGetDomainSuccess(res) {
+                var domainArray = res.origins.map((el) => {
+                        return <Option key={el.domain}>{el.domain}</Option>;
+                    })
+                this.setState({
+                    dataSourceDomains: domainArray,
                     isLoadingDetail: false
+                })
+            }
+
+            onCurrentSubTypeChange(value) {
+                const { setFieldsValue, getFieldsValue } = this.props.form;
+                setFieldsValue({"origins": []})
+                this.setState({
+                    dataSourceDomains: []
+                })
+                var collection = this.props.limitProps.collection;
+                collection.getDomainsBySubType({
+                    userId: this.props.limitProps.userInfo.uid,
+                    groupId: this.props.model.id,
+                    subType: value
+                })
+            }
+
+            onStrategyModeChange(value) {
+                var defaultStrategy = this.state.defaultStrategy;
+                defaultStrategy.currentMode = value;
+                this.setState({
+                    defaultStrategy: defaultStrategy
+                });
+             }
+
+            onAdvanceStrategyModeChange(value){
+                var curEditField = this.state.curEditField;
+                curEditField.currentMode = value;
+                this.setState({
+                    curEditField: curEditField
                 });
             }
 
+            validateStrategy (rule, value, callback) {
+                const  currentMode = this.state.defaultStrategy.currentMode;
+
+                if (currentMode == 1 && value !== ""){
+                    callback('请输入自定义回源！');
+                } else if(currentMode == 2 && value !== "") {
+                    callback('请输入自定义状态码！');
+                } else if (currentMode == 3 && value !== "") {
+                    callback('请输入自定义限速！');
+                } else {
+                    callback();
+                }
+            }
+
+            validateAdvanceStrategy (rule, value, callback) {
+                const  currentMode = this.state.curEditField.currentMode;
+                const { getFieldsValue } = this.props.form;
+                const  currentValue
+                if (currentMode == 1 && value !== ""){
+                    callback('请输入自定义回源！');
+                } else if(currentMode == 2 && value !== "") {
+                    callback('请输入自定义状态码！');
+                } else if (currentMode == 3 && value !== "") {
+                    callback('请输入自定义限速！');
+                } else {
+                    callback();
+                }
+            }
+
+            onAdvanceButtonChange(checked) {
+                this.setState({
+                    isAdvance: checked
+                });
+            }
 
             renderBaseInfoView(formItemLayout) {
                 const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
@@ -128,119 +183,124 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                 baseInfoView = (
                     <div>
                         <FormItem {...formItemLayout} label="限速域名" required={true}>
-                            <Col span={12}>
+                            <Col span={8}>
                                 <FormItem>
                                     {getFieldDecorator('currentSubType', {
-                                        initialValue: this.state.currentSubType,
+                                        initialValue: this.state.currentSubType + "",
                                         rules: [{ required: true, message: '请选择字段间隔符!' }],
                                     })(
-                                        <Select style={{ width: 200 }} onChange={$.proxy(this.onfieldSeparatorChange, this)}>
+                                        <Select style={{ width: 150 }} onChange={$.proxy(this.onCurrentSubTypeChange, this)}>
                                             <Option value="-1">全部类型</Option>
-                                            <Option value="1">下载</Option>
-                                            <Option value="2">直播拉流域名</Option>
-                                            <Option value="3">直播上行加速域名</Option>
-                                            <Option value="4">自定义</Option>
+                                            <Option value="1">音视频点播</Option>
+                                            <Option value="2" style={{display:"none"}}>流媒体直播</Option>
+                                            <Option value="3" style={{display:"none"}}>直播推流加速</Option>
+                                            <Option value="4">大文件下载</Option>
                                         </Select>
                                     )}
                                 </FormItem>
                             </Col>
                             <Col span={12} >
                                 <FormItem>
-                                    {getFieldDecorator('fieldSeparatorCusValue', {
-                                        initialValue: this.state.fieldSeparatorCusValue,
+                                    {getFieldDecorator('origins', {
+                                        initialValue: this.state.origins,
                                         rules: [
-                                            { validator: this.validateFieldSeparatorCusValue },
+                                            { type:"array", required: true, message: '请选择域名!' },
                                         ],
                                     })(
-                                        <Input style={{ width: 200}}
-                                               onChange={$.proxy(this.onfieldSeparatorCusValueChange, this)}/>
-                                    )}
-                                </FormItem>
-                            </Col>
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="模板名称" hasFeedback>
-                            {getFieldDecorator('name', {
-                                    initialValue: this.state.name,
-                                    validateFirst: true,
-                                    rules: [
-                                        { required: true, message: '请输入模板名称!' },
-                                        { pattern: /^[0-9A-Za-z\_]+$/, message: '模板名称只能输入英文数字下划线!' },
-                                    ],
-                                })(
-                                <Input disabled={this.props.isEdit}/>
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="产品线标识">
-                            {getFieldDecorator('productType', {
-                                initialValue: this.state.productType,
-                                rules: [{ required: true, message: '请选择产品线标识!' }]
-                            })(
-                                <Select style={{ width: 200 }} disabled={this.props.isEdit}>
-                                    <Option value="">请选择</Option> 
-                                    <Option value="LIVE">直播</Option>
-                                    <Option value="DOWNLOAD">点播</Option>
-                                </Select>
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label={(
-                                <span>
-                                    回传方式&nbsp;
-                                    <Tooltip title="说明：边缘回传，保证用户的高SLA；边缘回传保证用户的实时性。可根据用户的需要选择合适的回传方式">
-                                        <Icon type="question-circle-o" />
-                                    </Tooltip>
-                                </span>
-                            )}>
-                            {getFieldDecorator('backType', {
-                                initialValue: this.state.backType,
-                                rules: [{ required: true, message: '请选择回传方式!' }],
-                            })(
-                                <Select style={{ width: 200 }}>
-                                    <Option value="">请选择</Option> 
-                                    <Option value="CENTER">中心回传</Option>
-                                    <Option value="EDGE">边缘回传</Option>
-                                </Select>
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="字段间隔符设置" required={true}>
-                            <Col span={12}>
-                                <FormItem>
-                                    {getFieldDecorator('fieldSeparator', {
-                                        initialValue: this.state.fieldSeparator,
-                                        rules: [{ required: true, message: '请选择字段间隔符!' }],
-                                    })(
-                                        <Select style={{ width: 200 }} onChange={$.proxy(this.onfieldSeparatorChange, this)}>
-                                            <Option value="">请选择</Option>
-                                            <Option value="\t">tab</Option>
-                                            <Option value=" ">空格</Option>
-                                            <Option value="|">|</Option>
-                                            <Option value="custom">自定义</Option>
+                                        <Select mode="multiple" allowClear={true}
+                                                placeholder={'请选择'}
+                                                maxTagCount={1}
+                                                notFoundContent={<Spin size="small" />} 
+                                                filterOption={false} >
+                                                {this.state.dataSourceDomains}       
                                         </Select>
                                     )}
                                 </FormItem>
                             </Col>
-                            <Col span={12} style={{ display: this.state.fieldSepCusValueVisible}} >
+                            <Col span={4} >
                                 <FormItem>
-                                    {getFieldDecorator('fieldSeparatorCusValue', {
-                                        initialValue: this.state.fieldSeparatorCusValue,
+                                    <span style={{marginLeft: "10px"}}>共{this.state.dataSourceDomains.length}个域名</span>
+                                </FormItem>
+                            </Col>
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="限速阈值" required={true}>
+                            <Col span={8}>
+                                <FormItem>
+                                    {getFieldDecorator('totalQuota', {
+                                            initialValue: this.state.totalQuota,
+                                            rules: [{ required: true, message: '请输入限速阈值!' }],
+                                        })(
+                                        <InputNumber style={{ width: 150 }}/>
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={12} >
+                                <FormItem>
+                                    {getFieldDecorator('quotaUnits', {
+                                        initialValue: this.state.quotaUnits,
                                         rules: [
-                                            { validator: this.validateFieldSeparatorCusValue },
+                                            { type:"array", required: true, message: '请选择限速阈值单位!' },
                                         ],
                                     })(
-                                        <Input style={{ width: 200}}
-                                               onChange={$.proxy(this.onfieldSeparatorCusValueChange, this)}/>
+                                        <Select style={{ width: 150 }} onChange={$.proxy(this.onCurrentSubTypeChange, this)}>
+                                            <Option value="Gbps">Gbps</Option>
+                                            <Option value="Mbps">Mbps</Option>
+                                        </Select>
                                     )}
                                 </FormItem>
                             </Col>
                         </FormItem>
-                        <FormItem {...formItemLayout} label="换行符设置" hasFeedback>
-                            {getFieldDecorator('lineBreak', {
-                                    initialValue: this.state.lineBreak,
-                                    rules: [{ 
-                                        required: true, message: '请输入换行符!' }, {
-                                    }],
-                                })(
-                                <Input />
-                            )}
+                        <FormItem {...formItemLayout} label="超额策略" required={true}>
+                            <Col span={8}>
+                                <FormItem>
+                                    {getFieldDecorator('defaultStrategyMode', {
+                                        initialValue: this.state.defaultStrategy.currentMode + "",
+                                        rules: [{ required: true, message: '请选择超额策略!' }],
+                                    })(
+                                        <Select style={{ width: 150 }} onChange={$.proxy(this.onStrategyModeChange, this)}>
+                                            <Option value="1">自定义回源</Option>
+                                            <Option value="3">自定义限速</Option>
+                                            <Option value="2">自定义状态码</Option>
+                                        </Select>
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={12} >
+                                <FormItem style={{display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none"}}>
+                                    {getFieldDecorator('strategyLimit', {
+                                            initialValue: parseInt(this.state.defaultStrategy.currentValue),
+                                            rules: [
+                                                { validator: $.proxy(this.validateStrategy, this) },
+                                            ],
+                                        })(
+                                        <InputNumber style={{ width: 150 }} min={2000}/>
+                                    )}
+                                    <span style={{marginLeft: "10px"}}>kbps</span>
+                                </FormItem>
+                                <FormItem style={{display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none"}}>
+                                    {getFieldDecorator('strategyCode', {
+                                            initialValue: parseInt(this.state.defaultStrategy.currentValue),
+                                            rules: [
+                                                { validator: $.proxy(this.validateStrategy, this) },
+                                            ],
+                                        })(
+                                        <InputNumber style={{ width: 150 }} />
+                                    )}
+                                </FormItem>
+                                <FormItem style={{display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none"}}>
+                                    {getFieldDecorator('strategyOrigin', {
+                                            initialValue: this.state.defaultStrategy.currentValue,
+                                            rules: [
+                                                { validator: $.proxy(this.validateStrategy, this) },
+                                            ],
+                                        })(
+                                        <Input />
+                                    )}
+                                </FormItem>
+                            </Col>
+                        </FormItem>
+                        <FormItem {...formItemLayout} label="高级">
+                            <Switch checked={this.state.isAdvance} onChange={$.proxy(this.onAdvanceButtonChange, this)} />
                         </FormItem>
                     </div>
                 )
@@ -248,106 +308,41 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                 return baseInfoView
             }
 
-            validateFieldSeparatorCusValue(rule, value, callback) {
-                const { getFieldsValue } = this.props.form;
-                const fieldSeparator = getFieldsValue().fieldSeparator
-                if (fieldSeparator == "custom" && value == ""){
-                    callback('请输入自定义字段间隔符!');
-                } else {
-                    callback();
-                }
-            }
-
-            onfieldSeparatorChange(value, option) {
-                const { setFieldsValue } = this.props.form;
-                if (value == "custom") {
-                    this.setState({
-                        fieldSepCusValueVisible: "inline-block"
-                    })
-                } else {
-                    this.setState({
-                        fieldSepCusValueVisible: "none"
-                    })
-                    setFieldsValue({"fieldSeparatorCusValue": this.state.fieldSeparatorCusValue})
-                }
-            }
-
-            onfieldSeparatorCusValueChange(event) {
-                var value = event.target.value
-                if (value != "") {
-                    this.setState({
-                        fieldSeparatorCusValue: value
-                    })
-                }
-            }
-
-            renderExportFieldTableView(formItemLayout) {
+            renderFieldTableView(formItemLayout) {
                 const { getFieldDecorator } = this.props.form;
-                const { templateFieldList, fieldModalVisible, curEditField } = this.state;
-                var exportFieldListView = "";
+                const { advanceStrategy, fieldModalVisible, curEditField } = this.state;
+                var fieldListView = "";
                 const { isView, isEdit } = this.props;
                 var  columns = [{
-                    title: '序号',
-                    dataIndex: 'order',
-                    key: 'order'
+                    title: '文件类型',
+                    dataIndex: 'fileType',
+                    key: 'fileType'
                 },{
-                    title: '原字段标识',
-                    dataIndex: 'originFieldTag',
-                    key: 'originFieldTag'
-                },{
-                    title: '原字段名称',
-                    dataIndex: 'originFieldName',
-                    key: 'originFieldName'
-                },{
-                    title: '导出字段标识',
-                    dataIndex: 'exportFieldTag',
-                    key: 'exportFieldTag'
-                },{
-                    title: '导出字段名称',
-                    dataIndex: 'exportFieldName',
-                    key: 'exportFieldName'
-                },{
-                    title: '导出数据类型',
-                    dataIndex: 'exportFieldType',
-                    key: 'exportFieldType',
-                },{                
-                    title: '赋值类型',
-                    dataIndex: 'valueType',
-                    key: 'valueType',
+                    title: '超额策略',
+                    dataIndex: 'currentValue',
+                    key: 'currentValue',
                     render: (text, record) => {
                         var tag = null;
-                        if (record.valueType == "ORIGINAL_VALUE")
-                            tag = "原值"
-                        else if (record.valueType == "FIXED_VALUE")
-                            tag = "固定值"
-                        else if (record.valueType == "PREFIX_VALUE")
-                            tag = "前缀"
-                        else if (record.valueType == "SUFFIX_VALUE")
-                            tag = "后缀"
-                        else if (record.valueType == "PREFIX_AND_SUFFIX_VALUE")
-                            tag = "前后缀"
+                        if (record.currentMode == 1)
+                            tag = "自定义回源: " + text
+                        else if (record.currentMode == 2)
+                            tag = "自定义状态码: " + text
+                        else if (record.currentMode == 3)
+                            tag = "自定义限速: " + text + "kbps"
                         return tag
                     }
-                },{
-                    title: '赋值参数',
-                    dataIndex: 'param',
-                    key: 'param'
-                },{
-                    title: '样例',
-                    dataIndex: 'example',
-                    key: 'example'
                 },{
                     title: '操作',
                     dataIndex: '',
                     key: 'action',
                     render: (text, record) => {
-                        var editButton = (
-                            <Tooltip placement="bottom" title={"编辑"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickEditField, this)}>
-                                    <Icon type="edit" />
-                                </a>
-                            </Tooltip>
-                        );
+                        // var editButton = (
+                        //     <Tooltip placement="bottom" title={"编辑"}>
+                        //         <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickEditField, this)}>
+                        //             <Icon type="edit" />
+                        //         </a>
+                        //     </Tooltip>
+                        // );
                         var deleteButton = (
                             <Tooltip placement="bottom" title={"删除"}>
                                 <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickDeleteField, this)}>
@@ -355,41 +350,28 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </a>
                             </Tooltip>
                         );
-                        var buttonGroup = null;
-                        if (isView && isEdit) {
-                            buttonGroup = "-"
-                        } else {
-                            buttonGroup = (
+                        var buttonGroup = (
                                 <div>
-                                    {editButton}
-                                    <span className="ant-divider" />
                                     {deleteButton}
                                 </div>
                             )
-                        } 
                         return buttonGroup
                     },
                 }];
 
                 var addEditFieldView = "", addButton = "";
 
-                if (!this.props.isView){
-                    addEditFieldView =  this.renderAddEditFieldView(formItemLayout)//<div style={{textAlign: "center"}}><Spin /></div>
-                    addButton = (<Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddField, this)}>新增</Button>)
-                }
+                addEditFieldView = this.renderAddEditFieldView(formItemLayout)// <div style={{textAlign: "center"}}><Spin /></div>
+                addButton = (<Button icon="plus" size={'small'} onClick={$.proxy(this.onClickAddField, this)}>新增</Button>)
 
-                exportFieldListView = (
-                    <div>
-                        <FormItem {...formItemLayout} label="导出字段列表" required={true}>
+                fieldListView = (
+                    <div style={{display: this.state.isAdvance ? "list-item" : "none"}}>
+                        <FormItem {...formItemLayout} label="新增">
                             {addButton}
                         </FormItem>
-                        <FormItem wrapperCol={{ span: 24 }}>
-                            {getFieldDecorator('templateFieldList', {
-                                rules: [{ validator: this.validateTemplateFieldList }],
-                            })(
-                                <Table rowKey="order" columns={columns} pagination={false} size="small" dataSource={templateFieldList} />
-                            )}
-                            <Modal title={'导出字段'} width={800}
+                        <FormItem wrapperCol={{ span: 16, offset: 4}}>
+                            <Table rowKey="id" columns={columns} pagination={false} size="small" dataSource={advanceStrategy} />
+                            <Modal title={'新增策略'} width={800}
                                    destroyOnClose={true}
                                    visible={fieldModalVisible}
                                    onOk={$.proxy(this.handleFieldOk, this)}
@@ -400,80 +382,63 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     </div>
                 )
 
-                return exportFieldListView;
-            }
-
-            validateTemplateFieldList (rule, value, callback) {
-                if (this.state.templateFieldList.length != 0) {
-                    callback();
-                } else {
-                    callback('请添加导出字段列表！');
-                }
+                return fieldListView;
             }
 
             onClickAddField (event) {
                 this.setState({
                     isEditField:false,
-                    curEditField: {},
+                    curEditField: {
+                        currentMode: 1
+                    },
                     fieldModalVisible: true,
                 });
             }
 
             handleFieldOk (e){
-                // "order": 1,
-                // "originFieldTag": "log_type",
-                // "originFieldName": "日志类型",
-                // "exportFieldTag": "log_type",
-                // "exportFieldName": "导出日志类型",
-                // "exportFieldType": "string",
-                // "valueType": "ORIGINAL_VALUE",
-                // "param": "参数",
-                // "example": "${log_type}"
                 e.preventDefault();
-                const { templateFieldList, isEditField, curEditField } = this.state;
+                const { advanceStrategy, isEditField, curEditField } = this.state;
                 const { getFieldsValue, validateFields, resetFields } = this.props.form;
                 let newField = null, fieldObj;
-                validateFields(["originFieldTag", "exportFieldTag", "exportFieldName", "exportFieldType", "valueType", "param"], (err, vals) => {
-                    console.log("点击OK时的字段：", vals)
+                validateFields(["fileType", "advanceStrategyMode", "advanceStrategyLimit", "advanceStrategyCode", "advanceStrategyOrigin"], (err, vals) => {
                     if (!err && !isEditField) {
-                        fieldObj = _.find(this.logTplManageOriginField, (el)=>{
-                            return el.id == vals.originFieldTag
-                        })
+                        console.log(vals)
+                        var currentValue;
+                        if (vals.advanceStrategyMode == 1) {
+                            currentValue = vals.advanceStrategyOrigin
+                        } else if (vals.advanceStrategyMode == 2) {
+                            currentValue = vals.advanceStrategyCode
+                        } else if (vals.advanceStrategyMode == 3) {
+                            currentValue = vals.advanceStrategyLimit
+                        }
                         newField = {
-                            order: templateFieldList.length + 1,
                             id: Utility.randomStr(8),
-                            originFieldTag: fieldObj.field,
-                            originFieldName: curEditField.originFieldName,
-                            exportFieldTag: vals.exportFieldTag,
-                            exportFieldName: vals.exportFieldName,
-                            exportFieldType: vals.exportFieldType,
-                            valueType: vals.valueType,
-                            param: vals.param,
-                            example: curEditField.example
+                            fileType: vals.fileType.join(","),
+                            currentMode: vals.advanceStrategyMode,
+                            currentValue: currentValue
                         }
                         this.setState({
-                            templateFieldList: [...templateFieldList, newField],
+                            advanceStrategy: [...advanceStrategy, newField],
                             fieldModalVisible: false
                         });
                     } else if (!err && isEditField) {
-                        fieldObj = _.find(this.logTplManageOriginField, (el)=>{
-                            return el.id == vals.originFieldTag
-                        })
-                        _.find(templateFieldList, (el) => {
+                        if (vals.advanceStrategyMode == 1) {
+                            currentValue = vals.advanceStrategyOrigin
+                        } else if (vals.advanceStrategyMode == 2) {
+                            currentValue = vals.advanceStrategyCode
+                        } else if (vals.advanceStrategyMode == 3) {
+                            currentValue = vals.advanceStrategyLimit
+                        }
+                        _.find(advanceStrategy, (el) => {
                             if (el.id == curEditField.id) {
-                                el.originFieldTag = fieldObj.field,
-                                el.originFieldName = curEditField.originFieldName,
-                                el.exportFieldTag = vals.exportFieldTag,
-                                el.exportFieldName = vals.exportFieldName,
-                                el.exportFieldType = vals.exportFieldType,
-                                el.valueType = vals.valueType,
-                                el.param = vals.param,
-                                el.example = curEditField.example
+                                el.fileType = vals.fileType.join(",")
+                                el.currentMode = vals.advanceStrategyMode
+                                el.currentValue = currentValue
                             }
                         })
 
                         this.setState({
-                            templateFieldList: [...templateFieldList],
+                            advanceStrategy: [...advanceStrategy],
                             fieldModalVisible: false
                         });
                     }
@@ -495,7 +460,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-                var model = _.find(this.state.templateFieldList, function(obj){
+                var model = _.find(this.state.advanceStrategy, function(obj){
                         return obj.id == id
                     }.bind(this))
                 this.setState({
@@ -520,14 +485,11 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     okType: 'danger',
                     cancelText: '算了，不删了',
                     onOk: function(){
-                        var list = _.filter(this.state.templateFieldList, function(obj){
+                        var list = _.filter(this.state.advanceStrategy, function(obj){
                                 return obj.id !== id
                             }.bind(this))
-                        _.each(list, (el, index)=>{
-                            el.order = index + 1
-                        })
                         this.setState({
-                            templateFieldList: list
+                            advanceStrategy: list
                         })
                     }.bind(this)
                   });
@@ -539,166 +501,77 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                 var addEditNodesView = "";
                 addEditNodesView = (
                     <Form>
-                        <FormItem {...formItemLayout} label="原字段标识">
-                            {getFieldDecorator('originFieldTag', {
-                                initialValue: curEditField.originFieldTag || "",
-                                rules: [{ required: true, message: '请选择原字段标识!' }]
-                            })(
-                                <Select
-                                    showSearch
-                                    allowClear={true}
-                                    style={{ width: 300 }}
-                                    optionFilterProp="children"
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                    onChange={$.proxy(this.onOriginFieldTagChange, this)}
-                                >
-                                {this.state.dataSourceOriginFieldTag}
-                                </Select>
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="原字段名称">
-                            <span className="ant-form-text">{curEditField.originFieldName || ""}</span>
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="导出字段标识" hasFeedback>
-                            {getFieldDecorator('exportFieldTag', {
-                                    initialValue: curEditField.exportFieldTag || "",
-                                    rules: [{ required: true, message: '请输入导出字段标识!' }],
+                        <FormItem {...formItemLayout} label="文件类型">
+                            {getFieldDecorator('fileType', {
+                                    initialValue: this.state.curEditField.fileType,
+                                    rules: [
+                                        { type: "array", required: true, message: '请输入文件类型!' },
+                                    ],
                                 })(
-                                <Input />
+                                    <Select mode="tags" allowClear={true}
+                                            notFoundContent={"请输入文件类型, 可以配置多个"} 
+                                            filterOption={false} >  
+                                    </Select>
                             )}
                         </FormItem>
-                        <FormItem {...formItemLayout} label="导出字段名称" hasFeedback>
-                            {getFieldDecorator('exportFieldName', {
-                                    initialValue: curEditField.exportFieldName || "",
-                                    rules: [{ required: true, message: '请输入导出字段名称!' }],
-                                })(
-                                <Input />
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="导出数据类型">
-                            {getFieldDecorator('exportFieldType', {
-                                initialValue: curEditField.exportFieldType || "",
-                                rules: [{ required: true, message: '请选择原字段标识!' }]
-                            })(
-                                <Select style={{ width: 200 }}>
-                                    <Option value="">请选择</Option> 
-                                    <Option value="string">string</Option>
-                                    <Option value="int">int</Option>
-                                    <Option value="double">double</Option>
-                                </Select>
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="赋值类型">
-                            {getFieldDecorator('valueType', {
-                                initialValue: curEditField.valueType || "",
-                                rules: [{ required: true, message: '请选择赋值类型!' }]
-                            })(
-                                <Select style={{ width: 200 }} onChange={$.proxy(this.onValueTypeChange, this)}>
-                                    <Option value="">请选择</Option> 
-                                    <Option value="ORIGINAL_VALUE">原值</Option>
-                                    <Option value="FIXED_VALUE">固定值</Option>
-                                    <Option value="PREFIX_VALUE">前缀</Option>
-                                    <Option value="SUFFIX_VALUE">后缀</Option>
-                                    <Option value="PREFIX_AND_SUFFIX_VALUE">前后缀(请以","分割)</Option>
-                                </Select>
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="赋值参数" hasFeedback>
-                            {getFieldDecorator('param', {
-                                    initialValue: curEditField.param || "",
-                                    rules: [{ required: true, message: '请输入赋值参数!' }],
-                                })(
-                                <Input onChange={$.proxy(this.onParamChange, this)}/>
-                            )}
-                        </FormItem>
-                        <FormItem {...formItemLayout} label="样例">
-                            <Alert message={curEditField.example || ""} type="success" style={{minHeight:"40px"}}/>
+                        <FormItem {...formItemLayout} label="超额策略" required={true}>
+                            <Col span={8}>
+                                <FormItem>
+                                    {getFieldDecorator('advanceStrategyMode', {
+                                        initialValue: this.state.curEditField.currentMode + "",
+                                        rules: [{ required: true, message: '请选择超额策略!' }],
+                                    })(
+                                        <Select style={{ width: 150 }} onChange={$.proxy(this.onAdvanceStrategyModeChange, this)}>
+                                            <Option value="1">自定义回源</Option>
+                                            <Option value="3">自定义限速</Option>
+                                            <Option value="2">自定义状态码</Option>
+                                        </Select>
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={12} >
+                                <FormItem style={{display: this.state.curEditField.currentMode == 3 ? "list-item" : "none"}}>
+                                    {getFieldDecorator('advanceStrategyLimit', {
+                                            initialValue: parseInt(this.state.curEditField.currentValue) || 2000,
+                                            rules: [
+                                                { validator: $.proxy(this.validateAdvanceStrategy, this) },
+                                            ],
+                                        })(
+                                        <InputNumber style={{ width: 200 }} min={2000}/>
+                                    )}
+                                </FormItem>
+                                <FormItem style={{display: this.state.curEditField.currentMode == 2 ? "list-item" : "none"}}>
+                                    {getFieldDecorator('advanceStrategyCode', {
+                                            initialValue: parseInt(this.state.curEditField.currentValue) || 404,
+                                            rules: [
+                                                { validator: $.proxy(this.validateAdvanceStrategy, this) },
+                                            ],
+                                        })(
+                                        <InputNumber style={{ width: 200 }} />
+                                    )}
+                                </FormItem>
+                                <FormItem style={{display: this.state.curEditField.currentMode == 1 ? "list-item" : "none"}}>
+                                    {getFieldDecorator('advanceStrategyOrigin', {
+                                            initialValue: this.state.curEditField.currentValue,
+                                            rules: [
+                                                { validator: $.proxy(this.validateAdvanceStrategy, this) },
+                                            ],
+                                        })(
+                                        <Input style= {{ width: 200 }} />
+                                    )}
+                                </FormItem>
+                            </Col>
+                            <Col span={4} >
+                                <FormItem style={{display: this.state.curEditField.currentMode == 3 ? "list-item" : "none"}}>
+                                    <span style={{marginLeft: "10px"}}>kbps</span>
+                                </FormItem>
+                            </Col>
                         </FormItem>
                     </Form>
                 );
 
                 return addEditNodesView;
-            }
-
-            getFieldExample(originField, valueType, param) {
-                var example = "", prefix, suffix;
-                if (valueType && param && originField) {
-                    if (valueType == "ORIGINAL_VALUE") {
-                        example = "${" + originField + "}"
-                    } else if (valueType == "FIXED_VALUE") {
-                        example = param
-                    } else if (valueType == "PREFIX_VALUE") {
-                        example = param + "${" + originField + "}"
-                    } else if (valueType == "SUFFIX_VALUE") {
-                        example = "${" + originField + "}" + param
-                    } else if (valueType == "PREFIX_AND_SUFFIX_VALUE") {
-                        prefix = param.split(",")[0]
-                        suffix = param.split(",")[1]
-                        example = prefix + "${" + originField + "}" + suffix
-                    }
-                }
-                return example
-            }
-
-            onOriginFieldTagChange(value) {
-                const { setFieldsValue, getFieldsValue } = this.props.form;
-                var fieldObj, 
-                    curEditField = this.state.curEditField,
-                    fieldFormObj = getFieldsValue(),
-                    valueType = fieldFormObj.valueType, 
-                    param = fieldFormObj.param;
-
-                if (value) {
-                    fieldObj = _.find(this.logTplManageOriginField, (el)=>{
-                        return el.id == value
-                    })
-                    setFieldsValue({"exportFieldType": fieldObj.type})
-                    curEditField.originFieldName = fieldObj.name
-                    curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
-                } else {
-                    setFieldsValue({"exportFieldType": ""})
-                    curEditField.originFieldName = "";
-                    curEditField.example = "";
-                }
-
-                this.setState({
-                    curEditField: curEditField
-                });
-            }
-
-            onParamChange(e) {
-                const { setFieldsValue, getFieldsValue } = this.props.form;
-                var curEditField = this.state.curEditField,
-                    fieldFormObj = getFieldsValue(),
-                    valueType = fieldFormObj.valueType, 
-                    param = e.target.value,
-                    originFieldTag = fieldFormObj.originFieldTag,
-                    fieldObj = _.find(this.logTplManageOriginField, (el)=>{
-                        return el.id == originFieldTag
-                    })
-                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
-
-                this.setState({
-                    curEditField: curEditField
-                });
-            }
-
-            onValueTypeChange(value) {
-                const { setFieldsValue, getFieldsValue } = this.props.form;
-                var curEditField = this.state.curEditField,
-                    fieldFormObj = getFieldsValue(),
-                    valueType = value, 
-                    param = fieldFormObj.param,
-                    originFieldTag = fieldFormObj.originFieldTag,
-                    fieldObj = _.find(this.logTplManageOriginField, (el)=>{
-                        return el.id == originFieldTag
-                    })
-                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
-
-                this.setState({
-                    curEditField: curEditField
-                });
-            }                          
+            }                        
 
             onSubmitSuccess (){
                 Utility.alerts("保存成功！", "success", 2000);
@@ -708,10 +581,10 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
             handleSubmit(e) {
                 e.preventDefault();
                 const { resetFields, validateFields } = this.props.form;
-                resetFields("templateFieldList")
-                var checkArray = ["name", "productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', 'templateFieldList'];
+                resetFields("advanceStrategy")
+                var checkArray = ["name", "productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', 'advanceStrategy'];
                 if (this.props.isEdit) {
-                    checkArray = ["productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', "templateFieldList"];
+                    checkArray = ["productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', "advanceStrategy"];
                 }
                 validateFields(checkArray, function(err, vals) {
                     var postParam, model = this.props.model;
@@ -723,7 +596,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             backType: vals.backType,
                             fieldSeparator: vals.fieldSeparator == "custom" ? vals.fieldSeparatorCusValue : vals.fieldSeparator,
                             lineBreak: vals.lineBreak,                    
-                            templateFieldList: this.state.templateFieldList,
+                            advanceStrategy: this.state.advanceStrategy,
                         }
                         if (this.props.isEdit) {
                             postParam.groupId = this.groupId,
@@ -756,11 +629,11 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
             render() {
                 const { getFieldDecorator } = this.props.form;
                 const formItemLayout = {
-                  labelCol: { span: 6 },
-                  wrapperCol: { span: 12 },
+                  labelCol: { span: 4 },
+                  wrapperCol: { span: 16 },
                 };
                 const baseInfoView = this.renderBaseInfoView(formItemLayout);
-                const exportFieldListView = this.renderExportFieldTableView(formItemLayout);
+                const fieldListView = this.renderFieldTableView(formItemLayout);
                 let saveButton = null, editView = null;
                 if (!this.props.isView)
                     saveButton = (<Button type="primary" htmlType="submit">保存</Button>)
@@ -772,7 +645,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                         <div>
                             <Form onSubmit={this.handleSubmit}>
                                 {baseInfoView}
-                                {exportFieldListView}
+                                {fieldListView}
                                 <FormItem wrapperCol={{ span: 12, offset: 6 }}>
                                     {saveButton}
                                     <Button onClick={this.onClickCancel} style={{marginLeft: "10px"}}>取消</Button>

@@ -15,7 +15,7 @@ define("netRateLimiting.model", ['require', 'exports', 'utility'], function (req
             var url = BASE_URL + "/channelManager/globalLimitRate/gettAllLimitRateGroup",
                 successCallback = function (res) {
                 if (res) {
-                    this.trigger("get.allLimit.success", res.rows);
+                    this.trigger("get.allLimit.success", res);
                 } else {
                     this.trigger("get.allLimit.error");
                 }
@@ -23,7 +23,7 @@ define("netRateLimiting.model", ['require', 'exports', 'utility'], function (req
                 errorCallback = function (response) {
                 this.trigger('get.allLimit.error', response);
             }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         delLimitRateByGroupId: function delLimitRateByGroupId(args) {
@@ -48,13 +48,13 @@ define("netRateLimiting.model", ['require', 'exports', 'utility'], function (req
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        taskPause: function taskPause(args) {
-            var url = BASE_URL + "/refresh/task/pause",
+        getDomainsBySubType: function getDomainsBySubType(args) {
+            var url = BASE_URL + "/channelManager/globalLimitRate/getDomainsBySubType",
                 successCallback = function (res) {
-                this.trigger("refresh.pause.success", res);
+                this.trigger("get.domain.success", res);
             }.bind(this),
                 errorCallback = function (response) {
-                this.trigger('refresh.pause.error', response);
+                this.trigger('get.domain.error', response);
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },

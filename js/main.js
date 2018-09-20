@@ -208,6 +208,7 @@
   "nodeManage.operateDetail.view": "nodeManage/nodeManage.operateDetail.view",
   "nodeManage.prompt.view": "nodeManage/nodeManage.prompt.view",
   "nodeManage.view": "nodeManage/nodeManage.view",
+  "netRateLimiting.edit.view": "react/netRateLimiting/netRateLimiting.edit.view",
   "netRateLimiting.model": "react/netRateLimiting/netRateLimiting.model",
   "netRateLimiting.view": "react/netRateLimiting/netRateLimiting.view",
   "preheatManage.edit.view": "react/preheatManage/preheatManage.edit.view",

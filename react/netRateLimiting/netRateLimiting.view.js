@@ -21,7 +21,7 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                 //this.onChangePage = this.onChangePage.bind(this);
                 this.handleEditClick = this.handleEditClick.bind(this);
                 this.handleDeleteClick = this.handleDeleteClick.bind(this);
-                this.onGetAllLimitRateGroupSuccess = this.onGetAllLimitRateGroupSuccess.bind(this);
+
                 this.state = {
                     data: [],
                     isError: false,
@@ -69,34 +69,34 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                 this.setState({
                     isFetching: true
                 })
-                //collection.gettAllLimitRateGroup(queryCondition)
+                collection.gettAllLimitRateGroup(queryCondition)
 
-                this.onGetAllLimitRateGroupSuccess();
+                //this.onGetAllLimitRateGroupSuccess();
             }
 
-            onGetAllLimitRateGroupSuccess() {
+            onGetAllLimitRateGroupSuccess(data) {
                 //var data = [];
 
-                var data = [{
-                    "id": 19,
-                    "quotaUnits": "Gbps",
-                    "totalQuota": 100,
-                    "userId": 1241,
-                    "applicationType": 1,
-                    "creater": "1234",
-                    "createTime": 1537152256000,
-                    "updateTime": 1537152820000,
-                    "source": 2,
-                    "remark": "",
-                    "lastModifier": "",
-                    "defaultMode": 1,
-                    "defaultModeString": null,
-                    "active": "-1",
-                    "domainCount": 1,
-                    "domains": [
-                        "jiasutest1.ksyunacc.com"
-                    ]
-                }]
+                // var data = [{
+                //     "id": 19,
+                //     "quotaUnits": "Gbps",
+                //     "totalQuota": 100,
+                //     "userId": 1241,
+                //     "applicationType": 1,
+                //     "creater": "1234",
+                //     "createTime": 1537152256000,
+                //     "updateTime": 1537152820000,
+                //     "source": 2,
+                //     "remark": "",
+                //     "lastModifier": "",
+                //     "defaultMode": 1,
+                //     "defaultModeString": null,
+                //     "active": "-1",
+                //     "domainCount": 1,
+                //     "domains": [
+                //         "jiasutest1.ksyunacc.com"
+                //     ]
+                // }]
 
                 this.setState({
                     data: data,
@@ -286,7 +286,6 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
 
             getInitialState: function () {
                 var defaultState = {
-                    nodeList: [],
                     curViewsMark: "list",// list: 列表界面，add: 新建，edit: 编辑
                     breadcrumbTxt: ["客户配置管理", "全局限速"]
                 }
@@ -294,7 +293,7 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             },
 
             onClickAddCallback: function(){
-                require(['preheatManage.edit.view'],function(NetRateLimitingEditView){
+                require(['netRateLimiting.edit.view'],function(NetRateLimitingEditView){
                     this.curView = (<NetRateLimitingEditView limitProps={this.limitProps} isEdit={false} />);
                     this.setState({
                         curViewsMark: "add",
@@ -304,7 +303,7 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
             },
 
             onClickEditCallback: function(model){
-                require(['preheatManage.edit.view'],function(NetRateLimitingEditView){
+                require(['netRateLimiting.edit.view'],function(NetRateLimitingEditView){
                     this.curView = (<NetRateLimitingEditView limitProps={this.limitProps} model={model} isEdit={true} />);
                     this.setState({
                         curViewsMark: "edit",
@@ -322,11 +321,12 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
 
             render: function(){
                 this.queryCondition = {
-                    "userId": null
+                    "userId": this.props.userInfo.uid
                 }
 
                 this.limitProps = {
                     collection: this.props.collection,
+                    userInfo: this.props.userInfo,
                     queryCondition: this.queryCondition,
                     onClickAddCallback: $.proxy(this.onClickAddCallback, this),
                     onClickEditCallback: $.proxy(this.onClickEditCallback, this),
@@ -380,7 +380,8 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
 
                 var NetRateLimitingListFac = React.createFactory(NetRateLimitingList);
                 var netRateLimitingList = NetRateLimitingListFac({
-                    collection: this.collection
+                    collection: this.collection,
+                    userInfo: this.userInfo
                 });
                 ReactDOM.render(netRateLimitingList, this.$el.find(".list").get(0));
 

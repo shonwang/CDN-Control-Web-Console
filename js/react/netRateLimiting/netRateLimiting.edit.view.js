@@ -27,6 +27,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
         Tooltip = Antd.Tooltip,
         Col = Antd.Col,
         Alert = Antd.Alert,
+        InputNumber = Antd.InputNumber,
+        Switch = Antd.Switch,
         confirm = Modal.confirm;
 
     var NetRateLimitingEditForm = function (_React$Component) {
@@ -39,26 +41,24 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
 
             _this.onClickCancel = _this.onClickCancel.bind(_this);
             _this.renderBaseInfoView = _this.renderBaseInfoView.bind(_this);
-            _this.renderExportFieldTableView = _this.renderExportFieldTableView.bind(_this);
-            _this.validateTemplateFieldList = _this.validateTemplateFieldList.bind(_this);
+            _this.renderFieldTableView = _this.renderFieldTableView.bind(_this);
             _this.handleSubmit = _this.handleSubmit.bind(_this);
-            _this.convertEnumToShowStr = _this.convertEnumToShowStr.bind(_this);
-            _this.getFieldExample = _this.getFieldExample.bind(_this);
-            _this.validateFieldSeparatorCusValue = _this.validateFieldSeparatorCusValue.bind(_this);
 
             _this.state = {
                 currentSubType: -1,
                 origins: [],
                 quotaUnits: "",
                 totalQuota: "",
-                strategys: [],
+                advanceStrategy: [],
+                defaultStrategy: {},
+                isAdvance: false,
 
                 isLoadingDetail: props.isEdit ? true : false,
                 fieldModalVisible: false,
                 isEditField: false,
                 curEditField: {},
 
-                dataSourceOriginFieldTag: []
+                dataSourceDomains: []
             };
             return _this;
         }
@@ -68,21 +68,29 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
             value: function componentDidMount() {
                 var limitProps = this.props.limitProps,
                     collection = limitProps.collection;
+                collection.on("get.domain.success", $.proxy(this.onGetDomainSuccess, this));
+                collection.on("get.domain.error", $.proxy(this.onGetError, this));
                 if (this.props.isEdit) {
                     var model = this.props.model;
                     collection.on("get.detail.success", $.proxy(this.onGetDetailSuccess, this));
                     collection.on("get.detail.error", $.proxy(this.onGetError, this));
                     collection.getLimitRateDetailByGroupId({ groupId: model.id });
+                } else {
+                    collection.getDomainsBySubType({
+                        userId: this.props.limitProps.userInfo.uid,
+                        groupId: this.props.model.id,
+                        subType: this.state.currentSubType
+                    });
                 }
-                collection.on("add.template.success", $.proxy(this.onSubmitSuccess, this));
-                collection.on("add.template.error", $.proxy(this.onGetError, this));
+                // collection.on("add.template.success", $.proxy(this.onSubmitSuccess, this));
+                // collection.on("add.template.error", $.proxy(this.onGetError, this));
             }
         }, {
             key: 'componentWillUnmount',
             value: function componentWillUnmount() {
                 var collection = this.props.limitProps.collection;
-                collection.off("add.template.success");
-                collection.off("add.template.error");
+                // collection.off("add.template.success");
+                // collection.off("add.template.error");
                 if (this.props.isEdit) {
                     collection.off("get.detail.success");
                     collection.off("get.detail.error");
@@ -91,64 +99,125 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
         }, {
             key: 'onGetDetailSuccess',
             value: function onGetDetailSuccess(res) {
-                res = {
-                    "group": {
-                        "id": "",
-                        "quotaUnits": "",
-                        "totalQuota": "",
-                        "userId": "",
-                        "applicationType": "",
-                        "creater": "",
-                        "createTime": "",
-                        "updateTime": "",
-                        "source": "",
-                        "remark": "",
-                        "lastModifier": "",
-                        "defaultMode": "",
-                        "defaultModeString": "",
-                        "active": "",
-                        "domainCount": "",
-                        "domains": []
-
-                    },
-                    "origins": [{
-                        "id": "",
-                        "originId": "",
-                        "groupId": "",
-                        "userId": "",
-                        "domain": "",
-                        "domainId": ""
-                    }],
-                    "strategys": [{
-                        "id": "",
-                        "groupId": "",
-                        "fileType": "",
-                        "currentMode": "",
-                        "currentModeString": "",
-                        "currentValue": "",
-                        "sort": ""
-                    }],
-                    "domainSubTypes": [],
-                    "currentSubType": -1 //-1:全部类型，1:下载 2:直播拉流域名 3:直播上行加速域名 4：
-                };
+                var origins = [],
+                    defaultStrategy = res.strategys.shift(),
+                    advanceStrategy = res.strategys;
+                _.each(res.origins, function (el) {
+                    origins.push(el.domain);
+                }.bind(this));
 
                 this.setState({
                     currentSubType: res.currentSubType,
-                    origins: res.origins,
+                    origins: origins,
                     quotaUnits: res.group.quotaUnits,
                     totalQuota: res.group.totalQuota,
-                    strategys: res.strategys,
+                    advanceStrategy: advanceStrategy,
+                    defaultStrategy: defaultStrategy,
+                    isAdvance: advanceStrategy.length > 0 ? true : false
+                });
 
+                var collection = this.props.limitProps.collection;
+                collection.getDomainsBySubType({
+                    userId: this.props.limitProps.userInfo.uid,
+                    groupId: this.props.model.id,
+                    subType: this.state.currentSubType
+                });
+            }
+        }, {
+            key: 'onGetDomainSuccess',
+            value: function onGetDomainSuccess(res) {
+                var domainArray = res.origins.map(function (el) {
+                    return React.createElement(
+                        Option,
+                        { key: el.domain },
+                        el.domain
+                    );
+                });
+                this.setState({
+                    dataSourceDomains: domainArray,
                     isLoadingDetail: false
+                });
+            }
+        }, {
+            key: 'onCurrentSubTypeChange',
+            value: function onCurrentSubTypeChange(value) {
+                var _props$form = this.props.form,
+                    setFieldsValue = _props$form.setFieldsValue,
+                    getFieldsValue = _props$form.getFieldsValue;
+
+                setFieldsValue({ "origins": [] });
+                this.setState({
+                    dataSourceDomains: []
+                });
+                var collection = this.props.limitProps.collection;
+                collection.getDomainsBySubType({
+                    userId: this.props.limitProps.userInfo.uid,
+                    groupId: this.props.model.id,
+                    subType: value
+                });
+            }
+        }, {
+            key: 'onStrategyModeChange',
+            value: function onStrategyModeChange(value) {
+                var defaultStrategy = this.state.defaultStrategy;
+                defaultStrategy.currentMode = value;
+                this.setState({
+                    defaultStrategy: defaultStrategy
+                });
+            }
+        }, {
+            key: 'onAdvanceStrategyModeChange',
+            value: function onAdvanceStrategyModeChange(value) {
+                var curEditField = this.state.curEditField;
+                curEditField.currentMode = value;
+                this.setState({
+                    curEditField: curEditField
+                });
+            }
+        }, {
+            key: 'validateStrategy',
+            value: function validateStrategy(rule, value, callback) {
+                var currentMode = this.state.defaultStrategy.currentMode;
+
+                if (currentMode == 1 && value !== "") {
+                    callback('请输入自定义回源！');
+                } else if (currentMode == 2 && value !== "") {
+                    callback('请输入自定义状态码！');
+                } else if (currentMode == 3 && value !== "") {
+                    callback('请输入自定义限速！');
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'validateAdvanceStrategy',
+            value: function validateAdvanceStrategy(rule, value, callback) {
+                var currentMode = this.state.curEditField.currentMode;
+
+                if (currentMode == 1 && value !== "") {
+                    callback('请输入自定义回源！');
+                } else if (currentMode == 2 && value !== "") {
+                    callback('请输入自定义状态码！');
+                } else if (currentMode == 3 && value !== "") {
+                    callback('请输入自定义限速！');
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'onAdvanceButtonChange',
+            value: function onAdvanceButtonChange(checked) {
+                this.setState({
+                    isAdvance: checked
                 });
             }
         }, {
             key: 'renderBaseInfoView',
             value: function renderBaseInfoView(formItemLayout) {
-                var _props$form = this.props.form,
-                    getFieldDecorator = _props$form.getFieldDecorator,
-                    setFieldsValue = _props$form.setFieldsValue,
-                    getFieldValue = _props$form.getFieldValue;
+                var _props$form2 = this.props.form,
+                    getFieldDecorator = _props$form2.getFieldDecorator,
+                    setFieldsValue = _props$form2.setFieldsValue,
+                    getFieldValue = _props$form2.getFieldValue;
 
                 var baseInfoView = null;
 
@@ -160,16 +229,16 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                         _extends({}, formItemLayout, { label: '\u9650\u901F\u57DF\u540D', required: true }),
                         React.createElement(
                             Col,
-                            { span: 12 },
+                            { span: 8 },
                             React.createElement(
                                 FormItem,
                                 null,
                                 getFieldDecorator('currentSubType', {
-                                    initialValue: this.state.currentSubType,
+                                    initialValue: this.state.currentSubType + "",
                                     rules: [{ required: true, message: '请选择字段间隔符!' }]
                                 })(React.createElement(
                                     Select,
-                                    { style: { width: 200 }, onChange: $.proxy(this.onfieldSeparatorChange, this) },
+                                    { style: { width: 150 }, onChange: $.proxy(this.onCurrentSubTypeChange, this) },
                                     React.createElement(
                                         Option,
                                         { value: '-1' },
@@ -178,22 +247,22 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                     React.createElement(
                                         Option,
                                         { value: '1' },
-                                        '\u4E0B\u8F7D'
+                                        '\u97F3\u89C6\u9891\u70B9\u64AD'
                                     ),
                                     React.createElement(
                                         Option,
-                                        { value: '2' },
-                                        '\u76F4\u64AD\u62C9\u6D41\u57DF\u540D'
+                                        { value: '2', style: { display: "none" } },
+                                        '\u6D41\u5A92\u4F53\u76F4\u64AD'
                                     ),
                                     React.createElement(
                                         Option,
-                                        { value: '3' },
-                                        '\u76F4\u64AD\u4E0A\u884C\u52A0\u901F\u57DF\u540D'
+                                        { value: '3', style: { display: "none" } },
+                                        '\u76F4\u64AD\u63A8\u6D41\u52A0\u901F'
                                     ),
                                     React.createElement(
                                         Option,
                                         { value: '4' },
-                                        '\u81EA\u5B9A\u4E49'
+                                        '\u5927\u6587\u4EF6\u4E0B\u8F7D'
                                     )
                                 ))
                             )
@@ -204,263 +273,194 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             React.createElement(
                                 FormItem,
                                 null,
-                                getFieldDecorator('fieldSeparatorCusValue', {
-                                    initialValue: this.state.fieldSeparatorCusValue,
-                                    rules: [{ validator: this.validateFieldSeparatorCusValue }]
-                                })(React.createElement(Input, { style: { width: 200 },
-                                    onChange: $.proxy(this.onfieldSeparatorCusValueChange, this) }))
-                            )
-                        )
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u6A21\u677F\u540D\u79F0', hasFeedback: true }),
-                        getFieldDecorator('name', {
-                            initialValue: this.state.name,
-                            validateFirst: true,
-                            rules: [{ required: true, message: '请输入模板名称!' }, { pattern: /^[0-9A-Za-z\_]+$/, message: '模板名称只能输入英文数字下划线!' }]
-                        })(React.createElement(Input, { disabled: this.props.isEdit }))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u4EA7\u54C1\u7EBF\u6807\u8BC6' }),
-                        getFieldDecorator('productType', {
-                            initialValue: this.state.productType,
-                            rules: [{ required: true, message: '请选择产品线标识!' }]
-                        })(React.createElement(
-                            Select,
-                            { style: { width: 200 }, disabled: this.props.isEdit },
-                            React.createElement(
-                                Option,
-                                { value: '' },
-                                '\u8BF7\u9009\u62E9'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'LIVE' },
-                                '\u76F4\u64AD'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'DOWNLOAD' },
-                                '\u70B9\u64AD'
-                            )
-                        ))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: React.createElement(
-                                'span',
-                                null,
-                                '\u56DE\u4F20\u65B9\u5F0F\xA0',
-                                React.createElement(
-                                    Tooltip,
-                                    { title: '\u8BF4\u660E\uFF1A\u8FB9\u7F18\u56DE\u4F20\uFF0C\u4FDD\u8BC1\u7528\u6237\u7684\u9AD8SLA\uFF1B\u8FB9\u7F18\u56DE\u4F20\u4FDD\u8BC1\u7528\u6237\u7684\u5B9E\u65F6\u6027\u3002\u53EF\u6839\u636E\u7528\u6237\u7684\u9700\u8981\u9009\u62E9\u5408\u9002\u7684\u56DE\u4F20\u65B9\u5F0F' },
-                                    React.createElement(Icon, { type: 'question-circle-o' })
-                                )
-                            ) }),
-                        getFieldDecorator('backType', {
-                            initialValue: this.state.backType,
-                            rules: [{ required: true, message: '请选择回传方式!' }]
-                        })(React.createElement(
-                            Select,
-                            { style: { width: 200 } },
-                            React.createElement(
-                                Option,
-                                { value: '' },
-                                '\u8BF7\u9009\u62E9'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'CENTER' },
-                                '\u4E2D\u5FC3\u56DE\u4F20'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'EDGE' },
-                                '\u8FB9\u7F18\u56DE\u4F20'
-                            )
-                        ))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u5B57\u6BB5\u95F4\u9694\u7B26\u8BBE\u7F6E', required: true }),
-                        React.createElement(
-                            Col,
-                            { span: 12 },
-                            React.createElement(
-                                FormItem,
-                                null,
-                                getFieldDecorator('fieldSeparator', {
-                                    initialValue: this.state.fieldSeparator,
-                                    rules: [{ required: true, message: '请选择字段间隔符!' }]
+                                getFieldDecorator('origins', {
+                                    initialValue: this.state.origins,
+                                    rules: [{ type: "array", required: true, message: '请选择域名!' }]
                                 })(React.createElement(
                                     Select,
-                                    { style: { width: 200 }, onChange: $.proxy(this.onfieldSeparatorChange, this) },
+                                    { mode: 'multiple', allowClear: true,
+                                        placeholder: '请选择',
+                                        maxTagCount: 1,
+                                        notFoundContent: React.createElement(Spin, { size: 'small' }),
+                                        filterOption: false },
+                                    this.state.dataSourceDomains
+                                ))
+                            )
+                        ),
+                        React.createElement(
+                            Col,
+                            { span: 4 },
+                            React.createElement(
+                                FormItem,
+                                null,
+                                React.createElement(
+                                    'span',
+                                    { style: { marginLeft: "10px" } },
+                                    '\u5171',
+                                    this.state.dataSourceDomains.length,
+                                    '\u4E2A\u57DF\u540D'
+                                )
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        FormItem,
+                        _extends({}, formItemLayout, { label: '\u9650\u901F\u9608\u503C', required: true }),
+                        React.createElement(
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                null,
+                                getFieldDecorator('totalQuota', {
+                                    initialValue: this.state.totalQuota,
+                                    rules: [{ required: true, message: '请输入限速阈值!' }]
+                                })(React.createElement(InputNumber, { style: { width: 150 } }))
+                            )
+                        ),
+                        React.createElement(
+                            Col,
+                            { span: 12 },
+                            React.createElement(
+                                FormItem,
+                                null,
+                                getFieldDecorator('quotaUnits', {
+                                    initialValue: this.state.quotaUnits,
+                                    rules: [{ type: "array", required: true, message: '请选择限速阈值单位!' }]
+                                })(React.createElement(
+                                    Select,
+                                    { style: { width: 150 }, onChange: $.proxy(this.onCurrentSubTypeChange, this) },
                                     React.createElement(
                                         Option,
-                                        { value: '' },
-                                        '\u8BF7\u9009\u62E9'
+                                        { value: 'Gbps' },
+                                        'Gbps'
                                     ),
                                     React.createElement(
                                         Option,
-                                        { value: '\\t' },
-                                        'tab'
+                                        { value: 'Mbps' },
+                                        'Mbps'
+                                    )
+                                ))
+                            )
+                        )
+                    ),
+                    React.createElement(
+                        FormItem,
+                        _extends({}, formItemLayout, { label: '\u8D85\u989D\u7B56\u7565', required: true }),
+                        React.createElement(
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                null,
+                                getFieldDecorator('defaultStrategyMode', {
+                                    initialValue: this.state.defaultStrategy.currentMode + "",
+                                    rules: [{ required: true, message: '请选择超额策略!' }]
+                                })(React.createElement(
+                                    Select,
+                                    { style: { width: 150 }, onChange: $.proxy(this.onStrategyModeChange, this) },
+                                    React.createElement(
+                                        Option,
+                                        { value: '1' },
+                                        '\u81EA\u5B9A\u4E49\u56DE\u6E90'
                                     ),
                                     React.createElement(
                                         Option,
-                                        { value: ' ' },
-                                        '\u7A7A\u683C'
+                                        { value: '3' },
+                                        '\u81EA\u5B9A\u4E49\u9650\u901F'
                                     ),
                                     React.createElement(
                                         Option,
-                                        { value: '|' },
-                                        '|'
-                                    ),
-                                    React.createElement(
-                                        Option,
-                                        { value: 'custom' },
-                                        '\u81EA\u5B9A\u4E49'
+                                        { value: '2' },
+                                        '\u81EA\u5B9A\u4E49\u72B6\u6001\u7801'
                                     )
                                 ))
                             )
                         ),
                         React.createElement(
                             Col,
-                            { span: 12, style: { display: this.state.fieldSepCusValueVisible } },
+                            { span: 12 },
                             React.createElement(
                                 FormItem,
-                                null,
-                                getFieldDecorator('fieldSeparatorCusValue', {
-                                    initialValue: this.state.fieldSeparatorCusValue,
-                                    rules: [{ validator: this.validateFieldSeparatorCusValue }]
-                                })(React.createElement(Input, { style: { width: 200 },
-                                    onChange: $.proxy(this.onfieldSeparatorCusValueChange, this) }))
+                                { style: { display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none" } },
+                                getFieldDecorator('strategyLimit', {
+                                    initialValue: parseInt(this.state.defaultStrategy.currentValue),
+                                    rules: [{ validator: $.proxy(this.validateStrategy, this) }]
+                                })(React.createElement(InputNumber, { style: { width: 150 }, min: 2000 })),
+                                React.createElement(
+                                    'span',
+                                    { style: { marginLeft: "10px" } },
+                                    'kbps'
+                                )
+                            ),
+                            React.createElement(
+                                FormItem,
+                                { style: { display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none" } },
+                                getFieldDecorator('strategyCode', {
+                                    initialValue: parseInt(this.state.defaultStrategy.currentValue),
+                                    rules: [{ validator: $.proxy(this.validateStrategy, this) }]
+                                })(React.createElement(InputNumber, { style: { width: 150 } }))
+                            ),
+                            React.createElement(
+                                FormItem,
+                                { style: { display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none" } },
+                                getFieldDecorator('strategyOrigin', {
+                                    initialValue: this.state.defaultStrategy.currentValue,
+                                    rules: [{ validator: $.proxy(this.validateStrategy, this) }]
+                                })(React.createElement(Input, null))
                             )
                         )
                     ),
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u6362\u884C\u7B26\u8BBE\u7F6E', hasFeedback: true }),
-                        getFieldDecorator('lineBreak', {
-                            initialValue: this.state.lineBreak,
-                            rules: [{
-                                required: true, message: '请输入换行符!' }, {}]
-                        })(React.createElement(Input, null))
+                        _extends({}, formItemLayout, { label: '\u9AD8\u7EA7' }),
+                        React.createElement(Switch, { checked: this.state.isAdvance, onChange: $.proxy(this.onAdvanceButtonChange, this) })
                     )
                 );
 
                 return baseInfoView;
             }
         }, {
-            key: 'validateFieldSeparatorCusValue',
-            value: function validateFieldSeparatorCusValue(rule, value, callback) {
-                var getFieldsValue = this.props.form.getFieldsValue;
-
-                var fieldSeparator = getFieldsValue().fieldSeparator;
-                if (fieldSeparator == "custom" && value == "") {
-                    callback('请输入自定义字段间隔符!');
-                } else {
-                    callback();
-                }
-            }
-        }, {
-            key: 'onfieldSeparatorChange',
-            value: function onfieldSeparatorChange(value, option) {
-                var setFieldsValue = this.props.form.setFieldsValue;
-
-                if (value == "custom") {
-                    this.setState({
-                        fieldSepCusValueVisible: "inline-block"
-                    });
-                } else {
-                    this.setState({
-                        fieldSepCusValueVisible: "none"
-                    });
-                    setFieldsValue({ "fieldSeparatorCusValue": this.state.fieldSeparatorCusValue });
-                }
-            }
-        }, {
-            key: 'onfieldSeparatorCusValueChange',
-            value: function onfieldSeparatorCusValueChange(event) {
-                var value = event.target.value;
-                if (value != "") {
-                    this.setState({
-                        fieldSeparatorCusValue: value
-                    });
-                }
-            }
-        }, {
-            key: 'renderExportFieldTableView',
-            value: function renderExportFieldTableView(formItemLayout) {
+            key: 'renderFieldTableView',
+            value: function renderFieldTableView(formItemLayout) {
                 var _this2 = this;
 
                 var getFieldDecorator = this.props.form.getFieldDecorator;
                 var _state = this.state,
-                    templateFieldList = _state.templateFieldList,
+                    advanceStrategy = _state.advanceStrategy,
                     fieldModalVisible = _state.fieldModalVisible,
                     curEditField = _state.curEditField;
 
-                var exportFieldListView = "";
+                var fieldListView = "";
                 var _props = this.props,
                     isView = _props.isView,
                     isEdit = _props.isEdit;
 
                 var columns = [{
-                    title: '序号',
-                    dataIndex: 'order',
-                    key: 'order'
+                    title: '文件类型',
+                    dataIndex: 'fileType',
+                    key: 'fileType'
                 }, {
-                    title: '原字段标识',
-                    dataIndex: 'originFieldTag',
-                    key: 'originFieldTag'
-                }, {
-                    title: '原字段名称',
-                    dataIndex: 'originFieldName',
-                    key: 'originFieldName'
-                }, {
-                    title: '导出字段标识',
-                    dataIndex: 'exportFieldTag',
-                    key: 'exportFieldTag'
-                }, {
-                    title: '导出字段名称',
-                    dataIndex: 'exportFieldName',
-                    key: 'exportFieldName'
-                }, {
-                    title: '导出数据类型',
-                    dataIndex: 'exportFieldType',
-                    key: 'exportFieldType'
-                }, {
-                    title: '赋值类型',
-                    dataIndex: 'valueType',
-                    key: 'valueType',
+                    title: '超额策略',
+                    dataIndex: 'currentValue',
+                    key: 'currentValue',
                     render: function render(text, record) {
                         var tag = null;
-                        if (record.valueType == "ORIGINAL_VALUE") tag = "原值";else if (record.valueType == "FIXED_VALUE") tag = "固定值";else if (record.valueType == "PREFIX_VALUE") tag = "前缀";else if (record.valueType == "SUFFIX_VALUE") tag = "后缀";else if (record.valueType == "PREFIX_AND_SUFFIX_VALUE") tag = "前后缀";
+                        if (record.currentMode == 1) tag = "自定义回源: " + text;else if (record.currentMode == 2) tag = "自定义状态码: " + text;else if (record.currentMode == 3) tag = "自定义限速: " + text + "kbps";
                         return tag;
                     }
-                }, {
-                    title: '赋值参数',
-                    dataIndex: 'param',
-                    key: 'param'
-                }, {
-                    title: '样例',
-                    dataIndex: 'example',
-                    key: 'example'
                 }, {
                     title: '操作',
                     dataIndex: '',
                     key: 'action',
                     render: function render(text, record) {
-                        var editButton = React.createElement(
-                            Tooltip,
-                            { placement: 'bottom', title: "编辑" },
-                            React.createElement(
-                                'a',
-                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this2.onClickEditField, _this2) },
-                                React.createElement(Icon, { type: 'edit' })
-                            )
-                        );
+                        // var editButton = (
+                        //     <Tooltip placement="bottom" title={"编辑"}>
+                        //         <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickEditField, this)}>
+                        //             <Icon type="edit" />
+                        //         </a>
+                        //     </Tooltip>
+                        // );
                         var deleteButton = React.createElement(
                             Tooltip,
                             { placement: 'bottom', title: "删除" },
@@ -470,18 +470,11 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 React.createElement(Icon, { type: 'delete' })
                             )
                         );
-                        var buttonGroup = null;
-                        if (isView && isEdit) {
-                            buttonGroup = "-";
-                        } else {
-                            buttonGroup = React.createElement(
-                                'div',
-                                null,
-                                editButton,
-                                React.createElement('span', { className: 'ant-divider' }),
-                                deleteButton
-                            );
-                        }
+                        var buttonGroup = React.createElement(
+                            'div',
+                            null,
+                            deleteButton
+                        );
                         return buttonGroup;
                     }
                 }];
@@ -489,32 +482,28 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 var addEditFieldView = "",
                     addButton = "";
 
-                if (!this.props.isView) {
-                    addEditFieldView = this.renderAddEditFieldView(formItemLayout); //<div style={{textAlign: "center"}}><Spin /></div>
-                    addButton = React.createElement(
-                        Button,
-                        { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddField, this) },
-                        '\u65B0\u589E'
-                    );
-                }
+                addEditFieldView = this.renderAddEditFieldView(formItemLayout); // <div style={{textAlign: "center"}}><Spin /></div>
+                addButton = React.createElement(
+                    Button,
+                    { icon: 'plus', size: 'small', onClick: $.proxy(this.onClickAddField, this) },
+                    '\u65B0\u589E'
+                );
 
-                exportFieldListView = React.createElement(
+                fieldListView = React.createElement(
                     'div',
-                    null,
+                    { style: { display: this.state.isAdvance ? "list-item" : "none" } },
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u5BFC\u51FA\u5B57\u6BB5\u5217\u8868', required: true }),
+                        _extends({}, formItemLayout, { label: '\u65B0\u589E' }),
                         addButton
                     ),
                     React.createElement(
                         FormItem,
-                        { wrapperCol: { span: 24 } },
-                        getFieldDecorator('templateFieldList', {
-                            rules: [{ validator: this.validateTemplateFieldList }]
-                        })(React.createElement(Table, { rowKey: 'order', columns: columns, pagination: false, size: 'small', dataSource: templateFieldList })),
+                        { wrapperCol: { span: 16, offset: 4 } },
+                        React.createElement(Table, { rowKey: 'id', columns: columns, pagination: false, size: 'small', dataSource: advanceStrategy }),
                         React.createElement(
                             Modal,
-                            { title: '导出字段', width: 800,
+                            { title: '新增策略', width: 800,
                                 destroyOnClose: true,
                                 visible: fieldModalVisible,
                                 onOk: $.proxy(this.handleFieldOk, this),
@@ -524,23 +513,16 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     )
                 );
 
-                return exportFieldListView;
-            }
-        }, {
-            key: 'validateTemplateFieldList',
-            value: function validateTemplateFieldList(rule, value, callback) {
-                if (this.state.templateFieldList.length != 0) {
-                    callback();
-                } else {
-                    callback('请添加导出字段列表！');
-                }
+                return fieldListView;
             }
         }, {
             key: 'onClickAddField',
             value: function onClickAddField(event) {
                 this.setState({
                     isEditField: false,
-                    curEditField: {},
+                    curEditField: {
+                        currentMode: 1
+                    },
                     fieldModalVisible: true
                 });
             }
@@ -549,61 +531,57 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
             value: function handleFieldOk(e) {
                 var _this3 = this;
 
-                // "order": 1,
-                // "originFieldTag": "log_type",
-                // "originFieldName": "日志类型",
-                // "exportFieldTag": "log_type",
-                // "exportFieldName": "导出日志类型",
-                // "exportFieldType": "string",
-                // "valueType": "ORIGINAL_VALUE",
-                // "param": "参数",
-                // "example": "${log_type}"
                 e.preventDefault();
                 var _state2 = this.state,
-                    templateFieldList = _state2.templateFieldList,
+                    advanceStrategy = _state2.advanceStrategy,
                     isEditField = _state2.isEditField,
                     curEditField = _state2.curEditField;
-                var _props$form2 = this.props.form,
-                    getFieldsValue = _props$form2.getFieldsValue,
-                    validateFields = _props$form2.validateFields,
-                    resetFields = _props$form2.resetFields;
+                var _props$form3 = this.props.form,
+                    getFieldsValue = _props$form3.getFieldsValue,
+                    validateFields = _props$form3.validateFields,
+                    resetFields = _props$form3.resetFields;
 
                 var newField = null,
                     fieldObj = void 0;
-                validateFields(["originFieldTag", "exportFieldTag", "exportFieldName", "exportFieldType", "valueType", "param"], function (err, vals) {
-                    console.log("点击OK时的字段：", vals);
+                validateFields(["fileType", "advanceStrategyMode", "advanceStrategyLimit", "advanceStrategyCode", "advanceStrategyOrigin"], function (err, vals) {
                     if (!err && !isEditField) {
-                        fieldObj = _.find(_this3.logTplManageOriginField, function (el) {
-                            return el.id == vals.originFieldTag;
-                        });
+                        console.log(vals);
+                        var currentValue;
+                        if (vals.advanceStrategyMode == 1) {
+                            currentValue = vals.advanceStrategyOrigin;
+                        } else if (vals.advanceStrategyMode == 2) {
+                            currentValue = vals.advanceStrategyCode;
+                        } else if (vals.advanceStrategyMode == 3) {
+                            currentValue = vals.advanceStrategyLimit;
+                        }
                         newField = {
-                            order: templateFieldList.length + 1,
                             id: Utility.randomStr(8),
-                            originFieldTag: fieldObj.field,
-                            originFieldName: curEditField.originFieldName,
-                            exportFieldTag: vals.exportFieldTag,
-                            exportFieldName: vals.exportFieldName,
-                            exportFieldType: vals.exportFieldType,
-                            valueType: vals.valueType,
-                            param: vals.param,
-                            example: curEditField.example
+                            fileType: vals.fileType.join(","),
+                            currentMode: vals.advanceStrategyMode,
+                            currentValue: currentValue
                         };
                         _this3.setState({
-                            templateFieldList: [].concat(_toConsumableArray(templateFieldList), [newField]),
+                            advanceStrategy: [].concat(_toConsumableArray(advanceStrategy), [newField]),
                             fieldModalVisible: false
                         });
                     } else if (!err && isEditField) {
-                        fieldObj = _.find(_this3.logTplManageOriginField, function (el) {
-                            return el.id == vals.originFieldTag;
-                        });
-                        _.find(templateFieldList, function (el) {
+                        if (vals.advanceStrategyMode == 1) {
+                            currentValue = vals.advanceStrategyOrigin;
+                        } else if (vals.advanceStrategyMode == 2) {
+                            currentValue = vals.advanceStrategyCode;
+                        } else if (vals.advanceStrategyMode == 3) {
+                            currentValue = vals.advanceStrategyLimit;
+                        }
+                        _.find(advanceStrategy, function (el) {
                             if (el.id == curEditField.id) {
-                                el.originFieldTag = fieldObj.field, el.originFieldName = curEditField.originFieldName, el.exportFieldTag = vals.exportFieldTag, el.exportFieldName = vals.exportFieldName, el.exportFieldType = vals.exportFieldType, el.valueType = vals.valueType, el.param = vals.param, el.example = curEditField.example;
+                                el.fileType = vals.fileType.join(",");
+                                el.currentMode = vals.advanceStrategyMode;
+                                el.currentValue = currentValue;
                             }
                         });
 
                         _this3.setState({
-                            templateFieldList: [].concat(_toConsumableArray(templateFieldList)),
+                            advanceStrategy: [].concat(_toConsumableArray(advanceStrategy)),
                             fieldModalVisible: false
                         });
                     }
@@ -627,7 +605,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 } else {
                     id = $(eventTarget).attr("id");
                 }
-                var model = _.find(this.state.templateFieldList, function (obj) {
+                var model = _.find(this.state.advanceStrategy, function (obj) {
                     return obj.id == id;
                 }.bind(this));
                 this.setState({
@@ -653,14 +631,11 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     okType: 'danger',
                     cancelText: '算了，不删了',
                     onOk: function () {
-                        var list = _.filter(this.state.templateFieldList, function (obj) {
+                        var list = _.filter(this.state.advanceStrategy, function (obj) {
                             return obj.id !== id;
                         }.bind(this));
-                        _.each(list, function (el, index) {
-                            el.order = index + 1;
-                        });
                         this.setState({
-                            templateFieldList: list
+                            advanceStrategy: list
                         });
                     }.bind(this)
                 });
@@ -679,233 +654,92 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     null,
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u539F\u5B57\u6BB5\u6807\u8BC6' }),
-                        getFieldDecorator('originFieldTag', {
-                            initialValue: curEditField.originFieldTag || "",
-                            rules: [{ required: true, message: '请选择原字段标识!' }]
-                        })(React.createElement(
-                            Select,
-                            {
-                                showSearch: true,
-                                allowClear: true,
-                                style: { width: 300 },
-                                optionFilterProp: 'children',
-                                filterOption: function filterOption(input, option) {
-                                    return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-                                },
-                                onChange: $.proxy(this.onOriginFieldTagChange, this)
-                            },
-                            this.state.dataSourceOriginFieldTag
-                        ))
+                        _extends({}, formItemLayout, { label: '\u6587\u4EF6\u7C7B\u578B' }),
+                        getFieldDecorator('fileType', {
+                            initialValue: this.state.curEditField.fileType,
+                            rules: [{ type: "array", required: true, message: '请输入文件类型!' }]
+                        })(React.createElement(Select, { mode: 'tags', allowClear: true,
+                            notFoundContent: "请输入文件类型, 可以配置多个",
+                            filterOption: false }))
                     ),
                     React.createElement(
                         FormItem,
-                        _extends({}, formItemLayout, { label: '\u539F\u5B57\u6BB5\u540D\u79F0' }),
+                        _extends({}, formItemLayout, { label: '\u8D85\u989D\u7B56\u7565', required: true }),
                         React.createElement(
-                            'span',
-                            { className: 'ant-form-text' },
-                            curEditField.originFieldName || ""
+                            Col,
+                            { span: 8 },
+                            React.createElement(
+                                FormItem,
+                                null,
+                                getFieldDecorator('advanceStrategyMode', {
+                                    initialValue: this.state.curEditField.currentMode + "",
+                                    rules: [{ required: true, message: '请选择超额策略!' }]
+                                })(React.createElement(
+                                    Select,
+                                    { style: { width: 150 }, onChange: $.proxy(this.onAdvanceStrategyModeChange, this) },
+                                    React.createElement(
+                                        Option,
+                                        { value: '1' },
+                                        '\u81EA\u5B9A\u4E49\u56DE\u6E90'
+                                    ),
+                                    React.createElement(
+                                        Option,
+                                        { value: '3' },
+                                        '\u81EA\u5B9A\u4E49\u9650\u901F'
+                                    ),
+                                    React.createElement(
+                                        Option,
+                                        { value: '2' },
+                                        '\u81EA\u5B9A\u4E49\u72B6\u6001\u7801'
+                                    )
+                                ))
+                            )
+                        ),
+                        React.createElement(
+                            Col,
+                            { span: 12 },
+                            React.createElement(
+                                FormItem,
+                                { style: { display: this.state.curEditField.currentMode == 3 ? "list-item" : "none" } },
+                                getFieldDecorator('advanceStrategyLimit', {
+                                    initialValue: parseInt(this.state.curEditField.currentValue) || 2000,
+                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategy, this) }]
+                                })(React.createElement(InputNumber, { style: { width: 200 }, min: 2000 }))
+                            ),
+                            React.createElement(
+                                FormItem,
+                                { style: { display: this.state.curEditField.currentMode == 2 ? "list-item" : "none" } },
+                                getFieldDecorator('advanceStrategyCode', {
+                                    initialValue: parseInt(this.state.curEditField.currentValue) || 404,
+                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategy, this) }]
+                                })(React.createElement(InputNumber, { style: { width: 200 } }))
+                            ),
+                            React.createElement(
+                                FormItem,
+                                { style: { display: this.state.curEditField.currentMode == 1 ? "list-item" : "none" } },
+                                getFieldDecorator('advanceStrategyOrigin', {
+                                    initialValue: this.state.curEditField.currentValue,
+                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategy, this) }]
+                                })(React.createElement(Input, { style: { width: 200 } }))
+                            )
+                        ),
+                        React.createElement(
+                            Col,
+                            { span: 4 },
+                            React.createElement(
+                                FormItem,
+                                { style: { display: this.state.curEditField.currentMode == 3 ? "list-item" : "none" } },
+                                React.createElement(
+                                    'span',
+                                    { style: { marginLeft: "10px" } },
+                                    'kbps'
+                                )
+                            )
                         )
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u5BFC\u51FA\u5B57\u6BB5\u6807\u8BC6', hasFeedback: true }),
-                        getFieldDecorator('exportFieldTag', {
-                            initialValue: curEditField.exportFieldTag || "",
-                            rules: [{ required: true, message: '请输入导出字段标识!' }]
-                        })(React.createElement(Input, null))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u5BFC\u51FA\u5B57\u6BB5\u540D\u79F0', hasFeedback: true }),
-                        getFieldDecorator('exportFieldName', {
-                            initialValue: curEditField.exportFieldName || "",
-                            rules: [{ required: true, message: '请输入导出字段名称!' }]
-                        })(React.createElement(Input, null))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u5BFC\u51FA\u6570\u636E\u7C7B\u578B' }),
-                        getFieldDecorator('exportFieldType', {
-                            initialValue: curEditField.exportFieldType || "",
-                            rules: [{ required: true, message: '请选择原字段标识!' }]
-                        })(React.createElement(
-                            Select,
-                            { style: { width: 200 } },
-                            React.createElement(
-                                Option,
-                                { value: '' },
-                                '\u8BF7\u9009\u62E9'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'string' },
-                                'string'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'int' },
-                                'int'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'double' },
-                                'double'
-                            )
-                        ))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u8D4B\u503C\u7C7B\u578B' }),
-                        getFieldDecorator('valueType', {
-                            initialValue: curEditField.valueType || "",
-                            rules: [{ required: true, message: '请选择赋值类型!' }]
-                        })(React.createElement(
-                            Select,
-                            { style: { width: 200 }, onChange: $.proxy(this.onValueTypeChange, this) },
-                            React.createElement(
-                                Option,
-                                { value: '' },
-                                '\u8BF7\u9009\u62E9'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'ORIGINAL_VALUE' },
-                                '\u539F\u503C'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'FIXED_VALUE' },
-                                '\u56FA\u5B9A\u503C'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'PREFIX_VALUE' },
-                                '\u524D\u7F00'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'SUFFIX_VALUE' },
-                                '\u540E\u7F00'
-                            ),
-                            React.createElement(
-                                Option,
-                                { value: 'PREFIX_AND_SUFFIX_VALUE' },
-                                '\u524D\u540E\u7F00(\u8BF7\u4EE5","\u5206\u5272)'
-                            )
-                        ))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u8D4B\u503C\u53C2\u6570', hasFeedback: true }),
-                        getFieldDecorator('param', {
-                            initialValue: curEditField.param || "",
-                            rules: [{ required: true, message: '请输入赋值参数!' }]
-                        })(React.createElement(Input, { onChange: $.proxy(this.onParamChange, this) }))
-                    ),
-                    React.createElement(
-                        FormItem,
-                        _extends({}, formItemLayout, { label: '\u6837\u4F8B' }),
-                        React.createElement(Alert, { message: curEditField.example || "", type: 'success', style: { minHeight: "40px" } })
                     )
                 );
 
                 return addEditNodesView;
-            }
-        }, {
-            key: 'getFieldExample',
-            value: function getFieldExample(originField, valueType, param) {
-                var example = "",
-                    prefix,
-                    suffix;
-                if (valueType && param && originField) {
-                    if (valueType == "ORIGINAL_VALUE") {
-                        example = "${" + originField + "}";
-                    } else if (valueType == "FIXED_VALUE") {
-                        example = param;
-                    } else if (valueType == "PREFIX_VALUE") {
-                        example = param + "${" + originField + "}";
-                    } else if (valueType == "SUFFIX_VALUE") {
-                        example = "${" + originField + "}" + param;
-                    } else if (valueType == "PREFIX_AND_SUFFIX_VALUE") {
-                        prefix = param.split(",")[0];
-                        suffix = param.split(",")[1];
-                        example = prefix + "${" + originField + "}" + suffix;
-                    }
-                }
-                return example;
-            }
-        }, {
-            key: 'onOriginFieldTagChange',
-            value: function onOriginFieldTagChange(value) {
-                var _props$form3 = this.props.form,
-                    setFieldsValue = _props$form3.setFieldsValue,
-                    getFieldsValue = _props$form3.getFieldsValue;
-
-                var fieldObj,
-                    curEditField = this.state.curEditField,
-                    fieldFormObj = getFieldsValue(),
-                    valueType = fieldFormObj.valueType,
-                    param = fieldFormObj.param;
-
-                if (value) {
-                    fieldObj = _.find(this.logTplManageOriginField, function (el) {
-                        return el.id == value;
-                    });
-                    setFieldsValue({ "exportFieldType": fieldObj.type });
-                    curEditField.originFieldName = fieldObj.name;
-                    curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
-                } else {
-                    setFieldsValue({ "exportFieldType": "" });
-                    curEditField.originFieldName = "";
-                    curEditField.example = "";
-                }
-
-                this.setState({
-                    curEditField: curEditField
-                });
-            }
-        }, {
-            key: 'onParamChange',
-            value: function onParamChange(e) {
-                var _props$form4 = this.props.form,
-                    setFieldsValue = _props$form4.setFieldsValue,
-                    getFieldsValue = _props$form4.getFieldsValue;
-
-                var curEditField = this.state.curEditField,
-                    fieldFormObj = getFieldsValue(),
-                    valueType = fieldFormObj.valueType,
-                    param = e.target.value,
-                    originFieldTag = fieldFormObj.originFieldTag,
-                    fieldObj = _.find(this.logTplManageOriginField, function (el) {
-                    return el.id == originFieldTag;
-                });
-                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
-
-                this.setState({
-                    curEditField: curEditField
-                });
-            }
-        }, {
-            key: 'onValueTypeChange',
-            value: function onValueTypeChange(value) {
-                var _props$form5 = this.props.form,
-                    setFieldsValue = _props$form5.setFieldsValue,
-                    getFieldsValue = _props$form5.getFieldsValue;
-
-                var curEditField = this.state.curEditField,
-                    fieldFormObj = getFieldsValue(),
-                    valueType = value,
-                    param = fieldFormObj.param,
-                    originFieldTag = fieldFormObj.originFieldTag,
-                    fieldObj = _.find(this.logTplManageOriginField, function (el) {
-                    return el.id == originFieldTag;
-                });
-                curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
-
-                this.setState({
-                    curEditField: curEditField
-                });
             }
         }, {
             key: 'onSubmitSuccess',
@@ -917,14 +751,14 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
             key: 'handleSubmit',
             value: function handleSubmit(e) {
                 e.preventDefault();
-                var _props$form6 = this.props.form,
-                    resetFields = _props$form6.resetFields,
-                    validateFields = _props$form6.validateFields;
+                var _props$form4 = this.props.form,
+                    resetFields = _props$form4.resetFields,
+                    validateFields = _props$form4.validateFields;
 
-                resetFields("templateFieldList");
-                var checkArray = ["name", "productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', 'templateFieldList'];
+                resetFields("advanceStrategy");
+                var checkArray = ["name", "productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', 'advanceStrategy'];
                 if (this.props.isEdit) {
-                    checkArray = ["productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', "templateFieldList"];
+                    checkArray = ["productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', "advanceStrategy"];
                 }
                 validateFields(checkArray, function (err, vals) {
                     var postParam,
@@ -937,7 +771,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             backType: vals.backType,
                             fieldSeparator: vals.fieldSeparator == "custom" ? vals.fieldSeparatorCusValue : vals.fieldSeparator,
                             lineBreak: vals.lineBreak,
-                            templateFieldList: this.state.templateFieldList
+                            advanceStrategy: this.state.advanceStrategy
                         };
                         if (this.props.isEdit) {
                             postParam.groupId = this.groupId, postParam.originCreateTime = this.originCreateTime;
@@ -965,11 +799,11 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 var getFieldDecorator = this.props.form.getFieldDecorator;
 
                 var formItemLayout = {
-                    labelCol: { span: 6 },
-                    wrapperCol: { span: 12 }
+                    labelCol: { span: 4 },
+                    wrapperCol: { span: 16 }
                 };
                 var baseInfoView = this.renderBaseInfoView(formItemLayout);
-                var exportFieldListView = this.renderExportFieldTableView(formItemLayout);
+                var fieldListView = this.renderFieldTableView(formItemLayout);
                 var saveButton = null,
                     editView = null;
                 if (!this.props.isView) saveButton = React.createElement(
@@ -992,7 +826,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             Form,
                             { onSubmit: this.handleSubmit },
                             baseInfoView,
-                            exportFieldListView,
+                            fieldListView,
                             React.createElement(
                                 FormItem,
                                 { wrapperCol: { span: 12, offset: 6 } },

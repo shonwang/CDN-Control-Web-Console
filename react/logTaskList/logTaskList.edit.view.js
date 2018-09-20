@@ -1080,7 +1080,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                         taskFieldJson = {
                             "backMethod": vals.backMethod,
                             "backGetLogName": vals.backGetLogName,
-                            "senderType": vals.senderType,
+                            "senderType": vals.senderType == "" ? null : vals.senderType,
                             "batchCount": vals.batchCount,
                             "batchInterval": vals.batchInterval,
                             "logRange": vals.logRange,

@@ -78,7 +78,7 @@
                   <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>
               <% } %>
-              <% if ((data[i].attributes.status == 1 || data[i].attributes.status == 8) && permission.EnableorPauseHost) { %>
+              <% if ((data[i].attributes.status == 1 || data[i].attributes.status == 8 || data[i].attributes.typeName == "Live") && permission.EnableorPauseHost) { %>
                 <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="pause" data-status="2" data-name="<%=data[i].attributes['name']%>" title="暂停">
                   <span class="glyphicon glyphicon-pause"></span>
                 </a>

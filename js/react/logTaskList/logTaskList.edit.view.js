@@ -6,6 +6,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -37,6 +39,8 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
         _inherits(logTaskListEditForm, _React$Component);
 
         function logTaskListEditForm(props, context) {
+            var _this$state;
+
             _classCallCheck(this, logTaskListEditForm);
 
             var _this = _possibleConstructorReturn(this, (logTaskListEditForm.__proto__ || Object.getPrototypeOf(logTaskListEditForm)).call(this, props));
@@ -50,40 +54,19 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
             _this.handleSubmit = _this.handleSubmit.bind(_this);
             _this.convertEnumToShowStr = _this.convertEnumToShowStr.bind(_this);
 
-            _this.state = {
+            _this.state = (_this$state = {
                 name: "", //"任务名称",
                 templateName: "", //"模板名称",
                 accountId: "",
-                domainType: "", //DomainType 域名类型 FUULLSCALE（全量域名） CUSTOM（自定义域名）
+                domainType: "FULLSCALE", //DomainType 域名类型 FUULLSCALE（全量域名） CUSTOM（自定义域名）
                 domains: [],
                 backUrl: "",
                 productType: "",
 
                 backMethod: "", //回传方法
                 senderType: "",
-                backGetLogName: "",
-                batchCount: 100, //多条发送上限
-                batchInterval: 60, //单批次最大延迟发送时间
-                logRange: "", //日志范围  EDGE（边缘） EDGE_AND_UPPER （边缘+上层）
-                compressMode: "", //压缩方式 TEXT（文本） LZ4（lz4）  GZ（gzip）
-                userAgent: "",
-                tokenKey: "",
-                taskTokenType: "KEY_FIRST", //任务TOKEN类型   KEY_FIRST （key在前时间在后） KEY_LAST （key在后时间在前）
-                taskTokenTimeType: "", //任务TOKEN日期类型 WITH_CROSS（有横线 例如 2010-08-12） NO_CROSS （无横线 例如 20100812）
-                taskConditionList: [],
-
-                dataSourceUserId: [],
-                dataSourceTemplateName: [],
-                dataSourceDomains: [],
-                dataSourceOriginFieldTag: [],
-                domainsVisible: "none",
-                backGetLogNameVisible: "none",
-
-                isLoadingTplDetail: true,
-                fieldModalVisible: false,
-                isEditField: false,
-                curEditField: {}
-            };
+                backGetLogName: ""
+            }, _defineProperty(_this$state, 'senderType', ""), _defineProperty(_this$state, 'batchCount', 100), _defineProperty(_this$state, 'batchInterval', 60), _defineProperty(_this$state, 'logRange', ""), _defineProperty(_this$state, 'compressMode', ""), _defineProperty(_this$state, 'userAgent', ""), _defineProperty(_this$state, 'tokenKey', ""), _defineProperty(_this$state, 'taskTokenType', "KEY_FIRST"), _defineProperty(_this$state, 'taskTokenTimeType', ""), _defineProperty(_this$state, 'taskConditionList', []), _defineProperty(_this$state, 'dataSourceUserId', []), _defineProperty(_this$state, 'dataSourceTemplateName', []), _defineProperty(_this$state, 'dataSourceDomains', []), _defineProperty(_this$state, 'dataSourceOriginFieldTag', []), _defineProperty(_this$state, 'domainsVisible', "none"), _defineProperty(_this$state, 'backGetLogNameVisible', "none"), _defineProperty(_this$state, 'senderTypeVisible', "none"), _defineProperty(_this$state, 'isLoadingTplDetail', true), _defineProperty(_this$state, 'fieldModalVisible', false), _defineProperty(_this$state, 'isEditField', false), _defineProperty(_this$state, 'curEditField', {}), _this$state);
 
             _this.userIdList = [];
             return _this;
@@ -160,13 +143,15 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
         }, {
             key: 'onGetTaskDetailSuccess',
             value: function onGetTaskDetailSuccess(res) {
+                var _setState;
+
                 this.groupId = res.groupId;
                 this.originCreateTime = res.originCreateTime;
 
                 _.each(res.taskConditionList, function (el) {
                     el.id = Utility.randomStr(8);
                 });
-                this.setState({
+                this.setState((_setState = {
                     name: res.name,
                     templateName: res.templateName,
                     accountId: res.accountId,
@@ -177,19 +162,8 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
 
                     backMethod: res.taskFieldJson.backMethod,
                     senderType: res.taskFieldJson.senderType,
-                    backGetLogName: res.taskFieldJson.backGetLogName,
-                    batchCount: res.taskFieldJson.batchCount,
-                    batchInterval: res.taskFieldJson.batchInterval,
-                    logRange: res.taskFieldJson.logRange,
-                    compressMode: res.taskFieldJson.compressMode,
-                    userAgent: res.taskFieldJson.userAgent,
-                    tokenKey: res.taskFieldJson.tokenKey,
-                    taskTokenType: res.taskFieldJson.taskTokenType,
-                    taskTokenTimeType: res.taskFieldJson.taskTokenTimeType,
-                    taskConditionList: res.taskFieldJson.taskConditionList,
-
-                    isLoadingTplDetail: false
-                });
+                    backGetLogName: res.taskFieldJson.backGetLogName
+                }, _defineProperty(_setState, 'senderType', res.taskFieldJson.senderType), _defineProperty(_setState, 'batchCount', res.taskFieldJson.batchCount), _defineProperty(_setState, 'batchInterval', res.taskFieldJson.batchInterval), _defineProperty(_setState, 'logRange', res.taskFieldJson.logRange), _defineProperty(_setState, 'compressMode', res.taskFieldJson.compressMode), _defineProperty(_setState, 'userAgent', res.taskFieldJson.userAgent), _defineProperty(_setState, 'tokenKey', res.taskFieldJson.tokenKey), _defineProperty(_setState, 'taskTokenType', res.taskFieldJson.taskTokenType), _defineProperty(_setState, 'taskTokenTimeType', res.taskFieldJson.taskTokenTimeType), _defineProperty(_setState, 'taskConditionList', res.taskFieldJson.taskConditionList), _defineProperty(_setState, 'isLoadingTplDetail', false), _setState));
             }
         }, {
             key: 'convertEnumToShowStr',
@@ -200,6 +174,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                     backMethod = _state.backMethod,
                     tokenKey = _state.tokenKey,
                     backGetLogName = _state.backGetLogName,
+                    senderType = _state.senderType,
                     domainType = _state.domainType,
                     domains = _state.domains,
                     logRange = _state.logRange,
@@ -211,6 +186,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                     token: "",
                     taskTokenTimeType: "",
                     backGetLogName: "",
+                    senderType: "",
                     domainType: "",
                     domainContent: "全量域名",
                     logRange: "",
@@ -227,7 +203,11 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                     dataForShow.token = "方式一：md5({time:" + dataForShow.taskTokenTimeType + "}{key:" + tokenKey + "})";
                 }
                 if (backMethod == "GET") {
-                    dataForShow.backGetLogName = ", Log参数名称：" + backGetLogName;
+                    dataForShow.backGetLogName = ", 参数名称：" + backGetLogName;
+                } else if (backMethod == "POST" && senderType == "TEXT") {
+                    dataForShow.backGetLogName = ", 是否以数组形式回传：否";
+                } else if (backMethod == "POST" && senderType == "ARRAY") {
+                    dataForShow.backGetLogName = ", 是否以数组形式回传：是";
                 }
                 if (domainType == "FULLSCALE") {
                     dataForShow.domainType = "全量域名";
@@ -370,6 +350,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                                 )
                             )
                         ),
+                        React.createElement('hr', null),
                         React.createElement(
                             FormItem,
                             { wrapperCol: wrapperCol204 },
@@ -658,6 +639,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                                 )
                             )
                         ),
+                        React.createElement('hr', null),
                         React.createElement(
                             FormItem,
                             { wrapperCol: wrapperCol22 },
@@ -696,11 +678,52 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                                 { span: 12 },
                                 React.createElement(
                                     FormItem,
-                                    _extends({}, formItemLayout, { label: '\u53C2\u6570\u540D\u79F0', required: true, style: { display: this.state.backGetLogNameVisible } }),
+                                    _extends({}, formItemLayout, { label: React.createElement(
+                                            'span',
+                                            null,
+                                            '\u53C2\u6570\u540D\xA0',
+                                            React.createElement(
+                                                Tooltip,
+                                                { title: '\u56DE\u4F20\u65B9\u5F0F\u9009\u62E9Get\u65F6\uFF0C\u9700\u8981\u8BBE\u7F6E\u53C2\u6570\u540D\uFF0C\u6BD4\u5982log=****' },
+                                                React.createElement(Icon, { type: 'question-circle-o' })
+                                            )
+                                        ), required: true, style: { display: this.state.backGetLogNameVisible } }),
                                     getFieldDecorator('backGetLogName', {
                                         initialValue: this.state.backGetLogName,
                                         rules: [{ validator: this.validateBackGetLogName }]
                                     })(React.createElement(Input, null))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 12 },
+                                React.createElement(
+                                    FormItem,
+                                    _extends({}, formItemLayout, { label: "是否以数组形式回传",
+                                        required: true,
+                                        style: { display: this.state.senderTypeVisible } }),
+                                    getFieldDecorator('senderType', {
+                                        initialValue: this.state.senderType,
+                                        rules: [{ validator: $.proxy(this.validateSendType, this) }]
+                                    })(React.createElement(
+                                        Select,
+                                        { style: { width: 200 }, onChange: $.proxy(this.onDomainTypeChange, this) },
+                                        React.createElement(
+                                            Option,
+                                            { value: '' },
+                                            '\u8BF7\u9009\u62E9'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'TEXT' },
+                                            '\u5426'
+                                        ),
+                                        React.createElement(
+                                            Option,
+                                            { value: 'ARRAY' },
+                                            '\u662F'
+                                        )
+                                    ))
                                 )
                             )
                         ),
@@ -1062,15 +1085,26 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
         }, {
             key: 'onBackMethodChange',
             value: function onBackMethodChange(value) {
+                var resetFields = this.props.form.resetFields;
+
                 if (value == "GET") {
                     this.setState({
-                        backGetLogNameVisible: "list-item"
+                        backGetLogNameVisible: "list-item",
+                        senderTypeVisible: "none"
+                    });
+                } else if (value == "POST") {
+                    this.setState({
+                        backGetLogNameVisible: "none",
+                        senderTypeVisible: "list-item"
                     });
                 } else {
                     this.setState({
-                        backGetLogNameVisible: "none"
+                        backGetLogNameVisible: "none",
+                        senderTypeVisible: "none"
                     });
                 }
+                resetFields("backGetLogName");
+                resetFields("senderType");
             }
         }, {
             key: 'renderConditionTableView',
@@ -1219,6 +1253,18 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                 var backMethod = getFieldsValue().backMethod;
                 if (backMethod == "GET" && value == "") {
                     callback('请添加参数名称！');
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'validateSendType',
+            value: function validateSendType(rule, value, callback) {
+                var getFieldsValue = this.props.form.getFieldsValue;
+
+                var backMethod = getFieldsValue().backMethod;
+                if (backMethod == "POST" && value == "") {
+                    callback('请选择是否以数组形式回传！');
                 } else {
                     callback();
                 }
@@ -1437,7 +1483,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                     validateFields = _props$form5.validateFields;
                 //resetFields("taskConditionList")
 
-                var checkArray = ["accountId", "backGetLogName", "backMethod", "backUrl", "batchCount", "batchInterval", "compressMode", "domainType", "domains", "logRange", "name", "productType", "taskTokenTimeType", "taskTokenType", "templateName", "tokenKey", "userAgent"];
+                var checkArray = ["accountId", "backGetLogName", "senderType", "backMethod", "backUrl", "batchCount", "batchInterval", "compressMode", "domainType", "domains", "logRange", "name", "productType", "taskTokenTimeType", "taskTokenType", "templateName", "tokenKey", "userAgent"];
                 validateFields(checkArray, function (err, vals) {
                     var postParam,
                         taskFieldJson,
@@ -1448,6 +1494,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                         taskFieldJson = {
                             "backMethod": vals.backMethod,
                             "backGetLogName": vals.backGetLogName,
+                            "senderType": vals.senderType,
                             "batchCount": vals.batchCount,
                             "batchInterval": vals.batchInterval,
                             "logRange": vals.logRange,

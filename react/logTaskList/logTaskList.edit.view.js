@@ -36,7 +36,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     name: "",//"任务名称",
                     templateName: "",//"模板名称",
                     accountId: "",
-                    domainType: "", //DomainType 域名类型 FUULLSCALE（全量域名） CUSTOM（自定义域名）
+                    domainType: "FULLSCALE", //DomainType 域名类型 FUULLSCALE（全量域名） CUSTOM（自定义域名）
                     domains: [],
                     backUrl: "",
                     productType: "",
@@ -44,6 +44,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     backMethod: "", //回传方法
                     senderType: "", 
                     backGetLogName: "",
+                    senderType: "",
                     batchCount: 100, //多条发送上限
                     batchInterval: 60, //单批次最大延迟发送时间
                     logRange: "", //日志范围  EDGE（边缘） EDGE_AND_UPPER （边缘+上层）
@@ -60,6 +61,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     dataSourceOriginFieldTag: [],
                     domainsVisible: "none",
                     backGetLogNameVisible: "none",
+                    senderTypeVisible: "none",
 
                     isLoadingTplDetail: true,
                     fieldModalVisible: false,
@@ -149,6 +151,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     backMethod: res.taskFieldJson.backMethod,
                     senderType: res.taskFieldJson.senderType, 
                     backGetLogName: res.taskFieldJson.backGetLogName,
+                    senderType: res.taskFieldJson.senderType,
                     batchCount: res.taskFieldJson.batchCount, 
                     batchInterval: res.taskFieldJson.batchInterval,
                     logRange: res.taskFieldJson.logRange,
@@ -165,7 +168,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
 
             convertEnumToShowStr() {
                 const { taskTokenTimeType, taskTokenType, backMethod, 
-                        tokenKey, backGetLogName, domainType, domains,
+                        tokenKey, backGetLogName, senderType, domainType, domains,
                         logRange, compressMode } = this.state;
                 const colors = ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'];
 
@@ -173,6 +176,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     token: "", 
                     taskTokenTimeType: "", 
                     backGetLogName: "", 
+                    senderType: "",
                     domainType: "", 
                     domainContent: "全量域名", 
                     logRange: "", 
@@ -189,8 +193,12 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     dataForShow.token = "方式一：md5({time:" + dataForShow.taskTokenTimeType + "}{key:" + tokenKey + "})"
                 }
                 if (backMethod == "GET") {
-                    dataForShow.backGetLogName = ", Log参数名称：" + backGetLogName
-                }
+                    dataForShow.backGetLogName = ", 参数名称：" + backGetLogName
+                } else if (backMethod == "POST" && senderType == "TEXT") {
+                    dataForShow.backGetLogName = ", 是否以数组形式回传：否"
+                } else if (backMethod == "POST" && senderType == "ARRAY") {
+                    dataForShow.backGetLogName = ", 是否以数组形式回传：是"
+                } 
                 if (domainType == "FULLSCALE") {
                     dataForShow.domainType = "全量域名";
                 } else if (domainType == "CUSTOM") {
@@ -264,6 +272,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                     </FormItem>
                                 </Col>
                             </FormItem>
+                            <hr />
                             <FormItem wrapperCol={wrapperCol204}>
                                 <Col span={24}>
                                     <FormItem labelCol= {{ span: 4 }} wrapperCol={{ span: 20 }} label="回传方法">
@@ -431,6 +440,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                     </FormItem>
                                 </Col>
                             </FormItem>
+                            <hr />
                             <FormItem wrapperCol={wrapperCol22}>
                                 <Col span={12}>
                                     <FormItem {...formItemLayout} label={"回传方法"}>
@@ -447,7 +457,14 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                     </FormItem>
                                 </Col>
                                 <Col span={12}>
-                                    <FormItem {...formItemLayout} label="参数名称" required={true} style={{display: this.state.backGetLogNameVisible}}>
+                                    <FormItem {...formItemLayout} label={(
+                                        <span>
+                                            参数名&nbsp;
+                                            <Tooltip title="回传方式选择Get时，需要设置参数名，比如log=****">
+                                                <Icon type="question-circle-o" />
+                                            </Tooltip>
+                                        </span>
+                                    )} required={true} style={{display: this.state.backGetLogNameVisible}}>
                                         {getFieldDecorator('backGetLogName', {
                                             initialValue: this.state.backGetLogName,
                                             rules: [
@@ -455,6 +472,24 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                             ],
                                         })(
                                             <Input/>
+                                        )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={12}>
+                                    <FormItem {...formItemLayout} label={"是否以数组形式回传"} 
+                                        required={true} 
+                                        style={{display: this.state.senderTypeVisible}}>
+                                        {getFieldDecorator('senderType', {
+                                            initialValue: this.state.senderType,
+                                            rules: [
+                                                { validator: $.proxy(this.validateSendType, this) },
+                                            ],
+                                        })(
+                                            <Select style={{ width: 200 }} onChange={$.proxy(this.onDomainTypeChange, this)}>
+                                                <Option value="">请选择</Option> 
+                                                <Option value="TEXT">否</Option>
+                                                <Option value="ARRAY">是</Option>
+                                            </Select>
                                         )}
                                     </FormItem>
                                 </Col>
@@ -706,15 +741,25 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
             }
 
             onBackMethodChange(value) {
+                const { resetFields } = this.props.form;
                 if (value == "GET") {
                     this.setState({
-                        backGetLogNameVisible: "list-item"
+                        backGetLogNameVisible: "list-item",
+                        senderTypeVisible: "none"
+                    })
+                } else if (value == "POST"){
+                    this.setState({
+                        backGetLogNameVisible: "none",
+                        senderTypeVisible: "list-item"
                     })
                 } else {
                     this.setState({
-                        backGetLogNameVisible: "none"
+                        backGetLogNameVisible: "none",
+                        senderTypeVisible: "none"
                     })
                 }
+                resetFields("backGetLogName")
+                resetFields("senderType")
             }
 
             renderConditionTableView(formItemLayout) {
@@ -830,6 +875,16 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                 const backMethod = getFieldsValue().backMethod
                 if (backMethod == "GET" && value == ""){
                     callback('请添加参数名称！');
+                } else {
+                    callback();
+                }
+            }
+
+            validateSendType (rule, value, callback) {
+                const { getFieldsValue } = this.props.form;
+                const backMethod = getFieldsValue().backMethod
+                if (backMethod == "POST" && value == ""){
+                    callback('请选择是否以数组形式回传！');
                 } else {
                     callback();
                 }
@@ -1000,6 +1055,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                 var checkArray = [
                     "accountId",
                     "backGetLogName",
+                    "senderType",
                     "backMethod",
                     "backUrl",
                     "batchCount",
@@ -1024,6 +1080,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                         taskFieldJson = {
                             "backMethod": vals.backMethod,
                             "backGetLogName": vals.backGetLogName,
+                            "senderType": vals.senderType,
                             "batchCount": vals.batchCount,
                             "batchInterval": vals.batchInterval,
                             "logRange": vals.logRange,

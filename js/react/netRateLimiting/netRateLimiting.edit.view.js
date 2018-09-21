@@ -78,7 +78,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 } else {
                     collection.getDomainsBySubType({
                         userId: this.props.limitProps.userInfo.uid,
-                        groupId: this.props.model.id,
+                        //groupId: this.props.model.id,
                         subType: this.state.currentSubType
                     });
                 }
@@ -91,6 +91,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 var collection = this.props.limitProps.collection;
                 collection.off("update.detail.success");
                 collection.off("update.detail.error");
+                collection.off("get.domain.success");
+                collection.off("get.domain.error");
                 if (this.props.isEdit) {
                     collection.off("get.detail.success");
                     collection.off("get.detail.error");
@@ -152,11 +154,18 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     dataSourceDomains: []
                 });
                 var collection = this.props.limitProps.collection;
-                collection.getDomainsBySubType({
-                    userId: this.props.limitProps.userInfo.uid,
-                    groupId: this.props.model.id,
-                    subType: value
-                });
+                if (this.props.isEdit) {
+                    collection.getDomainsBySubType({
+                        userId: this.props.limitProps.userInfo.uid,
+                        groupId: this.props.model.id,
+                        subType: value
+                    });
+                } else {
+                    collection.getDomainsBySubType({
+                        userId: this.props.limitProps.userInfo.uid,
+                        subType: value
+                    });
+                }
             }
         }, {
             key: 'onStrategyModeChange',
@@ -382,7 +391,12 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                     rules: [{ required: true, message: '请选择限速阈值单位!' }]
                                 })(React.createElement(
                                     Select,
-                                    { style: { width: 150 }, onChange: $.proxy(this.onCurrentSubTypeChange, this) },
+                                    { style: { width: 150 } },
+                                    React.createElement(
+                                        Option,
+                                        { value: '' },
+                                        '\u8BF7\u9009\u62E9'
+                                    ),
                                     React.createElement(
                                         Option,
                                         { value: 'Gbps' },
@@ -407,11 +421,16 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 null,
                                 getFieldDecorator('defaultStrategyMode', {
-                                    initialValue: this.state.defaultStrategy.currentMode + "",
+                                    initialValue: this.state.defaultStrategy.currentMode ? this.state.defaultStrategy.currentMode + "" : "",
                                     rules: [{ required: true, message: '请选择超额策略!' }]
                                 })(React.createElement(
                                     Select,
                                     { style: { width: 150 }, onChange: $.proxy(this.onStrategyModeChange, this) },
+                                    React.createElement(
+                                        Option,
+                                        { value: '' },
+                                        '\u8BF7\u9009\u62E9'
+                                    ),
                                     React.createElement(
                                         Option,
                                         { value: '1' },
@@ -852,7 +871,6 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
 
                         postParam = {
                             "group": {
-                                "id": this.props.model.id,
                                 "quotaUnits": vals.quotaUnits,
                                 "totalQuota": vals.totalQuota,
                                 "userId": this.props.limitProps.userInfo.uid
@@ -861,8 +879,13 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             "strategys": strategys
                         };
 
+                        if (this.props.isEdit) {
+                            postParam.group.id = this.props.model.id;
+                            collection.updateLimitRateConf(postParam);
+                        } else {
+                            collection.addLimitRateConf(postParam);
+                        }
                         console.log(postParam);
-                        collection.updateLimitRateConf(postParam);
                     }
                 }.bind(this));
             }

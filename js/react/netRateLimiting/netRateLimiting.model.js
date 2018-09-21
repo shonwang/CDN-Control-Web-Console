@@ -68,6 +68,17 @@ define("netRateLimiting.model", ['require', 'exports', 'utility'], function (req
                 this.trigger('update.detail.error', response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        addLimitRateConf: function addLimitRateConf(args) {
+            var url = BASE_URL + "/channelManager/globalLimitRate/addLimitRateConf",
+                successCallback = function (res) {
+                this.trigger("update.detail.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('update.detail.error', response);
+            }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         }
     });
 

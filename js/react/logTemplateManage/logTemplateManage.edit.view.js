@@ -234,7 +234,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             getFieldDecorator('name', {
                                 initialValue: this.state.name,
                                 validateFirst: true,
-                                rules: [{ required: true, message: '请输入模板名称!' }, { pattern: /^[0-9A-Za-z\_]+$/, message: '模板名称只能输入英文数字下划线!' }]
+                                rules: [{ required: true, message: '请输入模板名称!' }, { pattern: /^[0-9A-Za-z\_]+$/, message: '模板名称只能输入英文数字下划线!' }, { max: 64, message: '模板名称定长64个字符!' }]
                             })(React.createElement(Input, { disabled: this.props.isEdit }))
                         ),
                         React.createElement(

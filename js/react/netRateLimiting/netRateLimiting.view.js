@@ -399,7 +399,7 @@ define("netRateLimiting.view", ['require', 'exports', 'template', 'base.view', '
                     null,
                     React.createElement(
                         Button,
-                        { icon: 'plus', onClick: this.onClickAddButton },
+                        { icon: 'plus', onClick: this.onClickAddCallback },
                         '\u65B0\u5EFA'
                     ),
                     React.createElement('hr', null),

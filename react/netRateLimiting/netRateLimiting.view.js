@@ -337,7 +337,7 @@ define("netRateLimiting.view", ['require','exports', 'template', 'base.view', 'u
                 if (this.state.curViewsMark == "list") {
                     curView = (
                         <div>
-                            <Button icon="plus" onClick={this.onClickAddButton}>新建</Button>
+                            <Button icon="plus" onClick={this.onClickAddCallback}>新建</Button>
                             <hr />    
                             <LimitGroupTable limitProps={this.limitProps} />
                         </div>

@@ -82,15 +82,15 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                         subType: this.state.currentSubType
                     });
                 }
-                // collection.on("add.template.success", $.proxy(this.onSubmitSuccess, this));
-                // collection.on("add.template.error", $.proxy(this.onGetError, this));
+                collection.on("update.detail.success", $.proxy(this.onSubmitSuccess, this));
+                collection.on("update.detail.error", $.proxy(this.onGetError, this));
             }
         }, {
             key: 'componentWillUnmount',
             value: function componentWillUnmount() {
                 var collection = this.props.limitProps.collection;
-                // collection.off("add.template.success");
-                // collection.off("add.template.error");
+                collection.off("update.detail.success");
+                collection.off("update.detail.error");
                 if (this.props.isEdit) {
                     collection.off("get.detail.success");
                     collection.off("get.detail.error");
@@ -99,11 +99,12 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
         }, {
             key: 'onGetDetailSuccess',
             value: function onGetDetailSuccess(res) {
-                var origins = [],
-                    defaultStrategy = res.strategys.shift(),
-                    advanceStrategy = res.strategys;
+                var defaultStrategy = res.strategys.shift(),
+                    advanceStrategy = res.strategys,
+                    origins = [];
+
                 _.each(res.origins, function (el) {
-                    origins.push(el.domain);
+                    origins.push(el.originId + "");
                 }.bind(this));
 
                 this.setState({
@@ -129,10 +130,11 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 var domainArray = res.origins.map(function (el) {
                     return React.createElement(
                         Option,
-                        { key: el.domain },
+                        { key: el.originId + "" },
                         el.domain
                     );
                 });
+
                 this.setState({
                     dataSourceDomains: domainArray,
                     isLoadingDetail: false
@@ -175,31 +177,77 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 });
             }
         }, {
-            key: 'validateStrategy',
-            value: function validateStrategy(rule, value, callback) {
+            key: 'validateStrategyLimit',
+            value: function validateStrategyLimit(rule, value, callback) {
                 var currentMode = this.state.defaultStrategy.currentMode;
-
-                if (currentMode == 1 && value !== "") {
-                    callback('请输入自定义回源！');
-                } else if (currentMode == 2 && value !== "") {
-                    callback('请输入自定义状态码！');
-                } else if (currentMode == 3 && value !== "") {
-                    callback('请输入自定义限速！');
+                if (currentMode == 3 && !value || value == 0) {
+                    if (value === 0) {
+                        callback();
+                    } else {
+                        callback('请输入自定义限速！');
+                    }
                 } else {
                     callback();
                 }
             }
         }, {
-            key: 'validateAdvanceStrategy',
-            value: function validateAdvanceStrategy(rule, value, callback) {
-                var currentMode = this.state.curEditField.currentMode;
-
-                if (currentMode == 1 && value !== "") {
+            key: 'validateStrategyCode',
+            value: function validateStrategyCode(rule, value, callback) {
+                var currentMode = this.state.defaultStrategy.currentMode;
+                if (currentMode == 2 && !value) {
+                    if (value === 0) {
+                        callback();
+                    } else {
+                        callback('请输入自定义状态码！');
+                    }
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'validateStrategyOrigin',
+            value: function validateStrategyOrigin(rule, value, callback) {
+                var currentMode = this.state.defaultStrategy.currentMode;
+                if (currentMode == 1 && !value) {
                     callback('请输入自定义回源！');
-                } else if (currentMode == 2 && value !== "") {
-                    callback('请输入自定义状态码！');
-                } else if (currentMode == 3 && value !== "") {
-                    callback('请输入自定义限速！');
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'validateAdvanceStrategyLimit',
+            value: function validateAdvanceStrategyLimit(rule, value, callback) {
+                var currentMode = this.state.curEditField.currentMode;
+                if (currentMode == 3 && !value || value == 0) {
+                    if (value === 0) {
+                        callback();
+                    } else {
+                        callback('请输入自定义限速！');
+                    }
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'validateAdvanceStrategyCode',
+            value: function validateAdvanceStrategyCode(rule, value, callback) {
+                var currentMode = this.state.curEditField.currentMode;
+                if (currentMode == 2 && !value) {
+                    if (value === 0) {
+                        callback();
+                    } else {
+                        callback('请输入自定义状态码！');
+                    }
+                } else {
+                    callback();
+                }
+            }
+        }, {
+            key: 'validateAdvanceStrategyOrigin',
+            value: function validateAdvanceStrategyOrigin(rule, value, callback) {
+                var currentMode = this.state.curEditField.currentMode;
+                if (currentMode == 1 && !value) {
+                    callback('请输入自定义回源！');
                 } else {
                     callback();
                 }
@@ -263,6 +311,11 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                         Option,
                                         { value: '4' },
                                         '\u5927\u6587\u4EF6\u4E0B\u8F7D'
+                                    ),
+                                    React.createElement(
+                                        Option,
+                                        { value: '5' },
+                                        '\u56FE\u7247\u5C0F\u6587\u4EF6'
                                     )
                                 ))
                             )
@@ -326,7 +379,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 null,
                                 getFieldDecorator('quotaUnits', {
                                     initialValue: this.state.quotaUnits,
-                                    rules: [{ type: "array", required: true, message: '请选择限速阈值单位!' }]
+                                    rules: [{ required: true, message: '请选择限速阈值单位!' }]
                                 })(React.createElement(
                                     Select,
                                     { style: { width: 150 }, onChange: $.proxy(this.onCurrentSubTypeChange, this) },
@@ -384,8 +437,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyLimit', {
-                                    initialValue: parseInt(this.state.defaultStrategy.currentValue),
-                                    rules: [{ validator: $.proxy(this.validateStrategy, this) }]
+                                    initialValue: parseInt(this.state.defaultStrategy.currentValue) || 2000,
+                                    rules: [{ validator: $.proxy(this.validateStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 }, min: 2000 })),
                                 React.createElement(
                                     'span',
@@ -397,8 +450,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyCode', {
-                                    initialValue: parseInt(this.state.defaultStrategy.currentValue),
-                                    rules: [{ validator: $.proxy(this.validateStrategy, this) }]
+                                    initialValue: parseInt(this.state.defaultStrategy.currentValue) || 404,
+                                    rules: [{ validator: $.proxy(this.validateStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 } }))
                             ),
                             React.createElement(
@@ -406,7 +459,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 { style: { display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyOrigin', {
                                     initialValue: this.state.defaultStrategy.currentValue,
-                                    rules: [{ validator: $.proxy(this.validateStrategy, this) }]
+                                    rules: [{ validator: $.proxy(this.validateStrategyOrigin, this) }]
                                 })(React.createElement(Input, null))
                             )
                         )
@@ -454,13 +507,15 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     dataIndex: '',
                     key: 'action',
                     render: function render(text, record) {
-                        // var editButton = (
-                        //     <Tooltip placement="bottom" title={"编辑"}>
-                        //         <a href="javascript:void(0)" id={record.id} onClick={$.proxy(this.onClickEditField, this)}>
-                        //             <Icon type="edit" />
-                        //         </a>
-                        //     </Tooltip>
-                        // );
+                        var editButton = React.createElement(
+                            Tooltip,
+                            { placement: 'bottom', title: "编辑" },
+                            React.createElement(
+                                'a',
+                                { href: 'javascript:void(0)', id: record.id, onClick: $.proxy(_this2.onClickEditField, _this2) },
+                                React.createElement(Icon, { type: 'edit' })
+                            )
+                        );
                         var deleteButton = React.createElement(
                             Tooltip,
                             { placement: 'bottom', title: "删除" },
@@ -473,6 +528,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                         var buttonGroup = React.createElement(
                             'div',
                             null,
+                            editButton,
+                            React.createElement('span', { className: 'ant-divider' }),
                             deleteButton
                         );
                         return buttonGroup;
@@ -608,6 +665,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 var model = _.find(this.state.advanceStrategy, function (obj) {
                     return obj.id == id;
                 }.bind(this));
+
+                if (typeof model.fileType == "string") model.fileType = model.fileType.split(",");
                 this.setState({
                     fieldModalVisible: true,
                     isEditField: true,
@@ -703,7 +762,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 { style: { display: this.state.curEditField.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyLimit', {
                                     initialValue: parseInt(this.state.curEditField.currentValue) || 2000,
-                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategy, this) }]
+                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 }, min: 2000 }))
                             ),
                             React.createElement(
@@ -711,7 +770,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 { style: { display: this.state.curEditField.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyCode', {
                                     initialValue: parseInt(this.state.curEditField.currentValue) || 404,
-                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategy, this) }]
+                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 } }))
                             ),
                             React.createElement(
@@ -719,7 +778,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 { style: { display: this.state.curEditField.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyOrigin', {
                                     initialValue: this.state.curEditField.currentValue,
-                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategy, this) }]
+                                    rules: [{ validator: $.proxy(this.validateAdvanceStrategyOrigin, this) }]
                                 })(React.createElement(Input, { style: { width: 200 } }))
                             )
                         ),
@@ -751,32 +810,59 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
             key: 'handleSubmit',
             value: function handleSubmit(e) {
                 e.preventDefault();
-                var _props$form4 = this.props.form,
-                    resetFields = _props$form4.resetFields,
-                    validateFields = _props$form4.validateFields;
+                var validateFields = this.props.form.validateFields;
 
-                resetFields("advanceStrategy");
-                var checkArray = ["name", "productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', 'advanceStrategy'];
-                if (this.props.isEdit) {
-                    checkArray = ["productType", "backType", "fieldSeparator", "fieldSeparatorCusValue", 'lineBreak', "advanceStrategy"];
-                }
+                var checkArray = ["currentSubType", "origins", "totalQuota", "quotaUnits", "defaultStrategyMode", 'strategyLimit', 'strategyCode', 'strategyOrigin'];
                 validateFields(checkArray, function (err, vals) {
+                    var _this4 = this;
+
                     var postParam,
                         model = this.props.model;
                     var collection = this.props.limitProps.collection;
                     if (!err) {
-                        postParam = {
-                            name: vals.name,
-                            productType: vals.productType,
-                            backType: vals.backType,
-                            fieldSeparator: vals.fieldSeparator == "custom" ? vals.fieldSeparatorCusValue : vals.fieldSeparator,
-                            lineBreak: vals.lineBreak,
-                            advanceStrategy: this.state.advanceStrategy
-                        };
-                        if (this.props.isEdit) {
-                            postParam.groupId = this.groupId, postParam.originCreateTime = this.originCreateTime;
+                        console.log(vals);
+                        var origins = vals.origins.map(function (el) {
+                            return {
+                                "originId": parseInt(el),
+                                "userId": _this4.props.limitProps.userInfo.uid
+                            };
+                        });
+                        var currentValue;
+                        if (vals.defaultStrategyMode == 1) {
+                            currentValue = vals.strategyOrigin;
+                        } else if (vals.defaultStrategyMode == 2) {
+                            currentValue = vals.strategyCode;
+                        } else if (vals.defaultStrategyMode == 3) {
+                            currentValue = vals.strategyLimit;
                         }
-                        collection.addTemplate(postParam);
+                        var strategys = [],
+                            defaultSg = {
+                            fileType: "default",
+                            currentMode: parseInt(vals.defaultStrategyMode),
+                            currentValue: currentValue
+                        };
+
+                        strategys.push(defaultSg);
+                        _.each(this.state.advanceStrategy, function (el) {
+                            el.currentMode = parseInt(el.currentMode);
+                            delete el.id;
+                            console.log(el);
+                            strategys.push(el);
+                        });
+
+                        postParam = {
+                            "group": {
+                                "id": this.props.model.id,
+                                "quotaUnits": vals.quotaUnits,
+                                "totalQuota": vals.totalQuota,
+                                "userId": this.props.limitProps.userInfo.uid
+                            },
+                            "origins": origins,
+                            "strategys": strategys
+                        };
+
+                        console.log(postParam);
+                        collection.updateLimitRateConf(postParam);
                     }
                 }.bind(this));
             }

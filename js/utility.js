@@ -605,10 +605,10 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
         },
 
         liveAndDownloadList:[
-            // {
-            //     name: "大文件下载加速",
-            //     value: "4"
-            // }, 
+            {
+                name: "大文件下载加速",
+                value: "4"
+            }, 
             {
                 name: "音视频点播加速",
                 value: "1"
@@ -620,13 +620,18 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
             {
                 name: "直播推流加速",
                 value: "3"
+            },
+            {
+                name: "图片小文件",
+                value: "3"
             }
         ],
         liveAndDownloadListBack:{
             1:"音视频点播加速",
             2:"直播加速",
             3:"直播推流加速",
-            4:"大文件下载加速"
+            4:"大文件下载加速",
+            5:"图片小文件"
         }
 
     };

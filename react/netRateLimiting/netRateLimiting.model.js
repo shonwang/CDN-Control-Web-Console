@@ -57,15 +57,15 @@ define("netRateLimiting.model", ['require', 'exports', 'utility'], function(requ
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
-        taskRestart: function(args) {
-            var url = BASE_URL + "/refresh/task/restart",
+        updateLimitRateConf: function(args) {
+            var url = BASE_URL + "/channelManager/globalLimitRate/updateLimitRateConf",
                 successCallback = function(res) {
-                    this.trigger("refresh.restart.success", res);
+                    this.trigger("update.detail.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
-                    this.trigger('refresh.restart.error', response);
+                    this.trigger('update.detail.error', response);
                 }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
     });
 

@@ -3,8 +3,8 @@ define("logTemplateManage.model", ['require','exports', 'utility'], function(req
         initialize: function(){
             var updateTime = parseInt(this.get("updateTime")),
                 createTime = parseInt(this.get("createTime"));
-            if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
-            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+            if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm:ss"));
+            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm:ss"));
         }
     });
 

@@ -48,7 +48,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     batchCount: 100, //多条发送上限
                     batchInterval: 60, //单批次最大延迟发送时间
                     logRange: "", //日志范围  EDGE（边缘） EDGE_AND_UPPER （边缘+上层）
-                    compressMode: "", //压缩方式 TEXT（文本） LZ4（lz4）  GZ（gzip）
+                    compressMode: "", //压缩方式 TEXT（txt） LZ4（lz4）  GZ（gzip）
                     userAgent: "",
                     tokenKey: "",
                     taskTokenType: "KEY_FIRST", //任务TOKEN类型   KEY_FIRST （key在前时间在后） KEY_LAST （key在后时间在前）
@@ -216,7 +216,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     dataForShow.logRange = "边缘+上层"
                 }
                 if (compressMode == "TEXT") {
-                    dataForShow.compressMode = "文本"
+                    dataForShow.compressMode = "txt"
                 } else if (compressMode == "LZ4") {
                     dataForShow.compressMode = "lz4"
                 } else if (compressMode == "GZ") {
@@ -288,7 +288,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                 </Col>
                                 <Col span={8}>
                                     <FormItem labelCol={{ span: 16 }} wrapperCol={{ span: 8 }} label="单批次最大延迟发送时间">
-                                        <span className="ant-form-text">{this.state.batchInterval}</span>
+                                        <span className="ant-form-text">{this.state.batchInterval}s</span>
                                     </FormItem>
                                 </Col>
                             </FormItem>
@@ -376,7 +376,6 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                             rules: [{ required: true, message: '请输入模版名称!' }]
                                         })(
                                             <Select style={{ width: 200 }} labelInValue>
-                                                <Option value="">请选择</Option> 
                                                {this.state.dataSourceTemplateName}
                                             </Select>
                                         )}
@@ -558,7 +557,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                         })(
                                             <Select style={{ width: 200 }}>
                                                 <Option value="">请选择</Option>  
-                                                <Option value="TEXT">文本</Option>
+                                                <Option value="TEXT">txt</Option>
                                                 <Option value="LZ4">lz4</Option>
                                                 <Option value="GZ">gzip</Option>
                                             </Select>

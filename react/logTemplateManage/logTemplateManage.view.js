@@ -67,7 +67,7 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                     message.warning('有' + res.taskCount + '个任务正在使用此模板，请先停掉任务，再删除！', 5);
                 } else {
                     confirm({
-                        title: '你确定要删除吗？',
+                        title: '无任务使用此模版，确定删除吗？',
                         okText: '确定',
                         okType: 'danger',
                         cancelText: '算了，不删了',

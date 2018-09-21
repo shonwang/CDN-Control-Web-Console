@@ -230,7 +230,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                     dataForShow.logRange = "边缘+上层";
                 }
                 if (compressMode == "TEXT") {
-                    dataForShow.compressMode = "文本";
+                    dataForShow.compressMode = "txt";
                 } else if (compressMode == "LZ4") {
                     dataForShow.compressMode = "lz4";
                 } else if (compressMode == "GZ") {
@@ -394,7 +394,8 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                                     React.createElement(
                                         'span',
                                         { className: 'ant-form-text' },
-                                        this.state.batchInterval
+                                        this.state.batchInterval,
+                                        's'
                                     )
                                 )
                             )
@@ -549,11 +550,6 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                                     })(React.createElement(
                                         Select,
                                         { style: { width: 200 }, labelInValue: true },
-                                        React.createElement(
-                                            Option,
-                                            { value: '' },
-                                            '\u8BF7\u9009\u62E9'
-                                        ),
                                         this.state.dataSourceTemplateName
                                     ))
                                 )
@@ -831,7 +827,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                                         React.createElement(
                                             Option,
                                             { value: 'TEXT' },
-                                            '\u6587\u672C'
+                                            'txt'
                                         ),
                                         React.createElement(
                                             Option,

@@ -603,7 +603,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     })
                 }.bind(this))
                 this.rule.push({
-                    "id": tempId,
+                    "id": this.defaultParam.id,
                     "local": tempLocal, 
                     "localType": this.defaultParam.localType,
                     "upper": this.defaultParam.upper,
@@ -629,7 +629,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                         })
                     }.bind(this))
                     this.rule.push({
-                        "id": tempId,
+                        "id": this.defaultParam.id,
                         "local": tempLocal, 
                         "localType": this.defaultParam.localType,
                         "upper": this.defaultParam.upper,
@@ -655,7 +655,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     })
                 }.bind(this))
                 this.rule.push({
-                    "id": tempId,
+                    "id": this.defaultParam.id,
                     "local": tempLocal, 
                     "localType": this.defaultParam.localType,
                     "upper": this.defaultParam.upper,
@@ -677,7 +677,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     })
                 }.bind(this))
                 this.rule.push({
-                    "id": tempId,
+                    "id": this.defaultParam.id,
                     "local": tempLocal, 
                     "localType": this.defaultParam.localType,
                     "upper": this.defaultParam.upper,
@@ -700,7 +700,7 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                     })
                 }.bind(this))
                 this.rule.push({
-                    "id": tempId,
+                    "id": this.defaultParam.id,
                     "local": tempLocal, 
                     "localType": this.defaultParam.localType,
                     "upper": this.defaultParam.upper,

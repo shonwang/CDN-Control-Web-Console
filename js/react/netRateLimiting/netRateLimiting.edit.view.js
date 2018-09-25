@@ -232,7 +232,6 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                 } else if (currentMode == 1 && value && Utility.isIP(value)) {
                     callback();
                 } else if (currentMode == 1) {
-                    console.log(value);
                     callback('请输入正确的自定义回源！');
                 } else {
                     callback();
@@ -640,7 +639,20 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     fieldObj = void 0;
                 validateFields(["fileType", "advanceStrategyMode", "advanceStrategyLimit", "advanceStrategyCode", "advanceStrategyOrigin"], function (err, vals) {
                     if (!err && !isEditField) {
-                        console.log(vals);
+                        var typeStr = "",
+                            repeatType = [];
+                        _.each(advanceStrategy, function (el) {
+                            typeStr = typeStr + el.fileType;
+                        });
+                        _.each(vals.fileType, function (el) {
+                            if (typeStr.indexOf(el) > -1) {
+                                repeatType.push(el);
+                            }
+                        });
+                        if (repeatType.length > 0) {
+                            Utility.alerts(repeatType.join(",") + "已经添加过了！");
+                            return;
+                        }
                         var currentValue;
                         if (vals.advanceStrategyMode == 1) {
                             currentValue = vals.advanceStrategyOrigin;
@@ -704,7 +716,6 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     return obj.id == id;
                 }.bind(this));
 
-                if (typeof model.fileType == "string") model.fileType = model.fileType.split(",");
                 this.setState({
                     fieldModalVisible: true,
                     isEditField: true,
@@ -729,7 +740,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     cancelText: '算了，不删了',
                     onOk: function () {
                         var list = _.filter(this.state.advanceStrategy, function (obj) {
-                            return obj.id !== id;
+                            return obj.id != id;
                         }.bind(this));
                         this.setState({
                             advanceStrategy: list
@@ -753,7 +764,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                         FormItem,
                         _extends({}, formItemLayout, { label: '\u6587\u4EF6\u7C7B\u578B' }),
                         getFieldDecorator('fileType', {
-                            initialValue: this.state.curEditField.fileType,
+                            initialValue: this.state.curEditField.fileType && this.state.curEditField.fileType.split(","),
                             rules: [{ type: "array", required: true, message: '请输入文件类型!' }]
                         })(React.createElement(Select, { mode: 'tags', allowClear: true,
                             notFoundContent: "请输入文件类型, 可以配置多个",

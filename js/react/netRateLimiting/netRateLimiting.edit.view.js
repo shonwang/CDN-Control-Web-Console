@@ -170,20 +170,30 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
         }, {
             key: 'onStrategyModeChange',
             value: function onStrategyModeChange(value) {
+                var resetFields = this.props.form.resetFields;
+
                 var defaultStrategy = this.state.defaultStrategy;
                 defaultStrategy.currentMode = value;
                 this.setState({
                     defaultStrategy: defaultStrategy
                 });
+                resetFields("strategyLimit");
+                resetFields("strategyCode");
+                resetFields("strategyOrigin");
             }
         }, {
             key: 'onAdvanceStrategyModeChange',
             value: function onAdvanceStrategyModeChange(value) {
+                var resetFields = this.props.form.resetFields;
+
                 var curEditField = this.state.curEditField;
                 curEditField.currentMode = value;
                 this.setState({
                     curEditField: curEditField
                 });
+                resetFields("advanceStrategyLimit");
+                resetFields("advanceStrategyCode");
+                resetFields("advanceStrategyOrigin");
             }
         }, {
             key: 'validateStrategyLimit',
@@ -217,8 +227,13 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
             key: 'validateStrategyOrigin',
             value: function validateStrategyOrigin(rule, value, callback) {
                 var currentMode = this.state.defaultStrategy.currentMode;
-                if (currentMode == 1 && !value) {
-                    callback('请输入自定义回源！');
+                if (currentMode == 1 && value && Utility.isDomain(value)) {
+                    callback();
+                } else if (currentMode == 1 && value && Utility.isIP(value)) {
+                    callback();
+                } else if (currentMode == 1) {
+                    console.log(value);
+                    callback('请输入正确的自定义回源！');
                 } else {
                     callback();
                 }
@@ -255,8 +270,12 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
             key: 'validateAdvanceStrategyOrigin',
             value: function validateAdvanceStrategyOrigin(rule, value, callback) {
                 var currentMode = this.state.curEditField.currentMode;
-                if (currentMode == 1 && !value) {
-                    callback('请输入自定义回源！');
+                if (currentMode == 1 && value && Utility.isDomain(value)) {
+                    callback();
+                } else if (currentMode == 1 && value && Utility.isIP(value)) {
+                    callback();
+                } else if (currentMode == 1) {
+                    callback('请输入正确的自定义回源！');
                 } else {
                     callback();
                 }
@@ -631,7 +650,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             currentValue = vals.advanceStrategyLimit;
                         }
                         newField = {
-                            id: Utility.randomStr(8),
+                            id: new Date().valueOf(),
                             fileType: vals.fileType.join(","),
                             currentMode: vals.advanceStrategyMode,
                             currentValue: currentValue
@@ -864,8 +883,6 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                         strategys.push(defaultSg);
                         _.each(this.state.advanceStrategy, function (el) {
                             el.currentMode = parseInt(el.currentMode);
-                            delete el.id;
-                            console.log(el);
                             strategys.push(el);
                         });
 

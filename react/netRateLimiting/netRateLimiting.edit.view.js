@@ -180,10 +180,12 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
 
             validateStrategyOrigin(rule, value, callback) {
                 const  currentMode = this.state.defaultStrategy.currentMode;
-                if (currentMode == 1 && !value) {
-                    callback('请输入自定义回源！');
-                } else {
+                if (currentMode == 1 && Utility.isDomain(value)) {
                     callback();
+                } else if (currentMode == 1 && Utility.isIP(value)) {
+                    callback();
+                } else {
+                    callback('请输入正确的自定义回源！')
                 }
             }
 
@@ -215,11 +217,12 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
 
             validateAdvanceStrategyOrigin(rule, value, callback) {
                 const  currentMode = this.state.curEditField.currentMode;
-                var isDomain = Utility.isDomain(value)
-                if ((currentMode == 1 && !value) || (currentMode == 1 && !isDomain)) {
-                    callback('请输入正确的自定义回源！');
-                } else {
+                if (currentMode == 1 && Utility.isDomain(value)) {
                     callback();
+                } else if (currentMode == 1 && Utility.isIP(value)) {
+                    callback();
+                } else {
+                    callback('请输入正确的自定义回源！')
                 }
             }
 

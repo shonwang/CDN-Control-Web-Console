@@ -386,7 +386,7 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
         _createClass(SearchForm, [{
             key: 'handleSubmit',
             value: function handleSubmit(e) {
-                e.preventDefault();
+                e && e.preventDefault();
                 var fieldsValue = this.props.form.getFieldsValue(),
                     ltProps = this.props.ltProps;
                 var collection = ltProps.collection,
@@ -407,6 +407,15 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
             value: function onClickAddButton() {
                 var onClickAddCallback = this.props.ltProps.onClickAddCallback;
                 onClickAddCallback && onClickAddCallback();
+            }
+        }, {
+            key: 'onClickResetButton',
+            value: function onClickResetButton() {
+                var setFieldsValue = this.props.form.setFieldsValue;
+
+                setFieldsValue({ "templateName": null });
+                setFieldsValue({ "time": null });
+                this.handleSubmit();
             }
         }, {
             key: 'render',
@@ -442,6 +451,11 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                             Button,
                             { style: { marginLeft: 8 }, icon: 'plus', onClick: this.onClickAddButton },
                             '\u65B0\u5EFA'
+                        ),
+                        React.createElement(
+                            Button,
+                            { style: { marginLeft: 8 }, icon: 'reload', onClick: $.proxy(this.onClickResetButton, this) },
+                            '\u91CD\u7F6E'
                         )
                     )
                 );

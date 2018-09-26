@@ -331,7 +331,7 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
             }
 
             handleSubmit(e){
-                e.preventDefault();
+                e&&e.preventDefault();
                 var fieldsValue = this.props.form.getFieldsValue(),
                     ltProps = this.props.ltProps;
                 var collection = ltProps.collection,
@@ -351,6 +351,13 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
             onClickAddButton(){
                 var onClickAddCallback = this.props.ltProps.onClickAddCallback;
                 onClickAddCallback&&onClickAddCallback()
+            }
+
+            onClickResetButton() {
+                const { setFieldsValue } = this.props.form;
+                setFieldsValue({"templateName": null})
+                setFieldsValue({"time": null})
+                this.handleSubmit();
             }
 
             render(){
@@ -374,6 +381,7 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                         <FormItem>
                             <Button type="primary" htmlType="submit" icon="search">查询</Button>
                             <Button style={{ marginLeft: 8 }} icon="plus" onClick={this.onClickAddButton}>新建</Button>
+                            <Button style={{ marginLeft: 8 }} icon="reload" onClick={$.proxy(this.onClickResetButton, this)}>重置</Button>
                         </FormItem>
                     </Form>
                 );

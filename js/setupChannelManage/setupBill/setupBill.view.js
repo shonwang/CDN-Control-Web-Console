@@ -93,6 +93,7 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.config.domainConf.confCustomType  === 2) this.baseInfo.confCustomTypeStr = '标准化内部配置';
             if (this.config.domainConf.confCustomType === 3) this.baseInfo.confCustomTypeStr = '定制化配置<span class="text-danger">(中控配置不准确，如需修改，请先联系运维)</span>';
             this.baseInfo.projectName = this.config.originDomain.projectName || '默认项目';
+            this.baseInfo.isNotShowProject = this.options.isNotShowProject || false;
             this.baseInfoTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.base.html'])({
                 data: this.baseInfo
             }));

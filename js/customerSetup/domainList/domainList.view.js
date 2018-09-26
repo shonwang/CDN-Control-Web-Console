@@ -248,6 +248,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     var mySetupBillModel = new SetupBillModel();
                     var mySetupBillView = new SetupBillView({
                         collection: mySetupBillModel,
+                        isNotShowProject:true,
                         originId: id,
                         onSaveCallback: function() {}.bind(this),
                         onCancelCallback: function() {

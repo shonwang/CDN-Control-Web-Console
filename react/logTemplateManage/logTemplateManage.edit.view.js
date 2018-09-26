@@ -463,7 +463,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
                         });
                     } else if (!err && isEditField) {
                         fieldObj = _.find(this.logTplManageOriginField, (el)=>{
-                            return el.id == vals.originFieldTag
+                            return (el.id == vals.originFieldTag) || (el.field == vals.originFieldTag)
                         })
                         _.find(templateFieldList, (el) => {
                             if (el.id == curEditField.id) {

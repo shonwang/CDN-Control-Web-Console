@@ -404,7 +404,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                         )}
                                     </FormItem>
                                 </Col>
-                                <Col span={10}>
+                                <Col span={8}>
                                     <FormItem {...formItemLayout} label="客户回传域名设置" required={true} style={{display: this.state.domainsVisible}}>
                                         {getFieldDecorator('domains', {
                                             initialValue: this.state.domains,
@@ -422,7 +422,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                         )}
                                     </FormItem>
                                 </Col>
-                                <Col span={2}>
+                                <Col span={4}>
                                     <FormItem style={{display: this.state.domainsVisible}}>
                                         <span style={{marginLeft: "10px"}}>共{this.state.dataSourceDomains.length}个域名</span>
                                     </FormItem>

@@ -156,7 +156,7 @@ define("logTaskStatistics.view", ['require', 'exports', 'template', 'base.view',
                         queryCondition.taskName = fieldsValue.taskName || null;
                         queryCondition.domains = fieldsValue.domains || null;
 
-                        queryCondition.userId = "yy_custom";
+                        // queryCondition.userId = "yy_custom"
                         this.queryCondition = queryCondition;
                         collection.getTaskStatistics(queryCondition);
                         collection.trigger("fetching");

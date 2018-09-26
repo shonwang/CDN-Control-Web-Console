@@ -599,7 +599,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                             ),
                             React.createElement(
                                 Col,
-                                { span: 10 },
+                                { span: 8 },
                                 React.createElement(
                                     FormItem,
                                     _extends({}, formItemLayout, { label: '\u5BA2\u6237\u56DE\u4F20\u57DF\u540D\u8BBE\u7F6E', required: true, style: { display: this.state.domainsVisible } }),
@@ -619,7 +619,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                             ),
                             React.createElement(
                                 Col,
-                                { span: 2 },
+                                { span: 4 },
                                 React.createElement(
                                     FormItem,
                                     { style: { display: this.state.domainsVisible } },

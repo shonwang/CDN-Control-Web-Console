@@ -599,7 +599,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                             ),
                             React.createElement(
                                 Col,
-                                { span: 12 },
+                                { span: 10 },
                                 React.createElement(
                                     FormItem,
                                     _extends({}, formItemLayout, { label: '\u5BA2\u6237\u56DE\u4F20\u57DF\u540D\u8BBE\u7F6E', required: true, style: { display: this.state.domainsVisible } }),
@@ -615,6 +615,21 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                                             filterOption: false },
                                         this.state.dataSourceDomains
                                     ))
+                                )
+                            ),
+                            React.createElement(
+                                Col,
+                                { span: 2 },
+                                React.createElement(
+                                    FormItem,
+                                    { style: { display: this.state.domainsVisible } },
+                                    React.createElement(
+                                        'span',
+                                        { style: { marginLeft: "10px" } },
+                                        '\u5171',
+                                        this.state.dataSourceDomains.length,
+                                        '\u4E2A\u57DF\u540D'
+                                    )
                                 )
                             )
                         ),
@@ -1320,7 +1335,7 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                         });
                     } else if (!err && isEditField) {
                         fieldObj = _.find(_this3.logTplManageOriginField, function (el) {
-                            return el.id == vals.originTag;
+                            return el.id == vals.originTag || el.field == vals.originTag;
                         });
                         _.find(taskConditionList, function (el) {
                             if (el.id == curEditField.id) {

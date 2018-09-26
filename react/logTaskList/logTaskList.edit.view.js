@@ -404,7 +404,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                         )}
                                     </FormItem>
                                 </Col>
-                                <Col span={12}>
+                                <Col span={10}>
                                     <FormItem {...formItemLayout} label="客户回传域名设置" required={true} style={{display: this.state.domainsVisible}}>
                                         {getFieldDecorator('domains', {
                                             initialValue: this.state.domains,
@@ -420,6 +420,11 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                                                     {this.state.dataSourceDomains}       
                                             </Select>
                                         )}
+                                    </FormItem>
+                                </Col>
+                                <Col span={2}>
+                                    <FormItem style={{display: this.state.domainsVisible}}>
+                                        <span style={{marginLeft: "10px"}}>共{this.state.dataSourceDomains.length}个域名</span>
                                     </FormItem>
                                 </Col>
                             </FormItem>
@@ -929,7 +934,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                         });
                     } else if (!err && isEditField) {
                         fieldObj = _.find(this.logTplManageOriginField, (el)=>{
-                            return el.id == vals.originTag
+                            return (el.id == vals.originTag) || (el.field == vals.originTag)
                         })
                         _.find(taskConditionList, (el) => {
                             if (el.id == curEditField.id) {

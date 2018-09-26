@@ -258,6 +258,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.myTopuAndStrategyDiffView = new TopuAndStrategyDiffView({
                         collection:this.collection,
                         operatorList:this.operatorList,
+                        from:"topo",
                         diffData:this.getPostParam(),
                         onCancelCallback:function(){
                             this.closeDiffView();

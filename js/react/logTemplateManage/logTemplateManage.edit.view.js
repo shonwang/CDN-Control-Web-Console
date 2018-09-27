@@ -107,7 +107,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
             key: 'onGetTplDetailSuccess',
             value: function onGetTplDetailSuccess(res) {
                 this.groupId = res.groupId;
-                this.originCreateTime = res.groupId;
+                this.originCreateTime = res.originCreateTime;
                 if (res.fieldSeparator != "\t" && res.fieldSeparator != " " && res.fieldSeparator != "|") {
                     res.fieldSeparatorCusValue = res.fieldSeparator;
                     res.fieldSeparator = "custom";

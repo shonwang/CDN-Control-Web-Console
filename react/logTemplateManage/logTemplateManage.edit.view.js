@@ -80,7 +80,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
 
             onGetTplDetailSuccess(res) {
                 this.groupId = res.groupId;
-                this.originCreateTime = res.groupId;
+                this.originCreateTime = res.originCreateTime;
                 if (res.fieldSeparator != "\t" &&
                     res.fieldSeparator != " " &&
                     res.fieldSeparator != "|") {

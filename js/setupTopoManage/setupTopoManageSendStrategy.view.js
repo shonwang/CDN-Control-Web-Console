@@ -80,7 +80,12 @@ define("setupTopoManageSendStrategy.view", ['require', 'exports', 'template', 'm
 
                 this.table.find('.edit').on('click', $.proxy(this.onClickEditSend, this));
                 this.table.find('.delete').on('click', $.proxy(this.onClickDeleteSend, this));
-                this.table.find('.setDefault').on('click', $.proxy(this.onClickDefault, this));
+
+                if(AUTH_OBJ.setDefaultDeliveryStrategy) {
+                    this.table.find('.setDefault').on('click', $.proxy(this.onClickDefault, this));
+                } else {
+                    this.table.find('.setDefault').remove();
+                }
 
                 if (!this.isInitPaginator) this.initPaginator();
             },

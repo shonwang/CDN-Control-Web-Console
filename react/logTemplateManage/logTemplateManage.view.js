@@ -63,16 +63,30 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
 
             onCheckTplIsUsedSuccess (res) {
                 var collection = this.props.ltProps.collection;
-                if (res.used) {
+                if (res.used && this.curClickButton == "delete") {
                     message.warning('有' + res.taskCount + '个任务正在使用此模板，请先停掉任务，再删除！', 5);
-                } else {
+                } else if (this.curClickButton == "delete" && !res.used){
                     confirm({
                         title: '无任务使用此模版，确定删除吗？',
                         okText: '确定',
                         okType: 'danger',
-                        cancelText: '算了，不删了',
+                        cancelText: '取消',
                         onOk: function(){
                             collection.deleteTemplate({groupId: this.curDeleteGroupId})
+                        }.bind(this)
+                    });
+                } else if (this.curClickButton == "edit" && !res.used) {
+                    var onClickEditCallback = this.props.ltProps.onClickEditCallback;
+                    onClickEditCallback&&onClickEditCallback(this.curEditModel)
+                } else if (this.curClickButton == "edit" && res.used) {
+                    confirm({
+                        title: '有' + res.taskCount + '个任务正在使用此模板，修改后模板在生效前，任务将以原模板执行，确认提交此修改？',
+                        okText: '确定',
+                        okType: 'danger',
+                        cancelText: '取消',
+                        onOk: function(){
+                            var onClickEditCallback = this.props.ltProps.onClickEditCallback;
+                            onClickEditCallback&&onClickEditCallback(this.curEditModel)
                         }.bind(this)
                     });
                 }
@@ -152,6 +166,7 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                 var collection = ltProps.collection;
                 collection.isTemplateUsed({groupId: id});
                 this.curDeleteGroupId = id;
+                this.curClickButton = "delete";
             }
 
             handleEditClick(event) {
@@ -166,8 +181,11 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
                     }.bind(this))
-                var onClickEditCallback = this.props.ltProps.onClickEditCallback;
-                onClickEditCallback&&onClickEditCallback(model)
+                var ltProps = this.props.ltProps;
+                var collection = ltProps.collection;
+                collection.isTemplateUsed({groupId: model.groupId});
+                this.curEditModel = model;
+                this.curClickButton = "edit"
             }
 
             handleViewClick(event) {

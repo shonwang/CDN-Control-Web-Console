@@ -949,7 +949,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                     var collection = this.props.ltProps.collection;
                     if (!err) {
                         postParam = {
-                            name: vals.name,
+                            name: vals.name || this.state.name,
                             productType: vals.productType,
                             backType: vals.backType,
                             fieldSeparator: vals.fieldSeparator == "custom" ? vals.fieldSeparatorCusValue : vals.fieldSeparator,
@@ -960,6 +960,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                             postParam.groupId = this.groupId, postParam.originCreateTime = this.originCreateTime;
                         }
                         collection.addTemplate(postParam);
+                        console.log(vals);
                     }
                 }.bind(this));
             }

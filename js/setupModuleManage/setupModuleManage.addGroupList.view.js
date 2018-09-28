@@ -139,7 +139,7 @@ define("setupModuleManage.addGroupList.view", ['require', 'exports', 'template',
                     id;
                 id = $(eventTarget).attr("id");
                 if (id.length != 8) {
-                    alert("这条KEY已经保存到服务器不能删除！如需删除，请联系翟磊！");
+                    alert("这条KEY已经保存到服务器不能删除！如需删除，请联系中控服务端开发人员！");
                     return;
                 }
                 Utility.confirm("你确定要删除吗？", function() {

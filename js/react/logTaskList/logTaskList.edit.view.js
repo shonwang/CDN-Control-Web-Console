@@ -1501,6 +1501,10 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                         model = this.props.model;
                     var collection = this.props.ltProps.collection;
                     console.log(vals);
+                    if (_.indexOf(this.userId, vals.accountId) == -1) {
+                        Utility.alerts("请输入正确的用户ID");
+                        return;
+                    }
                     if (!err) {
                         taskFieldJson = {
                             "backMethod": vals.backMethod,

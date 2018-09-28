@@ -707,7 +707,7 @@ define("logTemplateManage.edit.view", ['require','exports', 'template', 'base.vi
             }                          
 
             onSubmitSuccess (){
-                Utility.alerts("保存成功！", "success", 2000);
+                Utility.alerts("保存成功，并发送邮件给日志管理小组发布，请尽快和小组成员联系", "success", 2000);
                 this.onClickCancel();
             }
 

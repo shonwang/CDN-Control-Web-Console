@@ -916,7 +916,7 @@ define("logTemplateManage.edit.view", ['require', 'exports', 'template', 'base.v
                     param = fieldFormObj.param,
                     originFieldTag = fieldFormObj.originFieldTag,
                     fieldObj = _.find(this.logTplManageOriginField, function (el) {
-                    return el.id == originFieldTag;
+                    return el.id == originFieldTag || el.field == originFieldTag;
                 });
                 curEditField.example = this.getFieldExample(fieldObj.field, valueType, param);
 

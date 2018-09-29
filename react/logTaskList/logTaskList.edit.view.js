@@ -704,7 +704,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                 var productType = getFieldsValue().productType,
                     applicationType = productType == "LIVE" ? 1 : 2
 
-                if (!productType) applicationType = null;
+                if (!productType) return;
 
                 if (value) {
                     require(['statisticsManage.model'],function(DomainListModel){

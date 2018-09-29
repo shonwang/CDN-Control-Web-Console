@@ -672,16 +672,14 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                 if (value) {
                     collection.getTemplateByProductType({productType: value});
                     if (accountId) {
-                        applicationType = value == "LIVE" ? 203 : 202
-                        require(['domainList.model'],function(DomainListModel){
+                        applicationType = value == "LIVE" ? 1 : 2
+                        require(['statisticsManage.model'],function(DomainListModel){
                             var domainListModel = new DomainListModel();
-                            domainListModel.on("query.domain.success", $.proxy(this.onGetDomainListSuccess, this))
-                            domainListModel.on("query.domain.error", $.proxy(this.onGetError, this))
-                            domainListModel.getDomainInfoList({
-                                currentPage: 1,
-                                applicationType: applicationType,
-                                pageSize: 99999,
-                                userId: accountId
+                            domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                            domainListModel.on("get.domain.error", $.proxy(this.onGetError, this))
+                            domainListModel.getDomain({
+                                userid: accountId,
+                                type: applicationType
                             });
                         }.bind(this));
                     }
@@ -704,28 +702,26 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     dataSourceDomains: []
                 })
                 var productType = getFieldsValue().productType,
-                    applicationType = productType == "LIVE" ? 203 : 202
+                    applicationType = productType == "LIVE" ? 1 : 2
 
                 if (!productType) applicationType = null;
 
                 if (value) {
-                    require(['domainList.model'],function(DomainListModel){
+                    require(['statisticsManage.model'],function(DomainListModel){
                         var domainListModel = new DomainListModel();
-                        domainListModel.on("query.domain.success", $.proxy(this.onGetDomainListSuccess, this))
-                        domainListModel.on("query.domain.error", $.proxy(this.onGetError, this))
-                        domainListModel.getDomainInfoList({
-                            currentPage: 1,
-                            applicationType: applicationType,
-                            pageSize: 99999,
-                            userId: value
+                        domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                        domainListModel.on("get.domain.error", $.proxy(this.onGetError, this))
+                        domainListModel.getDomain({
+                            userid: value,
+                            type: applicationType
                         });
                     }.bind(this));
                 }
             }
 
             onGetDomainListSuccess(res) {
-                var domainArray = res.data.map((el) => {
-                        return <Option key={el.originDomain.domain}>{el.originDomain.domain}</Option>;
+                var domainArray = res.map((el) => {
+                        return <Option key={el}>{el}</Option>;
                     })
                 this.setState({
                     dataSourceDomains: domainArray

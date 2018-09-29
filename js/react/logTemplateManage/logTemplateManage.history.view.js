@@ -274,13 +274,19 @@ define("logTemplateManage.history.view", ['require', 'exports', 'template', 'bas
                                     '\u6B63\u5728\u4F7F\u7528'
                                 )
                             );
-                        } else {
+                        } else if (AUTH_OBJ.CheckLogList) {
                             buttonGroup = React.createElement(
                                 'div',
                                 null,
                                 detailButton,
                                 React.createElement('span', { className: 'ant-divider' }),
                                 publishButton
+                            );
+                        } else {
+                            buttonGroup = React.createElement(
+                                'div',
+                                null,
+                                detailButton
                             );
                         }
                         return buttonGroup;

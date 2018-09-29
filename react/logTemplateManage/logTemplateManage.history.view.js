@@ -236,12 +236,18 @@ define("logTemplateManage.history.view", ['require','exports', 'template', 'base
                                     <Tag color={"green"}>正在使用</Tag>
                                 </div>
                             )
-                        } else {
+                        } else if (AUTH_OBJ.CheckLogList){
                             buttonGroup = (
                                 <div>
                                     {detailButton}
                                     <span className="ant-divider" />
                                     {publishButton}
+                                </div>
+                            )
+                        } else {
+                            buttonGroup = (
+                                <div>
+                                    {detailButton}
                                 </div>
                             )
                         }

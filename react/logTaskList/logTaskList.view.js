@@ -6,6 +6,7 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
             Breadcrumb = Antd.Breadcrumb,
             Button = Antd.Button,
             Input = Antd.Input,
+            InputNumber = Antd.InputNumber,
             Form = Antd.Form,
             FormItem = Form.Item,
             Table = Antd.Table,
@@ -96,7 +97,8 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
                 })
                 this.setState({
                     data: data,
-                    isFetching: false
+                    isFetching: false,
+                    isError: false
                 })
             }
 
@@ -184,11 +186,6 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
                 else if (error && error.Error && error.Error.Message)
                     msgDes = error.Error.Message;
 
-                this.setState({
-                    isError: true,
-                    isFetching: false
-                })
-
                 this.errorView = (
                     <Alert
                         message="出错了"
@@ -197,6 +194,11 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
                         showIcon
                     />
                 );
+
+                this.setState({
+                    isError: true,
+                    isFetching: false
+                })
             }
 
             render() {
@@ -326,23 +328,24 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
             }
 
             handleSubmit(e){
-                // "name": null,
-                // "domain": null,
-                // "templateName": null,
-                // "accountId": null,
-                // "backUrl": null,
                 e&&e.preventDefault();
-                var fieldsValue = this.props.form.getFieldsValue(),
-                    ltProps = this.props.ltProps;
-                var collection = ltProps.collection,
-                    queryCondition = ltProps.queryCondition;
-                queryCondition.name = fieldsValue.name || null;
-                //queryCondition.domain = fieldsValue.domain || null;
-                queryCondition.templateName = fieldsValue.templateName || null;
-                queryCondition.accountId = fieldsValue.accountId || null;
-                queryCondition.backUrl = fieldsValue.backUrl || null;
-                console.log(queryCondition)
-                collection.trigger("fetching", queryCondition)
+                const { validateFields } = this.props.form;
+
+                validateFields(["accountId"], function(err, vals) {
+                    if (!err) {
+                        var fieldsValue = this.props.form.getFieldsValue(),
+                            ltProps = this.props.ltProps;
+                        var collection = ltProps.collection,
+                            queryCondition = ltProps.queryCondition;
+                        queryCondition.name = fieldsValue.name || null;
+                        //queryCondition.domain = fieldsValue.domain || null;
+                        queryCondition.templateName = fieldsValue.templateName || null;
+                        queryCondition.accountId = fieldsValue.accountId || null;
+                        queryCondition.backUrl = fieldsValue.backUrl || null;
+                        console.log(queryCondition)
+                        collection.trigger("fetching", queryCondition)
+                    }
+                }.bind(this))
             }
 
             onClickAddButton(){
@@ -397,7 +400,11 @@ define("logTaskList.view", ['require','exports', 'template', 'base.view', 'utili
                         <Row>
                             <Col span={8}>
                                 <FormItem {...formItemLayout} label={"客户ID"}>
-                                    {getFieldDecorator('accountId')(
+                                    {getFieldDecorator('accountId',{
+                                            rules: [
+                                                { pattern: /^[0-9]+$/, message: '客户ID只能输入数字!' },
+                                            ],
+                                        })(
                                         <Input />
                                     )}
                                 </FormItem>

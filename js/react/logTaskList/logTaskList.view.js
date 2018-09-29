@@ -17,6 +17,7 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
         Breadcrumb = Antd.Breadcrumb,
         Button = Antd.Button,
         Input = Antd.Input,
+        InputNumber = Antd.InputNumber,
         Form = Antd.Form,
         FormItem = Form.Item,
         Table = Antd.Table,
@@ -117,7 +118,8 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
                 });
                 this.setState({
                     data: data,
-                    isFetching: false
+                    isFetching: false,
+                    isError: false
                 });
             }
         }, {
@@ -207,16 +209,16 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
                 var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！";
                 if (error && error.message) msgDes = error.message;else if (error && error.Error && error.Error.Message) msgDes = error.Error.Message;
 
-                this.setState({
-                    isError: true,
-                    isFetching: false
-                });
-
                 this.errorView = React.createElement(Alert, {
                     message: '\u51FA\u9519\u4E86',
                     description: msgDes,
                     type: 'error',
                     showIcon: true
+                });
+
+                this.setState({
+                    isError: true,
+                    isFetching: false
                 });
             }
         }, {
@@ -375,23 +377,25 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
         _createClass(SearchForm, [{
             key: 'handleSubmit',
             value: function handleSubmit(e) {
-                // "name": null,
-                // "domain": null,
-                // "templateName": null,
-                // "accountId": null,
-                // "backUrl": null,
                 e && e.preventDefault();
-                var fieldsValue = this.props.form.getFieldsValue(),
-                    ltProps = this.props.ltProps;
-                var collection = ltProps.collection,
-                    queryCondition = ltProps.queryCondition;
-                queryCondition.name = fieldsValue.name || null;
-                //queryCondition.domain = fieldsValue.domain || null;
-                queryCondition.templateName = fieldsValue.templateName || null;
-                queryCondition.accountId = fieldsValue.accountId || null;
-                queryCondition.backUrl = fieldsValue.backUrl || null;
-                console.log(queryCondition);
-                collection.trigger("fetching", queryCondition);
+                var validateFields = this.props.form.validateFields;
+
+
+                validateFields(["accountId"], function (err, vals) {
+                    if (!err) {
+                        var fieldsValue = this.props.form.getFieldsValue(),
+                            ltProps = this.props.ltProps;
+                        var collection = ltProps.collection,
+                            queryCondition = ltProps.queryCondition;
+                        queryCondition.name = fieldsValue.name || null;
+                        //queryCondition.domain = fieldsValue.domain || null;
+                        queryCondition.templateName = fieldsValue.templateName || null;
+                        queryCondition.accountId = fieldsValue.accountId || null;
+                        queryCondition.backUrl = fieldsValue.backUrl || null;
+                        console.log(queryCondition);
+                        collection.trigger("fetching", queryCondition);
+                    }
+                }.bind(this));
             }
         }, {
             key: 'onClickAddButton',
@@ -466,7 +470,9 @@ define("logTaskList.view", ['require', 'exports', 'template', 'base.view', 'util
                             React.createElement(
                                 FormItem,
                                 _extends({}, formItemLayout, { label: "客户ID" }),
-                                getFieldDecorator('accountId')(React.createElement(Input, null))
+                                getFieldDecorator('accountId', {
+                                    rules: [{ pattern: /^[0-9]+$/, message: '客户ID只能输入数字!' }]
+                                })(React.createElement(Input, null))
                             )
                         ),
                         React.createElement(

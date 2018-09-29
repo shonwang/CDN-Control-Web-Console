@@ -1501,8 +1501,8 @@ define("logTaskList.edit.view", ['require', 'exports', 'template', 'base.view', 
                         model = this.props.model;
                     var collection = this.props.ltProps.collection;
                     console.log(vals);
-                    if (_.indexOf(this.userId, vals.accountId) == -1) {
-                        Utility.alerts("请输入正确的用户ID");
+                    if (_.indexOf(this.userIdList, parseInt(vals.accountId)) == -1) {
+                        Utility.alerts("请输入正确的用户ID", "", 2000);
                         return;
                     }
                     if (!err) {

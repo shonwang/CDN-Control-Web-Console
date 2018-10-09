@@ -281,6 +281,7 @@
   "setupTopoManageSendStrategy.editStep.view": "setupTopoManage/setupTopoManageSendStrategy.editStep.view",
   "setupTopoManageSendStrategy.model": "setupTopoManage/setupTopoManageSendStrategy.model",
   "setupTopoManageSendStrategy.view": "setupTopoManage/setupTopoManageSendStrategy.view",
+  "topuAndStrategyDiff.view": "setupTopoManage/topuAndStrategyDiff.view",
   "sharedSetup.detail.view": "sharedSetup/sharedSetup.detail.view",
   "sharedSetup.model": "sharedSetup/sharedSetup.model",
   "sharedSetup.view": "sharedSetup/sharedSetup.view",

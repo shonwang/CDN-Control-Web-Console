@@ -1,0 +1,97 @@
+<div class="list-panel-ctn">
+	<%if(upperDiffNodes.length>0){%>
+	<div>上层：</div>
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>节点名称</th>
+				<th>状态</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%for(var i=0;i<upperDiffNodes.length;i++){%>
+			<tr class="<%=upperDiffNodes[i].class%>">
+				<td><%=upperDiffNodes[i].name%></td>
+				<td><%=upperDiffNodes[i].typeName%></td>
+			</tr>
+			<%}%>
+		</tbody>
+	</table>
+	<hr />
+	<%}%>
+
+	<%if(middleDiffNodes.length>0){%>
+	<div>中层：</div>
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>节点名称</th>
+				<th>状态</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%for(var i=0;i<middleDiffNodes.length;i++){%>
+			<tr class="<%=middleDiffNodes[i].class%>">
+				<td><%=middleDiffNodes[i].name%></td>
+				<td><%=middleDiffNodes[i].typeName%></td>
+			</tr>
+			<%}%>
+		</tbody>
+	</table>
+	<hr />
+	<%}%>
+
+    <%if(lowerDiffNodes.length>0){%>
+    <div>下层：</div>
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>节点名称</th>
+				<th>状态</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%for(var i=0;i<lowerDiffNodes.length;i++){%>
+			<tr class="<%=lowerDiffNodes[i].class%>">
+				<td><%=lowerDiffNodes[i].name%></td>
+				<td><%=lowerDiffNodes[i].typeName%></td>
+			</tr>
+			<%}%>
+		</tbody>
+	</table>
+	<%}%>	
+
+	<%if(diffRules.length>0){%>
+	<div>规则：</div>
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>本层</th>
+				<th>上一层</th>
+				<th>状态</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%for(var i=0;i<diffRules.length;i++){%>
+				<tr>
+					<td colspan="2">
+						<table class="table table-striped">
+							<tbody>
+								<%for(var j=0;j<diffRules[i].content.length;j++){%>
+								<tr>
+									<td style="width: 200px;" class="<%=diffRules[i].class%>"><%=diffRules[i].content[j].localLayer%></td>
+									<td style="width: 300px;" class="<%=diffRules[i].class%>"><%=diffRules[i].content[j].upperLayer%></td>
+								</tr>
+								<%}%>
+							</tbody>
+						</table>
+					</td>
+					<td><%=diffRules[i].typeName%></td>
+				</tr>
+				
+			<%}%>
+		</tbody>
+	</table>
+	<%}%>
+
+</div>

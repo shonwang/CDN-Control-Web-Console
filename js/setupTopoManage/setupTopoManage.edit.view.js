@@ -47,8 +47,10 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     this.$el.find('.middle .add-node').hide();
                     this.$el.find('.lower .add-node').hide();
                     this.$el.find(".add-rule").hide();
+                    this.$el.find(".compare").hide();
                 // 新建模式（！isEdit）
                 } else {
+                    this.$el.find(".compare").hide();
                     this.defaultParam = {
                         "id": null,
                         "name": "",
@@ -198,6 +200,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 } else if (AUTH_OBJ.ApplyEditTopos) {
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
                     this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
+                    this.$el.find(".opt-ctn .compare").on("click", $.proxy(this.onClickCompareButton, this));
                 }
 
                 if (this.isView) {
@@ -244,6 +247,31 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                     myNodeManageModel.on("get.operator.error", $.proxy(this.onGetError, this));
                     myNodeManageModel.getOperatorList();
                 }.bind(this))
+            },
+
+            onClickCompareButton:function(){
+                var postTopo = this.getPostParam();
+                this.$el.find(".add-topo").hide();
+                //需要判断是否是copy,调用的接口不一样
+                require(['topuAndStrategyDiff.view'],function(TopuAndStrategyDiffView){
+
+                    this.myTopuAndStrategyDiffView = new TopuAndStrategyDiffView({
+                        collection:this.collection,
+                        operatorList:this.operatorList,
+                        from:"topo",
+                        diffData:this.getPostParam(),
+                        onCancelCallback:function(){
+                            this.closeDiffView();
+                        }.bind(this)
+                    });
+                    this.myTopuAndStrategyDiffView.render(this.$el.find(".diff-role-ctn"));
+
+                }.bind(this))
+            },
+
+            closeDiffView:function(){
+                this.myTopuAndStrategyDiffView.$el.remove();
+                this.$el.find(".add-topo").show();
             },
 
             // 显示更多，已做修改
@@ -317,6 +345,28 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
 
                 console.log("点击保存按钮时的拓扑", this.defaultParam, this.defaultParam.rule)
 
+                var postTopo = this.getPostParam();
+
+                var uiRuleNum = this.$el.find(".rule tbody tr").length,
+                    dateTime = new Date().format("yyyy/MM/dd hh:mm:ss"),
+                    messageDebug = "你确定要暂存或发布吗？<br><p class='h4'>" + dateTime + 
+                                    "<br>进入界面从后端获取<strong class='text-danger'>" + this.originRuleNum + "</strong>条规则" + 
+                                    "<br>点击保存时界面上有<strong class='text-danger'>" + uiRuleNum + "</strong>条规则<br>" + 
+                                    "点击保存时发给后端<strong class='text-danger'>" + postTopo.rule.length + "</strong>条规则</p>"
+                if (this.isEdit) {
+                    Utility.confirm(messageDebug, function(){
+                        this.collection.topoModify(postTopo);
+                    }.bind(this))
+                } else {
+                    this.collection.topoAdd(postTopo);
+                }
+
+                //this.isSaving = true;
+
+                //this.$el.find("opt-ctn .save").attr("disabled", "disabled");
+            },
+
+            getPostParam:function(){
                 var postRules = [],
                     postTopo = {};
 
@@ -370,24 +420,7 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                 else
                     postTopo.ispub = 0;
                 console.log("finally", postTopo)
-
-                var uiRuleNum = this.$el.find(".rule tbody tr").length,
-                    dateTime = new Date().format("yyyy/MM/dd hh:mm:ss"),
-                    messageDebug = "你确定要暂存或发布吗？<br><p class='h4'>" + dateTime + 
-                                    "<br>进入界面从后端获取<strong class='text-danger'>" + this.originRuleNum + "</strong>条规则" + 
-                                    "<br>点击保存时界面上有<strong class='text-danger'>" + uiRuleNum + "</strong>条规则<br>" + 
-                                    "点击保存时发给后端<strong class='text-danger'>" + postTopo.rule.length + "</strong>条规则</p>"
-                if (this.isEdit) {
-                    Utility.confirm(messageDebug, function(){
-                        this.collection.topoModify(postTopo);
-                    }.bind(this))
-                } else {
-                    this.collection.topoAdd(postTopo);
-                }
-
-                //this.isSaving = true;
-
-                //this.$el.find("opt-ctn .save").attr("disabled", "disabled");
+                return postTopo;                
             },
 
             onClickCancelButton: function() {
@@ -761,11 +794,22 @@ define("setupTopoManage.edit.view", ['require', 'exports', 'template', 'modal.vi
                             appType: this.defaultParam.type,
                             isEdit: true,
                             onSaveCallback: function() {
-                                var tempRule = myAddEditLayerStrategyView.getArgs()
-                                this.defaultParam.rule = this.defaultParam.rule.concat(tempRule);
-                                this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
-                                    return el.id !== this.curEditRule.id
-                                }.bind(this))
+                                var tempRule = myAddEditLayerStrategyView.getArgs();
+                                //this.defaultParam.rule = tempRule;
+                                // this.defaultParam.rule = this.defaultParam.rule.concat(tempRule);
+                                // this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
+                                //     return el.id !== this.curEditRule.id
+                                // }.bind(this))
+                                var newRule = [];
+                                for(var i=0;i<this.defaultParam.rule.length;i++){
+                                    if(this.defaultParam.rule[i].id == id){
+                                        continue;
+                                    }
+                                    newRule.push(this.defaultParam.rule[i]);
+                                }
+                                newRule = newRule.concat(tempRule);
+                                this.defaultParam.rule = newRule;
+                                
                                 console.log("保存", tempRule, this.curEditRule)
                                 console.log("编辑后的this.defaultParam.rule", this.defaultParam.rule) 
                                 myAddEditLayerStrategyView.$el.remove();

@@ -257,6 +257,17 @@ define("specialLayerManage.model", ['require', 'exports', 'utility', 'setupTopoM
                         this.trigger('edit.send.error', response);
                     }.bind(this);
                 Utility.postAjax(url, [], successCallback, errorCallback);
+            },
+
+            getStrategyDiff:function(args){
+                    var url = BASE_URL + "/resource/special/getStrategyDiff",
+                    successCallback = function(res) {
+                        this.trigger("diff.strategy.success", res);
+                    }.bind(this),
+                    errorCallback = function(response) {
+                        this.trigger('diff.strategy.error', response);
+                    }.bind(this);
+                Utility.postAjax(url, args, successCallback, errorCallback);                
             }
 
 

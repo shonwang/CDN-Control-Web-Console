@@ -144,6 +144,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.on("edit.send.error", $.proxy(this.onSendError, this));
 
                 this.$el.find(".add-rule").hide();
+                this.$el.find(".opt-ctn .compare").hide();
                 this.$el.find(".opt-ctn .save").hide();
                 this.$el.find(".opt-ctn .send").hide();
                 this.$el.find('.view-less').hide();
@@ -245,6 +246,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 } else if (!this.isView && this.isEdit) {
                     // if (AUTH_OBJ.ApplyEditTopos)
                     this.$el.find(".opt-ctn .save").on("click", $.proxy(this.onClickSaveButton, this));
+                    this.$el.find(".opt-ctn .compare").on("click", $.proxy(this.onClickCompareButton, this));
                     this.$el.find(".opt-ctn .saveAndSend").on("click", $.proxy(this.onClickSaveAndSendButton, this));
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
                     this.$el.find(".view-less").on("click", $.proxy(this.onClickViewLessButton, this));
@@ -252,6 +254,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find(".add-rule").show();
                     this.$el.find(".opt-ctn .save").show();
                     this.$el.find(".opt-ctn .send").show();
+                    this.$el.find(".compare").show();
                     //this.$el.find(".comment-group").hide();
                 } else if (this.isView) {
                     this.$el.find(".view-more").on("click", $.proxy(this.onClickViewMoreButton, this));
@@ -301,22 +304,57 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.onClickSaveButton();
             },
 
+            onClickCompareButton:function(){
+                var postTopo = this.getPostParam();
+                this.$el.find(".add-topo").hide();
+                //需要判断是否是copy,调用的接口不一样
+                require(['topuAndStrategyDiff.view'],function(TopuAndStrategyDiffView){
+
+                    this.myTopuAndStrategyDiffView = new TopuAndStrategyDiffView({
+                        collection:this.collection,
+                        operatorList:this.operatorList,
+                        diffData:this.getPostParam(),
+                        onCancelCallback:function(){
+                            this.closeDiffView();
+                        }.bind(this)
+                    });
+                    this.myTopuAndStrategyDiffView.render(this.$el.find(".diff-role-ctn"));
+
+                }.bind(this))
+            },
+
+            closeDiffView:function(){
+                this.myTopuAndStrategyDiffView.$el.remove();
+                this.$el.find(".add-topo").show();
+            },
+
             onClickSaveButton: function() {
+                var postTopo = this.getPostParam();
+                if(!postTopo){
+                    return false;
+                }
+                if (this.isEdit && !this.isCopy)
+                    this.collection.modifyStrategy(postTopo);
+                else if (this.isEdit && this.isCopy)
+                    this.collection.copyStrategy(postTopo)
+                else
+                    this.collection.addStrategy(postTopo);
+            },
+
+            getPostParam:function(){
                 this.defaultParam.name = $.trim(this.$el.find("#input-name").val());
                 if (this.defaultParam.name == '') {
                     Utility.warning('请输入名称');
-                    return;
+                    return false;
                 } else if (this.defaultParam.type == null) {
                     Utility.warning('请选择设备类型');
-                    return;
+                    return false;
                 } else if (this.defaultParam.rule.length == 0) {
                     Utility.warning('请添加规则');
-                    return;
+                    return false;
                 }
-                console.log("点击保存按钮时的分层策略", this.defaultParam)
                 var postRules = [],
                     postTopo = {};
-                    console.log("父页面点保存时的this.defaultParam.rule", this.defaultParam.rule)
                 _.each(this.defaultParam.rule, function(rule) {
                     var localIdArray = [],
                         upperObjArray = [],
@@ -360,12 +398,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 postTopo.type = this.defaultParam.type;
                 postTopo.rule = postRules;
                 postTopo.remark = this.$el.find("#secondary").val();
-                if (this.isEdit && !this.isCopy)
-                    this.collection.modifyStrategy(postTopo);
-                else if (this.isEdit && this.isCopy)
-                    this.collection.copyStrategy(postTopo)
-                else
-                    this.collection.addStrategy(postTopo);
+                return postTopo;                
             },
 
             onClickCancelButton: function() {
@@ -592,11 +625,21 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                             notFilter: true,
                             appType: this.defaultParam.type,
                             onSaveCallback: function() {
-                                var tempRule = myAddEditLayerStrategyView.getArgs()
-                                this.defaultParam.rule = this.defaultParam.rule.concat(tempRule);
-                                this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
-                                    return el.id !== this.curEditRule.id
-                                }.bind(this))
+                                var tempRule = myAddEditLayerStrategyView.getArgs();
+                                //this.defaultParam.rule = tempRule;
+                                // this.defaultParam.rule = this.defaultParam.rule.concat(tempRule);
+                                // this.defaultParam.rule = _.filter(this.defaultParam.rule, function(el){
+                                //     return el.id !== this.curEditRule.id
+                                // }.bind(this))
+                                var newRule = [];
+                                for(var i=0;i<this.defaultParam.rule.length;i++){
+                                    if(this.defaultParam.rule[i].id == id){
+                                        continue;
+                                    }
+                                    newRule.push(this.defaultParam.rule[i]);
+                                }
+                                newRule = newRule.concat(tempRule);
+                                this.defaultParam.rule = newRule;
                                 myAddEditLayerStrategyView.$el.remove();
                                 this.$el.find(".add-topo").show();
                                 this.initRuleTable();

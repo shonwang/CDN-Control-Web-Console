@@ -314,6 +314,18 @@ define("setupTopoManage.model", ['require', 'exports', 'utility'], function(requ
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
+        getStrategyDiff:function(args){
+                var url = BASE_URL + "/resource/topo/getTopoDiff",
+                successCallback = function(res) {
+                    this.trigger("diff.strategy.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('diff.strategy.error', response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);                
+        }
+                    
     });
 
     return SetupTopoManageCollection;

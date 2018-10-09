@@ -181,15 +181,24 @@ define("logTaskStatistics.view", ['require','exports', 'template', 'base.view', 
                         domainListModel.getDomainInfoList({
                             currentPage: 1,
                             pageSize: 99999,
-                            userId: value
+                            userId: parseInt(value)
                         });
                     }.bind(this));
+                    // require(['statisticsManage.model'],function(DomainListModel){
+                    //     var domainListModel = new DomainListModel();
+                    //     domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                    //     domainListModel.on("get.domain.error", $.proxy(this.onGetError, this))
+                    //     domainListModel.getDomain({
+                    //         userid: value
+                    //     });
+                    // }.bind(this));
                 }
             }
 
             onGetDomainListSuccess(res) {
                 var domainArray = res.data.map((el) => {
                         return <Option key={el.originDomain.domain}>{el.originDomain.domain}</Option>;
+                        //return <Option key={el}>{el}</Option>;
                     })
                 this.setState({
                     dataSourceDomains: domainArray

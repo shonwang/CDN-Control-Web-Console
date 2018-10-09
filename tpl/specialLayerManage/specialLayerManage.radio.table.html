@@ -6,6 +6,17 @@
       </tr>
     </thead>
     <tbody>
+        <tr>
+           <td>
+                <div class="radio">
+                    <label>
+                      <input type="radio" name="options-layer" id="-1" %>
+                      <span>解除分层策略</span>
+                    </label>
+                </div>
+            </td>
+            <td></td>          
+        </tr>
         <% for(var i = 0; i < data.length; i++) { %>
             <% if (!data[i].get('notDisplay')) { %>
             <tr data-id="<%=data[i].get('id')%>">

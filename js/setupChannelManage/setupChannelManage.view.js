@@ -128,7 +128,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                             domain: el.get("domain"),
                             version: el.get("version"),
                             description: el.get("description"),
-                            id: el.get("id")
+                            id: el.get("id"),
+                            specialruleName:el.get("specialruleName")
                         });
                     }.bind(this))
 
@@ -174,8 +175,17 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                         return model.get("applicationType") === checkedList[0].get("applicationType");
                     });
 
+                    var topoLists = _.filter(checkedList, function(model) {
+                        return model.get("topologyId") === checkedList[0].get("topologyId");
+                    });
+
                     if (checkedList.length !== layerTypeDomains.length) {
                         Utility.warning("所选域名关联的特殊分层策略不是同一种应用类型，不能进行批量操作！");
+                        return;
+                    }
+
+                    if(checkedList.length != topoLists.length ){
+                        Utility.warning("所选域名关联的特殊分层策略不是同一拓扑关系，不能进行批量操作！");
                         return;
                     }
 
@@ -195,7 +205,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     var mySelectLayerView = new setupChannelManageSelectView.SelectLayerView({
                         collection: this.collection,
                         domainArray: this.domainArray,
-                        applicationType: checkedList[0].get("applicationType")
+                        applicationType: checkedList[0].get("applicationType"),
+                        topoId:checkedList[0].get("topologyId")
                     });
                     var options = {
                         title: "选择分层策略",

@@ -7,6 +7,11 @@ define("deviceManage.model", ['require','exports', 'utility'], function(require,
                 createTime = this.get("createTime");
                 updateTime = this.get("updateTime");
 
+            var relayStatus = this.get("relayStatus");
+            if (relayStatus == 0) this.set("relayStatusName",'---');
+            if (relayStatus == 1) this.set("relayStatusName",'active');
+            if (relayStatus == 2) this.set("relayStatusName",'deactive');
+
             var tips = '<a href="javascript:void(0)" class="label label-danger"' + 
                                 'data-container="body"' + 
                                 'data-trigger="hover"' +

@@ -35,7 +35,7 @@
                     <ul class="dropdown-menu"></ul>
                 </div>
             </div>
-            <div class="form-group">
+<!--             <div class="form-group">
                 <label for="dropdown-reason">操作说明</label>
             </div>
             <div class="form-group dropdown-reason">
@@ -46,7 +46,25 @@
                     </button>
                     <ul class="dropdown-menu"></ul>
                 </div>
+            </div> -->
+
+            <div class="form-group">
+                <label for="dropdown-reason">操作说明</label>
+            </div>            
+
+            <div class="form-group">
+                <div class="dropdown-reason-list" style="position: relative;">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-reason-list" data-toggle="dropdown">
+                            <span class="cur-value">加载中...</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu long-dropdown-menu"></ul>
+                    </div>
+                </div>
             </div>
+
+            <a href="javascript:void(0)" class="btn btn-success btnQueryList"><span class="glyphicon glyphicon-search"></span>设备名称批量查询</a>
         </form>
         <hr>
         <form class="form-inline">

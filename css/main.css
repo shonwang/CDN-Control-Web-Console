@@ -1373,3 +1373,5 @@ ul, li {
 
 /* 新增帐号迁移css */
 .user-move-label {min-width:110px;}
+
+.dropdown-reason-list .select-container {left:0;}

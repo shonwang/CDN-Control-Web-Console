@@ -8,6 +8,7 @@
     <th>节点</th>
     <th>类型</th>
     <th>状态</th>
+    <th>relay状态</th>
     <th>创建时间</th>
     <th>状态更新时间</th>
     <th>操作</th>
@@ -32,6 +33,7 @@
           <td><%=data[i].attributes["nodeName"]%></td>
           <td><%=data[i].attributes["typeName"]%></td>
           <td><%=data[i].attributes["statusName"]%></td>
+          <td><%=data[i].attributes["relayStatusName"]%></td>
           <td><%=data[i].attributes["createTimeFormated"]%></td>
           <td><%=data[i].attributes["updateTimeFormated"]%></td>
           <td>
@@ -76,7 +78,7 @@
                   <span class="glyphicon glyphicon-play-circle css-gray"></span>
                 </a>
               <% } %>
-              <% if ((data[i].attributes.status == 1 || data[i].attributes.status == 8) && permission.EnableorPauseHost) { %>
+              <% if ((data[i].attributes.status == 1 || data[i].attributes.status == 8 || data[i].attributes.typeName == "Live") && permission.EnableorPauseHost) { %>
                 <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="pause" data-status="2" data-name="<%=data[i].attributes['name']%>" title="暂停">
                   <span class="glyphicon glyphicon-pause"></span>
                 </a>

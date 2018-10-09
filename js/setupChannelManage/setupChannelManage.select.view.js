@@ -9,7 +9,6 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
                 this.topoId = options.topoId;
-                console.log(this.topoId);
 
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
                     data: {
@@ -21,7 +20,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
 
                 this.$el.find("#input-layer").on('keyup', $.proxy(this.onKeyupLayerInput, this));
 
-                this.setStrategyList();
+                this.setStrategyList(this.topoId);
             },
 
             setStrategyList:function(topoId){

@@ -35,6 +35,17 @@ define("logTaskStatistics.model", ['require','exports', 'utility'], function(req
                 }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
+
+        getTaskNameList: function(args) {
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/names",
+                successCallback = function(res) {
+                    this.trigger("get.taskList.success", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.taskList.error', response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
     });
 
     return logTaskListCollection;

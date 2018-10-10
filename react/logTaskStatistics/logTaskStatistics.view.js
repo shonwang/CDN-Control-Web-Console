@@ -43,6 +43,8 @@ define("logTaskStatistics.view", ['require','exports', 'template', 'base.view', 
                     customerSetup.on("get.user.error", $.proxy(this.onGetError, this))
                     customerSetup.queryChannel({currentPage: 1,pageSize: 99999});
                 }.bind(this));
+                collection.on("get.taskList.success", $.proxy(this.onGetTaskListSuccess, this))
+                collection.on("get.taskList.error", $.proxy(this.onGetError, this))
             }
 
             componentWillUnmount() {
@@ -50,6 +52,8 @@ define("logTaskStatistics.view", ['require','exports', 'template', 'base.view', 
                 collection.off("statistics.chart2.200.success")
                 collection.off("statistics.chart1.success")
                 collection.off("statistics.chart2.not200.success")
+                collection.off("get.taskList.success")
+                collection.off("get.taskList.error")
             }
 
             onGetUserListSuccess(res) {
@@ -172,6 +176,12 @@ define("logTaskStatistics.view", ['require','exports', 'template', 'base.view', 
                 this.setState({
                     dataSourceDomains: []
                 })
+                setFieldsValue({"taskName": []})
+                this.setState({
+                    dataSourceTaskName: []
+                })
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
 
                 if (value) {
                     require(['domainList.model'],function(DomainListModel){
@@ -192,7 +202,19 @@ define("logTaskStatistics.view", ['require','exports', 'template', 'base.view', 
                     //         userid: value
                     //     });
                     // }.bind(this));
+                    collection.getTaskNameList({
+                        userId: parseInt(value)
+                    })
                 }
+            }
+
+            onGetTaskListSuccess(res) {
+                var taskArray = res.map((el) => {
+                        return <Option key={el}>{el}</Option>;
+                    })
+                this.setState({
+                    dataSourceTaskName: taskArray
+                })
             }
 
             onGetDomainListSuccess(res) {

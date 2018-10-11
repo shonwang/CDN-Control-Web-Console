@@ -623,7 +623,7 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
             },
             {
                 name: "图片小文件",
-                value: "3"
+                value: "5"
             }
         ],
         liveAndDownloadListBack:{

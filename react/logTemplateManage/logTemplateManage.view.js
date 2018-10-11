@@ -310,8 +310,6 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                                 <div>
                                     {editButton}
                                     <span className="ant-divider" />
-                                    {detailButton}
-                                    <span className="ant-divider" />
                                     {deleteButton}
                                     <span className="ant-divider" />
                                     {historyButton}

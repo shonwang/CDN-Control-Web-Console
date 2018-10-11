@@ -1,0 +1,11 @@
+
+<%for(var i=0;i<data.length;i++){%>
+<tr>
+	<td>
+		<label for="project-select-<%=i%>">
+			<input class="project-select-list floatLeft" type="radio" name="project-select" id="project-select-<%=i%>" <% if(data[i].ProjectId==0){%>checked<%}%> value="<%= data[i].ProjectId %>">
+			<span><%= data[i].ProjectName %></span>
+		</label>
+	</td>
+</tr>
+<%}%>		

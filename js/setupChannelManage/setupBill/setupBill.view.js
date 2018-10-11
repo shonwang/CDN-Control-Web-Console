@@ -50,6 +50,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.config.originDomain.subType === 1) this.baseInfo.businessTypeStr = '下载加速';
             if (this.config.originDomain.subType  === 2) this.baseInfo.businessTypeStr = '直播加速';
             if (this.config.originDomain.subType  === 3) this.baseInfo.businessTypeStr = '直播推流加速';
+            if (this.config.originDomain.subType  === 4) this.baseInfo.businessTypeStr = '大文件下载加速';
+            if (this.config.originDomain.subType  === 5) this.baseInfo.businessTypeStr = '页面小文件加速';
             //加速区域
             var allRegion = this.allRegion || [
                     {"id":1.0,"region":"CN","name":"中国大陆","cdnFactory":"ksc"},
@@ -90,7 +92,8 @@ define("setupBill.view", ['require','exports', 'template', 'modal.view', 'utilit
             if (this.config.domainConf.confCustomType === 1) this.baseInfo.confCustomTypeStr = '标准化开放式配置（默认）';
             if (this.config.domainConf.confCustomType  === 2) this.baseInfo.confCustomTypeStr = '标准化内部配置';
             if (this.config.domainConf.confCustomType === 3) this.baseInfo.confCustomTypeStr = '定制化配置<span class="text-danger">(中控配置不准确，如需修改，请先联系运维)</span>';
-
+            this.baseInfo.projectName = this.config.originDomain.projectName || '默认项目';
+            this.baseInfo.isNotShowProject = this.options.isNotShowProject || false;
             this.baseInfoTable = $(_.template(template['tpl/setupChannelManage/setupBill/setupBill.base.html'])({
                 data: this.baseInfo
             }));

@@ -164,7 +164,27 @@ define("domainList.model", ['require','exports','utility'], function(require, ex
                 this.trigger("delete.domain.error", response);  
             }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
-        }
+        },
+
+        getAllProject:function(args){
+            var url = BASE_URL + "/channelManager/domain/getAllProject",
+            successCallback = function(res){
+                this.trigger("get.project.success", res);
+            }.bind(this),
+            errorCallback = function(response){
+                this.trigger("get.project.error", response);  
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);            
+        },
+
+        modifyProject:function(args){
+            var url = BASE_URL + "/channelManager/domain/modifyProject";
+            Utility.postAjax(url, args, function(res){
+                this.trigger("modify.project.success");
+            }.bind(this),function(res){
+                this.trigger("modify.project.error", res);
+            }.bind(this));
+        },
 	});
 
     return DomainListCollection;

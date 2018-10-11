@@ -21,6 +21,9 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.collection.on("query.domain.success", $.proxy(this.queryDomainSuccess, this));
                 this.collection.on("query.domain.error", $.proxy(this.queryDomainError, this));
 
+                this.collection.on("modify.project.success", $.proxy(this.modifyProjectSuccess, this));
+                this.collection.on("modify.project.error", $.proxy(this.onGetError, this));
+
                 this.collection.on("change.confCustomType.success", $.proxy(this.changeConfCustomTypeSuccess, this))
                 this.collection.on("change.confCustomType.error", $.proxy(this.changeConfCustomTypeError, this))
 
@@ -29,6 +32,9 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
 
                 this.$el.find("#cdn-search-btn").bind('click', $.proxy(this.onClickSearchBtn, this));
                 this.$el.find(".add-domain").bind('click', $.proxy(this.onClickAddDomain, this));
+                this.$el.find(".btn-modify-project").bind('click',$.proxy(this.onClickModifyProject,this));
+                this.$el.find("thead .selectAllDomain").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
                 if (!AUTH_OBJ.CreateCustomerDomain) {
                     this.$el.find('.add-domain').remove();
                 }
@@ -49,6 +55,37 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.setDropDownMenu();
             },
 
+            onGetError:function(res){
+                var msg  = res.message || "出现错误";
+                alert(msg);
+            },
+
+            modifyProjectSuccess:function(){
+                Utility.alerts("修改成功","success",5000);
+                this.onClickSearchBtn();
+            },
+
+            onAllCheckedUpdated:function(event){
+                var eventTarget = event.srcElement || event.target;
+                if (eventTarget.tagName !== "INPUT") return;
+                this.collection.each(function(list){
+                    list.set("isChecked",eventTarget.checked);
+                }.bind(this));
+                try{
+                    this.tbodyList.find(".selectDomain").prop("checked", eventTarget.checked);
+                }
+                catch(e){
+                    
+                }            
+            },            
+
+            getSelectedList:function(){
+                var obj = this.collection.filter(function(list){
+                    return list.get("isChecked") == true;
+                });
+                return obj;
+            },
+
             onClickAddDomain: function(event) {
                 require(['domainList.addDomain.view'], function(DomainListAddDomainView) {
 
@@ -63,6 +100,42 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     this.addDomainView = new DomainListAddDomainView.AddDomainView(options);
                     this.addDomainView.render(this.$el.find(".new-domain"));
                 }.bind(this));
+            },
+
+            onClickModifyProject:function(){
+                var selectedList = this.getSelectedList();
+                if(selectedList.length == 0){
+                    Utility.alerts("请选择域名","danger",5000);
+                    return false;
+                }
+                require(['domainList.project.view'], function(DomainListProjectView) {
+                    this.$el.find(".main-list").hide();
+                    var options = {
+                        selectedList:selectedList,
+                        obj:this,
+                        collection: this.collection,
+                        userInfo: this.userInfo,
+                        okCallback: $.proxy(this.onModifiedProject, this),
+                        cancelCallback: $.proxy(this.onCancelModifiedProject, this)
+                    };
+                    this.projectView = new DomainListProjectView(options);
+                    this.projectView.render(this.$el.find(".new-domain"));
+                }.bind(this));                
+            },
+
+            onCancelModifiedProject:function(){
+                this.projectView.$el.remove()
+                this.projectView = null;
+                this.$el.find(".main-list").show();
+            },
+
+            onModifiedProject:function(args){
+                this.onCancelModifiedProject();
+                this.onClickAddProjectBtn(args);
+            },
+
+            onClickAddProjectBtn:function(args){
+                this.collection.modifyProject(args);
             },
 
             onCancelAddDomain: function() {
@@ -84,10 +157,15 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 this.toQueryDomain();
             },
 
+            resetSelectAll:function(){
+                this.$el.find("thead .selectAllDomain").get(0).checked = false;
+            },
+
             toQueryDomain: function() {
                 var args = this.args;
                 this.showLoading();
                 //this.collection.queryDomain(args);
+                this.resetSelectAll();
                 this.collection.getDomainInfoList(args);
             },
 
@@ -112,6 +190,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     this.$el.find(".ks-table tbody .setup-bill").on("click", $.proxy(this.onClickViewSetupBillBtn, this));
                     this.$el.find(".ks-table tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
                     this.$el.find(".ks-table tbody .history").on("click", $.proxy(this.onClickViewHistoryBtn, this));
+                    this.tbodyList.find(".selectDomain").on("click", $.proxy(this.onItemCheckedUpdated, this));
 
                     _.each(this.$el.find(".ks-table tbody .manage"), function(el) {
                         var protocol = this.collection.get(el.id).get("protocol");
@@ -139,6 +218,28 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                 }
             },
 
+            onItemCheckedUpdated:function(event){
+                var eventTarget = event.srcElement || event.target;
+                if (eventTarget.tagName !== "INPUT") return;
+                var id = $(eventTarget).attr("id");
+                this.collection.each(function(list) {
+                    if(list.get("domainId") == id){
+                       list.set("isChecked",eventTarget.checked);
+                    }
+                });
+
+                var checkedList = this.collection.filter(function(list) {
+                    return list.get("isChecked") == true;
+                });
+
+                if (checkedList.length === this.args.pageSize || checkedList.length === this.collection.total){
+                    this.$el.find("thead .selectAllDomain").get(0).checked = true;
+                }
+                else if (checkedList.length !== this.args.pageSize){                   
+                    this.$el.find("thead .selectAllDomain").get(0).checked = false;
+                }
+            },     
+
             onClickViewSetupBillBtn: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
@@ -147,6 +248,7 @@ define("domainList.view", ['require', 'exports', 'template', 'utility', "modal.v
                     var mySetupBillModel = new SetupBillModel();
                     var mySetupBillView = new SetupBillView({
                         collection: mySetupBillModel,
+                        isNotShowProject:true,
                         originId: id,
                         onSaveCallback: function() {}.bind(this),
                         onCancelCallback: function() {

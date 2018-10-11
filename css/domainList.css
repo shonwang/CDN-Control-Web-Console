@@ -455,3 +455,6 @@
   word-break: break-all;
   white-space: pre-wrap; 
 }
+.cdn-customsetup-project .ks-table-select-project td {padding: 0px 5px 0 12px;}
+.cdn-customsetup-project .ks-table-select-project .project-select-list {margin-top:3px;margin-right:5px;}
+.cdn-customsetup-project .ks-table-select-project label {padding:5px 0;width:100%;}

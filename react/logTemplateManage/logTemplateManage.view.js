@@ -267,11 +267,13 @@ define("logTemplateManage.view", ['require','exports', 'template', 'base.view', 
                     title: '创建时间',
                     dataIndex: 'createTimeFormated',
                     key: 'createTimeFormated'
-                },{
-                    title: '修改时间',
-                    dataIndex: 'updateTimeFormated',
-                    key: 'updateTimeFormated'
-                },{
+                },
+                // {
+                //     title: '修改时间',
+                //     dataIndex: 'updateTimeFormated',
+                //     key: 'updateTimeFormated'
+                // },
+                {
                     title: '操作',
                     dataIndex: '',
                     key: 'action',

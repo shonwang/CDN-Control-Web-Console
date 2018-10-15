@@ -622,7 +622,7 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
                 value: "3"
             },
             {
-                name: "图片小文件",
+                name: "小文件下载",
                 value: "5"
             }
         ],
@@ -631,7 +631,7 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
             2:"直播加速",
             3:"直播推流加速",
             4:"大文件下载加速",
-            5:"图片小文件"
+            5:"小文件下载"
         }
 
     };

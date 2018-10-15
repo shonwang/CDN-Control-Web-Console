@@ -9,6 +9,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
                 this.topoId = options.topoId;
+                this.showRemoveSpecialLayer = options.showRemoveSpecialLayer || false;
 
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
                     data: {
@@ -80,6 +81,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 
                 this.table = $(_.template(template['tpl/specialLayerManage/specialLayerManage.radio.table.html'])({
                     data: this.mySpecialLayerManageModel.models,
+                    showRemoveSpecialLayer:this.showRemoveSpecialLayer
                 }));
                 //if (this.mySpecialLayerManageModel.models.length !== 0)
                     this.$el.find(".table-ctn").html(this.table[0]);
@@ -129,6 +131,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.options = options;
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
+                this.showRemoveSpecialLayer = options.showRemoveSpecialLayer || false;
 
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
                     data: {
@@ -156,7 +159,8 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 var mySelectLayerView = new SelectLayerView({
                     collection: this.collection,
                     domainArray: this.domainArray,
-                    applicationType: this.options.applicationType
+                    applicationType: this.options.applicationType,
+                    showRemoveSpecialLayer:this.showRemoveSpecialLayer
                 });
 
                 mySelectLayerView.$el.find(".domain-list").remove()

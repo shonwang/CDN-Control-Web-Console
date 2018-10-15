@@ -139,7 +139,8 @@ define("setupChannelManage.view", ['require', 'exports', 'template', 'modal.view
                     var mySelectTopoView = new setupChannelManageSelectView.SelectTopoView({
                         collection: this.collection,
                         domainArray: this.domainArray,
-                        applicationType: checkedList[0].get("applicationType")
+                        applicationType: checkedList[0].get("applicationType"),
+                        showRemoveSpecialLayer:true
                     });
                     var options = {
                         title: "选择拓扑关系",

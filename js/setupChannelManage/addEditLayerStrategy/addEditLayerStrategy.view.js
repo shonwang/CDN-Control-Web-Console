@@ -71,8 +71,8 @@ define("addEditLayerStrategy.view", ['require', 'exports', 'template', 'modal.vi
                 this.onCancelParam= $.extend(true,{},this.curEditRule)     
             }
             if(!this.notFilter){
-                this.$el.find("#asHashstrategyRadio6").hide();
-                this.$el.find("#strategyRadioAsHash-ctn").hide();
+                //this.$el.find("#asHashstrategyRadio6").hide();
+                //this.$el.find("#strategyRadioAsHash-ctn").hide();
             }
             this.$el.find("input[name=strategyUpperRadio]").on("click",$.proxy(this.onUpperStyleChange,this));
             if(this.defaultParam.upType == 2){

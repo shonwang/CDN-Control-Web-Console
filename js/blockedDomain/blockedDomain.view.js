@@ -124,20 +124,16 @@ define("blockedDomain.view", ['require','exports', 'template', 'modal.view', 'ut
             var typeArray = [{
                     name: "全部",
                     value: "All"
-                },
-                {
+                }, {
                     name: "大文件下载加速",
                     value: "4"
-                }, 
-                {
+                }, {
                     name: "音视频点播加速",
                     value: "1"
-                }                
-                // {
-                //     name: "直播加速",
-                //     value: 2
-                // }
-                ],
+                }, {
+                    name: "小文件下载加速",
+                    value: "5"
+                }],
                 rootNode = this.$el.find(".dropdown-type");
             Utility.initDropMenu(rootNode, typeArray, function(value) {
                 if (value == "All")

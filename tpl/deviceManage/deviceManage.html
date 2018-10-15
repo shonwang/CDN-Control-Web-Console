@@ -1,109 +1,116 @@
 <div class="device-manage fadeInLeft animated">
     <h4>资源管理<small>/设备管理</small></h4>
     <div class="error-ctn"></div>
-    <div class="well opt-ctn">
-        <form class="form-inline">
-            <div class="form-group">
-                <label for="input-domain">名称</label>
-                <input type="text" class="form-control" id="input-domain">
-            </div>
-            <div class="form-group">
-                <label for="input-node">节点名称</label>
-                <input type="text" class="form-control" id="input-node">
-            </div>
-            <div class="form-group">
-                <label for="dropdown-status">状态</label>
-            </div>
-            <div class="form-group dropdown-status">
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-status" data-toggle="dropdown">
-                        <span class="cur-value">全部</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu"></ul>
+    <div>
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="index.html#/deviceManage/none">设备列表</a></li>
+            <li><a href="index.html#/nodeManage">当前任务</a></li>
+            <li><a href="index.html#/nodeManage">历史任务</a></li>
+        </ul>
+        <div class="well opt-ctn">
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="input-domain">名称</label>
+                    <input type="text" class="form-control" id="input-domain">
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="dropdown-type">类型</label>
-            </div>
-            <div class="form-group dropdown-type">
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
-                        <span class="cur-value">全部</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu"></ul>
+                <div class="form-group">
+                    <label for="input-node">节点名称</label>
+                    <input type="text" class="form-control" id="input-node">
                 </div>
-            </div>
-<!--             <div class="form-group">
-                <label for="dropdown-reason">操作说明</label>
-            </div>
-            <div class="form-group dropdown-reason">
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-reason" data-toggle="dropdown">
-                        <span class="cur-value">全部</span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu"></ul>
+                <div class="form-group">
+                    <label for="dropdown-status">状态</label>
                 </div>
-            </div> -->
-
-            <div class="form-group">
-                <label for="dropdown-reason">操作说明</label>
-            </div>            
-
-            <div class="form-group">
-                <div class="dropdown-reason-list" style="position: relative;">
+                <div class="form-group dropdown-status">
                     <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-reason-list" data-toggle="dropdown">
-                            <span class="cur-value">加载中...</span>
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-status" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
                             <span class="caret"></span>
                         </button>
-                        <ul class="dropdown-menu long-dropdown-menu"></ul>
+                        <ul class="dropdown-menu"></ul>
                     </div>
                 </div>
-            </div>
-
-            <a href="javascript:void(0)" class="btn btn-success btnQueryList"><span class="glyphicon glyphicon-search"></span>设备名称批量查询</a>
-        </form>
-        <hr>
-        <form class="form-inline">
-            <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
-            <a href="javascript:void(0)" class="btn btn-primary create"><span class="glyphicon glyphicon-plus"></span>新建</a>
-            <a href="javascript:void(0)" class="btn btn-success import"><span class="glyphicon glyphicon-import"></span>导入</a>
-            <a href="javascript:void(0)" class="btn btn-info multi-play"><span class="glyphicon glyphicon-play-circle"></span>批量开启</a>
-            <a href="javascript:void(0)" class="btn btn-warning multi-stop"><span class="glyphicon glyphicon-off"></span>批量暂停</a>
-            <a href="javascript:void(0)" class="btn btn-danger multi-delete" style="display: none"><span class="glyphicon glyphicon-trash"></span>批量删除</a>
-        </form>
-    </div>
-    <div class="well">
-        <div class="table-ctn table-responsive"></div>
-        <div class="page-ctn row">
-            <div class="col-md-8" style="text-align:center">
-                <div class="pagination"></div>
-            </div>
-            <div class="col-md-4" style="text-align:center">
-                <form class="form-inline page-info">
-                    <div class="form-group">
-                        <div class="form-control-static">每页显示</div>
+                <div class="form-group">
+                    <label for="dropdown-type">类型</label>
+                </div>
+                <div class="form-group dropdown-type">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
                     </div>
-                    <div class="form-group page-num">
-                        <div class="drop-ctn dropup">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
-                                <span class="cur-value">10 条</span>
+                </div>
+    <!--             <div class="form-group">
+                    <label for="dropdown-reason">操作说明</label>
+                </div>
+                <div class="form-group dropdown-reason">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-reason" data-toggle="dropdown">
+                            <span class="cur-value">全部</span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div> -->
+
+                <div class="form-group">
+                    <label for="dropdown-reason">操作说明</label>
+                </div>            
+
+                <div class="form-group">
+                    <div class="dropdown-reason-list" style="position: relative;">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdown-reason-list" data-toggle="dropdown">
+                                <span class="cur-value">加载中...</span>
                                 <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu"></ul>
-                            </div>
+                            </button>
+                            <ul class="dropdown-menu long-dropdown-menu"></ul>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
-                    </div>
-                </form>
+                </div>
+
+                <a href="javascript:void(0)" class="btn btn-success btnQueryList"><span class="glyphicon glyphicon-search"></span>设备名称批量查询</a>
+            </form>
+            <hr>
+            <form class="form-inline">
+                <a href="javascript:void(0)" class="btn btn-primary query"><span class="glyphicon glyphicon-search"></span>查询</a>
+                <a href="javascript:void(0)" class="btn btn-primary create"><span class="glyphicon glyphicon-plus"></span>新建</a>
+                <a href="javascript:void(0)" class="btn btn-success import"><span class="glyphicon glyphicon-import"></span>导入</a>
+                <a href="javascript:void(0)" class="btn btn-info multi-play"><span class="glyphicon glyphicon-play-circle"></span>批量开启</a>
+                <a href="javascript:void(0)" class="btn btn-warning multi-stop"><span class="glyphicon glyphicon-off"></span>批量暂停</a>
+                <a href="javascript:void(0)" class="btn btn-danger multi-delete" style="display: none"><span class="glyphicon glyphicon-trash"></span>批量删除</a>
+            </form>
+        </div>
+        <div class="well">
+            <div class="table-ctn table-responsive"></div>
+            <div class="page-ctn row">
+                <div class="col-md-8" style="text-align:center">
+                    <div class="pagination"></div>
+                </div>
+                <div class="col-md-4" style="text-align:center">
+                    <form class="form-inline page-info">
+                        <div class="form-group">
+                            <div class="form-control-static">每页显示</div>
+                        </div>
+                        <div class="form-group page-num">
+                            <div class="drop-ctn dropup">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+                                    <span class="cur-value">10 条</span>
+                                    <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-control-static total-items">共<span class="text-primary">0</span>条记录</div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<input type="hidden" id="ipManageDialogId" value="">
+    <input type="hidden" id="ipManageDialogId" value="">
+    </div>

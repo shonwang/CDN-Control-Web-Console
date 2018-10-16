@@ -1,7 +1,26 @@
 define("routes.resourceManage", ['require', 'exports'], 
     function(require, exports) {
         var RouterResourceManage = {
-            
+
+            playbackTask: function() {
+                require(['playback.view', 'playback.model'], function(PlaybackView, PlaybackModel) {
+                    this.curPage = 'deviceManage';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.playbackModel)
+                        this.playbackModel = new PlaybackModel();
+                    if (!this.playbackView) {
+                        var options = {
+                            collection: this.playbackModel
+                        };
+                        this.playbackView = new PlaybackView(options);
+                        this.playbackView.render($('.ksc-content'));
+                    } else {
+                        this.playbackView.update($('.ksc-content'));
+                    }
+                    this.curView = this.playbackView;
+                }.bind(this));
+            },
+
             coverManage: function() {
                 if (!AUTH_OBJ.ManageCoverrelateds) return;
                 require(['coverManage.view', 'coverManage.model', 'nodeManage.model'], function(CoverManageView, CoverManageModel, NodeManageModel) {

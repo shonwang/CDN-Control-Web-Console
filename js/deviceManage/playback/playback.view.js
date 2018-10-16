@@ -1,75 +1,4 @@
-define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
-
-    var LookOverTopoView = Backbone.View.extend({
-        events: {
-            //"click .search-btn":"onClickSearch"
-        },
-
-        initialize: function(options) {
-            this.options = options;
-            this.collection = options.collection;
-            this.model      = options.model;
-
-            this.$el = $('<div><div class="table-ctn"></div></div>');
-
-            this.$el.find(".opt-ctn .cancel").on("click", $.proxy(this.onClickCancelButton, this));
-            
-            this.collection.off('get.topo.OriginInfo.success');
-            this.collection.off('get.topo.OriginInfo.error');
-            this.collection.on('get.topo.OriginInfo.success',$.proxy(this.onOriginInfo, this));
-            this.collection.on('get.topo.OriginInfo.error',$.proxy(this.onGetError, this));
-            
-            this.collection.getTopoOrigininfo(this.model.get('topoId'));
-            
-            //this.initSetup()
-        },
-        onOriginInfo:function(res){
-            var tempData = [{
-                name : res.name,
-                id:res.id
-            }];
-            this.initSetup(tempData);
-        },
-        initSetup: function(tempData){
-            this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.topo.table.html'])({
-                data: tempData
-            }));
-            if (tempData.length !== 0)
-                this.$el.find(".table-ctn").html(this.table[0]);
-            else
-                this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-        },
-
-        onClickCancelButton: function(){
-            this.options.onCancelCallback && this.options.onCancelCallback();
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                Utility.alerts(error.message)
-            else
-                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
-        },
-
-        render: function(target) {
-            this.$el.appendTo(target);
-        }
-    });
-    var FuncDetailView = Backbone.View.extend({
-            events: {
-            },
-
-            initialize: function(options) {
-                this.options = options;
-                this.collection = options.collection;
-                this.model      = options.model;
-
-                this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.func.table.detail.html'])({data: {}}));
-            },
-            render: function(target) {
-                this.$el.appendTo(target);
-            }
-    });
+define("playback.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
    
     var AppDetailView = Backbone.View.extend({
         events: {
@@ -153,23 +82,21 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         }
     });
     
-    var SetupAppManageView = Backbone.View.extend({
+    var PlaybackView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/setupAppManage/setupAppManage.html'])());
+            this.$el = $(_.template(template['tpl/deviceManage/playback/playback.html'])());
             
-            this.collection.off("get.app.info.success");
-            this.collection.off("get.app.info.error");
-            this.collection.on("get.app.info.success", $.proxy(this.onappListSuccess, this));
-            this.collection.on("get.app.info.error", $.proxy(this.onGetError, this));
+            // this.collection.on("get.app.info.success", $.proxy(this.onappListSuccess, this));
+            // this.collection.on("get.app.info.error", $.proxy(this.onGetError, this));
 
-            this.queryArgs = {
-                "count"     : 10
-             }
-            this.onClickQueryButton();
+            // this.queryArgs = {
+            //     "count"     : 10
+            //  }
+            // this.onClickQueryButton();
         },
 
         onGetError: function(error){
@@ -256,28 +183,6 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
             myAppDetailView.render(this.$el.find(".detail-panel"))
         },
 
-        initPaginator: function(){
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.count) return;
-            var total = Math.ceil(this.collection.total/this.queryArgs.count);
-
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function (num, type) {
-                    if (type !== "init"){
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.page = num;
-                        args.count = this.queryArgs.count;
-                        this.collection.queryChannel(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
-        },
-
         hide: function(){
             this.$el.hide();
         },
@@ -295,5 +200,5 @@ define("setupAppManage.view", ['require','exports', 'template', 'modal.view', 'u
         }
     });
 
-    return SetupAppManageView;
+    return PlaybackView;
 });

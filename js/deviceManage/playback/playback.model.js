@@ -1,10 +1,10 @@
-define("setupAppManage.model", ['require','exports', 'utility'], function(require, exports, Utility) {
+define("playback.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
         }
     });
 
-    var SetupAppManageCollection = Backbone.Collection.extend({
+    var PlaybackCollection = Backbone.Collection.extend({
         
         model: Model,
 
@@ -62,5 +62,5 @@ define("setupAppManage.model", ['require','exports', 'utility'], function(requir
 
     });
 
-    return SetupAppManageCollection;
+    return PlaybackCollection;
 });

@@ -672,7 +672,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                 if (value) {
                     collection.getTemplateByProductType({productType: value});
                     if (accountId) {
-                        applicationType = value == "LIVE" ? 1 : 2
+                        applicationType = value == "LIVE" ? 2 : 1
                         require(['statisticsManage.model'],function(DomainListModel){
                             var domainListModel = new DomainListModel();
                             domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
@@ -702,7 +702,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     dataSourceDomains: []
                 })
                 var productType = getFieldsValue().productType,
-                    applicationType = productType == "LIVE" ? 1 : 2
+                    applicationType = productType == "LIVE" ? 2 : 1
 
                 if (!productType) return;
 

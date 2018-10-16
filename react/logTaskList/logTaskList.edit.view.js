@@ -673,15 +673,21 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     collection.getTemplateByProductType({productType: value});
                     if (accountId) {
                         applicationType = value == "LIVE" ? 2 : 1
-                        require(['statisticsManage.model'],function(DomainListModel){
-                            var domainListModel = new DomainListModel();
-                            domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
-                            domainListModel.on("get.domain.error", $.proxy(this.onGetError, this))
-                            domainListModel.getDomain({
-                                userid: accountId,
-                                type: applicationType
-                            });
-                        }.bind(this));
+                        // require(['statisticsManage.model'],function(DomainListModel){
+                        //     var domainListModel = new DomainListModel();
+                        //     domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                        //     domainListModel.on("get.domain.error", $.proxy(this.onGetError, this))
+                        //     domainListModel.getDomain({
+                        //         userid: accountId,
+                        //         type: applicationType
+                        //     });
+                        // }.bind(this));
+                        collection.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                        collection.on("get.domain.error", $.proxy(this.onGetError, this))
+                        collection.getTaskDomain({
+                            userid: accountId,
+                            type: applicationType
+                        });
                     }
                 }
             }
@@ -702,20 +708,28 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     dataSourceDomains: []
                 })
                 var productType = getFieldsValue().productType,
-                    applicationType = productType == "LIVE" ? 2 : 1
+                    applicationType = productType == "LIVE" ? 2 : 1;
+                var ltProps = this.props.ltProps,
+                    collection = ltProps.collection;
 
                 if (!productType) return;
 
                 if (value) {
-                    require(['statisticsManage.model'],function(DomainListModel){
-                        var domainListModel = new DomainListModel();
-                        domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
-                        domainListModel.on("get.domain.error", $.proxy(this.onGetError, this))
-                        domainListModel.getDomain({
-                            userid: value,
-                            type: applicationType
-                        });
-                    }.bind(this));
+                    // require(['statisticsManage.model'],function(DomainListModel){
+                    //     var domainListModel = new DomainListModel();
+                    //     domainListModel.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                    //     domainListModel.on("get.domain.error", $.proxy(this.onGetError, this))
+                    //     domainListModel.getTaskDomain({
+                    //         userid: value,
+                    //         type: applicationType
+                    //     });
+                    // }.bind(this));
+                    collection.on("get.domain.success", $.proxy(this.onGetDomainListSuccess, this))
+                    collection.on("get.domain.error", $.proxy(this.onGetError, this))
+                    collection.getTaskDomain({
+                        userid: value,
+                        type: applicationType
+                    });
                 }
             }
 

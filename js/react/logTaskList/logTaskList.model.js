@@ -89,6 +89,17 @@ define("logTaskList.model", ['require', 'exports', 'utility'], function (require
                 this.trigger('delete.task.error', response);
             }.bind(this);
             Utility.postAjax(url, args, successCallback, errorCallback);
+        },
+
+        getTaskDomain: function getTaskDomain(args) {
+            var url = BASE_URL + "/2018-08-30/realtimelog/task/domains",
+                successCallback = function (res) {
+                this.trigger("get.domain.success", res);
+            }.bind(this),
+                errorCallback = function (response) {
+                this.trigger('get.domain.error', response);
+            }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
         }
     });
 

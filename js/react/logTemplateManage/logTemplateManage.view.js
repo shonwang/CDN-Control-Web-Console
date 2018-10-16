@@ -356,8 +356,6 @@ define("logTemplateManage.view", ['require', 'exports', 'template', 'base.view',
                             null,
                             editButton,
                             React.createElement('span', { className: 'ant-divider' }),
-                            detailButton,
-                            React.createElement('span', { className: 'ant-divider' }),
                             deleteButton,
                             React.createElement('span', { className: 'ant-divider' }),
                             historyButton

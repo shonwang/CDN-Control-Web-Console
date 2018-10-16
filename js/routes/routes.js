@@ -38,7 +38,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "setupAppManage": "setupAppManage",
                 "setupTopoManage": "setupTopoManage",
                 "specialLayerManage": "specialLayerManage",
-                "playbackTask" : "playbackTask"
+                "playbackTask" : "playbackTask",
 
                 //常用工具
                 "speedMeasure" : "speedMeasure",

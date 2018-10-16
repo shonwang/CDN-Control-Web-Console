@@ -180,6 +180,8 @@
   "deviceManage.ipManage.view": "deviceManage/deviceManage.ipManage.view",
   "deviceManage.model": "deviceManage/deviceManage.model",
   "deviceManage.view": "deviceManage/deviceManage.view",
+  "playback.model": "deviceManage/playback/playback.model",
+  "playback.view": "deviceManage/playback/playback.view",
   "dispConfig.model": "dispConfig/dispConfig.model",
   "dispConfig.view": "dispConfig/dispConfig.view",
   "newDispConfig.model": "dispConfig/newDispConfig.model",

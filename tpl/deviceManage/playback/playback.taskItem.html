@@ -1,0 +1,132 @@
+<div>
+<% for(var i = 0; i < data.length; i++) { %>
+    <div id='<%=data[i].get("taskId")%>'>
+        <hr>
+        <div class="row">
+            <div class="col-md-10">
+                <div class="row">
+                    <div class="col-md-10 text-center">
+                        <%=data[i].get("replayPositionFormated")%>
+                    </div>
+                </div>
+                <div class="row">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" style="padding-top:0">Task <%=data[i].get("taskId")%></label>
+                            <div class="col-sm-7">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-success" style='width: <%=data[i].get("progressName")%>'>
+                                        <span><%=data[i].get("progressName")%></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <p>预计还需<%=data[i].get("remainingMinute")%>分钟</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">所属节点</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("nodeName")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">下线时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("endTimestampFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">入库时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("createTimeFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">回放类型</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("replayTypeName")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">上线时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("startTimestampFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">开始时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("startTimeFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1 text-center">
+                <% if (data[i].get("replayStatus") == 0) { %>
+                    <img src="images/task_wait.svg" style="max-width:100px">
+                    <p>排队中</p>
+                <% } else if (data[i].get("replayStatus") == 1) { %>
+                    <img src="images/task_wait.svg" style="max-width:100px">
+                    <p>回放中</p>
+                <% } %>
+            </div>
+            <div class="col-md-1">
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm">暂停</a>
+                </div>
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm">插队</a>
+                </div>
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm">挂起</a>
+                </div>
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm">放弃</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-11">
+                <ul class="list-unstyled node-ctn" style="max-height: 90px; overflow: hidden;">
+                    <li class="node-item">email@example.com</li>
+                </ul>
+            </div>
+            <div class="col-md-1">
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm">显示更多</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %> 
+</div>

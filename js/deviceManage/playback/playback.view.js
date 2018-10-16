@@ -90,13 +90,13 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
             this.collection = options.collection;
             this.$el = $(_.template(template['tpl/deviceManage/playback/playback.html'])());
             
-            // this.collection.on("get.app.info.success", $.proxy(this.onappListSuccess, this));
-            // this.collection.on("get.app.info.error", $.proxy(this.onGetError, this));
+            this.collection.on("get.task.info.success", $.proxy(this.onTaksListSuccess, this));
+            this.collection.on("get.task.info.error", $.proxy(this.onGetError, this));
 
-            // this.queryArgs = {
-            //     "count"     : 10
-            //  }
-            // this.onClickQueryButton();
+            this.queryArgs = {
+                "status":0
+             }
+            this.onClickQueryButton();
         },
 
         onGetError: function(error){
@@ -106,28 +106,27 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
                 Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
         },
 
-        onappListSuccess: function(){
+        onTaksListSuccess: function(){
             this.initTable();
           //  if (!this.isInitPaginator) this.initPaginator();
         },
 
         onClickQueryButton: function(){
-            this.isInitPaginator = false;
             this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.$el.find(".pagination").html("");
-            this.collection.getAppInfo(this.queryArgs);
+            this.collection.getTaskInfo(this.queryArgs);
         },
 
         initTable: function(){
-            this.$el.find(".multi-modify-topology").attr("disabled", "disabled");
-            this.table = $(_.template(template['tpl/setupAppManage/setupAppManage.table.html'])({data: this.collection.models, permission: AUTH_OBJ}));
+            this.table = $(_.template(template['tpl/deviceManage/playback/playback.taskItem.html'])({
+                data: this.collection.models,
+            }));
             if (this.collection.models.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemDetail, this));
-            this.table.find("tbody .topo").on("click", $.proxy(this.onClickItemTopo, this));
+            // this.table.find("tbody .detail").on("click", $.proxy(this.onClickItemDetail, this));
+            // this.table.find("tbody .topo").on("click", $.proxy(this.onClickItemTopo, this));
         },
 
         onClickItemTopo: function(event){
@@ -138,24 +137,6 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
             } else {
                 id = $(eventTarget).attr("id");
             }
-
-            var model = this.collection.get(id);
-
-            if (this.lookOverTopoViewPopup) $("#" + this.lookOverTopoViewPopup.modalId).remove();
-
-            var myLookOverTopoView = new LookOverTopoView({
-                collection: this.collection,
-                model     : model
-            });
-            var options = {
-                title:"拓扑关系",
-                body : myLookOverTopoView,
-                backdrop : 'static',
-                type     : 1,
-                onOKCallback:  function(){}.bind(this),
-                onHiddenCallback: function(){}.bind(this)
-            }
-            this.lookOverTopoViewPopup = new Modal(options);
         },
 
         onClickItemDetail: function(event){
@@ -166,21 +147,6 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
             } else {
                 id = $(eventTarget).attr("id");
             }
-
-            var model = this.collection.get(id);
-              
-            var myAppDetailView = new AppDetailView({
-                collection: this.collection,
-                model: model,
-                onSaveCallback: function(){}.bind(this),
-                onCancelCallback: function(){
-                    myAppDetailView.$el.remove();
-                    this.$el.find(".list-panel").show();
-                }.bind(this)
-            })
-
-            this.$el.find(".list-panel").hide();
-            myAppDetailView.render(this.$el.find(".detail-panel"))
         },
 
         hide: function(){

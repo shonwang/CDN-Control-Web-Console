@@ -10,6 +10,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                 this.options = options;
                 this.collection = options.collection;
                 this.model = options.model;
+                this.topologyId = this.model.get("topologyId");
                 this.rule = [];
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.specialLayer.html'])({
                     data: this.model.attributes
@@ -43,6 +44,7 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
                         name: null,
                         page: 1,
                         size: 99999,
+                        topoId:this.topologyId,
                         type: null
                     });
 
@@ -356,7 +358,8 @@ define("setupChannelManage.specialLayer.view", ['require', 'exports', 'template'
 
                 var postParam = {
                     strategyIds: [this.curLayerId],
-                    topoIds: [this.model.get('topologyId')]
+                    //topoIds: [this.model.get('topologyId')]
+                    topoId: this.model.get('topologyId')
                 }
                 this.collection.off('get.isTopoStrategyMatch.success');
                 this.collection.off('get.isTopoStrategyMatch.error');

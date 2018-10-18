@@ -1375,3 +1375,17 @@ ul, li {
 .user-move-label {min-width:110px;}
 
 .dropdown-reason-list .select-container {left:0;}
+
+.back-to-top {
+    height: 40px;
+    position: fixed;
+    width: 40px;
+    bottom: 20px;
+    right: 10px;
+    background: #292929;
+    padding: 13px;
+    text-align: center;
+    cursor: pointer;
+    color: #fff;
+    display: none;
+}

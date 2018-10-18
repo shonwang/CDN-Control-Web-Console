@@ -1,5 +1,5 @@
-define("setupChannelManage.history.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
-    function(require, exports, template, Modal, Utility) {
+define("setupChannelManage.history.view", ['require', 'exports', 'template', 'modal.view', 'utility', "react", "react-dom"],
+    function(require, exports, template, Modal, Utility, React, ReactDOM) {
 
         var AddCommentsView = Backbone.View.extend({
 

@@ -136,6 +136,26 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                 }.bind(this));
             },
 
+            preheatManage: function() {
+                require(['preheatManage.view', 'preheatManage.model'], function(PreheatManageView, PreheatManageModel) {
+                    this.curPage = 'preheatManage';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    var renderTarget = $('.ksc-content')
+                    if (!this.preheatManageModel)
+                        this.preheatManageModel = new PreheatManageModel();
+                    if (!this.preheatManageView) {
+                        var options = {
+                            collection: this.preheatManageModel
+                        };
+                        this.preheatManageView = new PreheatManageView(options);
+                        this.preheatManageView.render(renderTarget);
+                    } else {
+                        this.preheatManageView.update(renderTarget);
+                    }
+                    this.curView = this.preheatManageView;
+                }.bind(this));
+            },
+
             refreshManual: function() {
                 require(['refreshManual.view', 'refreshManual.model'], function(RefreshManualView, RefreshManualModel) {
                     this.curPage = 'refreshManual';

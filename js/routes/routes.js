@@ -8,6 +8,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         'routes.customerSetup',
         'routes.setupSend',
         'routes.codeRateSetup',
+        'routes.logManage',
         'routes.other'
     ],
     function(require, exports, NavbarView,
@@ -20,6 +21,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         RouterCustomerSetup,
         RouterSetupSend,
         RouterCodeRateSetup,
+        RouterLogManage,
         RouterOther) {
 
         var Workspace = Backbone.Router.extend({
@@ -96,7 +98,6 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/luaForceRedirect/:query2": "luaForceRedirect",
                 "domainList/:query/luaXtcpSetup/:query2": "luaXtcpSetup",
                  
-
                 //直播域名配置
                 "domainList/:query/liveConnection/:query2": "liveConnection",
                 "domainList/:query/liveUpConnection/:query2": "liveUpConnection",
@@ -165,13 +166,19 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "templateManage": "templateManage",
                 "channelManage": "channelManage",
 
-                //张振建提的半途而废的需求（废弃）
+                //预热刷新相关
+                "preheatManage": "preheatManage",
                 "refreshManual": "refreshManual",
                 "customMaintenance": "customMaintenance",
 
                 //平台切换
                 "applicationChange": "applicationChange",
                 "blockedDomain": "blockedDomain",
+
+                //日志管理
+                "logTaskList": "logTaskList",
+                "logTaskStatistics": "logTaskStatistics",
+                "logTemplateManage": "logTemplateManage",
                 
                 //配置模型
                 "setupTemplateManage": "setupTemplateManage",
@@ -199,6 +206,7 @@ define("routes", ['require', 'exports', 'navbar.view',
         Workspace = Workspace.extend(RouterCustomerSetup);
         Workspace = Workspace.extend(RouterSetupSend);
         Workspace = Workspace.extend(RouterCodeRateSetup);
+        Workspace = Workspace.extend(RouterLogManage);
         Workspace = Workspace.extend(RouterOther);
 
         exports.Workspace = new Workspace();

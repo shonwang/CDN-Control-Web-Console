@@ -25,9 +25,9 @@ define("customerSetup.model", ['require','exports', 'utility'], function(require
                         this.push(new Model(element));
                     }.bind(this))
                     this.total = res.totalCount;
-                    this.trigger("get.user.success");
+                    this.trigger("get.user.success", res);
                 } else {
-                    this.trigger("get.user.error"); 
+                    this.trigger("get.user.error", res); 
                 } 
             }.bind(this),
             errorCallback = function(response){

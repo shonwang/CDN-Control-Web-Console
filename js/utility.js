@@ -1,4 +1,4 @@
-define("utility", ['require','exports'], function(require, exports) {
+define("utility", ['require','exports',"react", "react-dom"], function(require, exports, React, ReactDOM) {
     var Utility = {
         dateFormat: function(){
             Date.prototype.format = function(fmt) {

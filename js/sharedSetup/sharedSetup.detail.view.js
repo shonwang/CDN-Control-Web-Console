@@ -1,10 +1,10 @@
-define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.doubleSelect.panel'],
-    function(require, exports, template, Modal, Utility, ReactDoubleSelectComponent) {
+define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.doubleSelect.panel', "react", "react-dom"],
+    function(require, exports, template, Modal, Utility, ReactDoubleSelectComponent, React, ReactDOM) {
 
         var SharedSetupDetailView = Backbone.View.extend({
             events: {
-                "click .cancel": "onClickBackBtn",
-                "click .save": "onClickSaveBtn"
+                // "click .cancel": "onClickBackBtn",
+                // "click .save": "onClickSaveBtn"
             },
 
             initialize: function(options) {
@@ -19,6 +19,8 @@ define("sharedSetup.detail.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.off("set.configSharedGroup.error"); 
                 this.collection.on("set.configSharedGroup.success", $.proxy(this.onSetConfigSharedGroupSuccess, this));
                 this.collection.on("set.configSharedGroup.error", $.proxy(this.onGetError, this));
+                this.$el.find(".cancel").on("click", $.proxy(this.onClickBackBtn, this));
+                this.$el.find(".save").on("click", $.proxy(this.onClickSaveBtn, this))
 
                 this.mainDomain = this.model ? this.model.get("mainDomain") : "";
                 this.sharedDomain = this.model ? this.model.get("sharedDomain")  : "";

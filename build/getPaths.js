@@ -16,6 +16,8 @@ module.exports = function(grunt) {
       map = grunt.file.readJSON(options.mapping);
     }
     this.files.forEach(function(file) {
+      if (file.orig.srcBasePath)
+        options.srcBasePath = file.orig.srcBasePath;
       file.src.forEach(function(src) {
         var source = grunt.file.read(src);
         var dirname = path.dirname(src);

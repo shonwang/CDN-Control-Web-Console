@@ -1,4 +1,5 @@
-define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("setupChannelManage.edit.view", ['require','exports', 'template', 'modal.view', 'utility', "react", "react-dom"], 
+    function(require, exports, template, Modal, Utility, React, ReactDOM) {
 
     var EditChannelView = Backbone.View.extend({
         events: {},

@@ -1,10 +1,10 @@
-define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table'],
-    function(require, exports, template, Modal, Utility, ReactTableComponent) {
+define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'modal.view', 'utility', 'react.table', "react", "react-dom"],
+    function(require, exports, template, Modal, Utility, ReactTableComponent, React, ReactDOM) {
 
         var IsomorphismManageDetailView = Backbone.View.extend({
             events: {
-                "click .opt-ctn .back": "onClickBackBtn",
-                "click .opt-ctn .diff": "onClickDiffBtn"
+                // "click .opt-ctn .back": "onClickBackBtn",
+                // "click .opt-ctn .diff": "onClickDiffBtn"
             },
 
             initialize: function(options) {
@@ -21,6 +21,9 @@ define("isomorphismManage.detail.view", ['require', 'exports', 'template', 'moda
                     "subType": this.model.get("subType")
                 }
                 this.$el.find(".opt-ctn .diff").attr("disabled", "disabled");
+
+                this.$el.find(".opt-ctn .back").on("click", $.proxy(this.onClickBackBtn, this));
+                this.$el.find(".opt-ctn .diff").on("click", $.proxy(this.onClickDiffBtn, this))
 
                 this.collection.on("get.domain.version.success", $.proxy(this.onGetVersionListSuccess, this));
                 this.collection.on("get.domain.version.error", $.proxy(this.onGetError, this));

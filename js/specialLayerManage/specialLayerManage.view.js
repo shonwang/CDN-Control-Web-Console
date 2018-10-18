@@ -143,6 +143,11 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.on("edit.send.success", $.proxy(this.onSendSuccess, this));
                 this.collection.on("edit.send.error", $.proxy(this.onSendError, this));
 
+                this.collection.off('get.topoInfo.success');
+                this.collection.off('get.topoInfo.error');
+                this.collection.on('get.topoInfo.success',$.proxy(this.onGetTopuInfo, this));
+                this.collection.on('get.topoInfo.error',$.proxy(this.onGetError, this));
+
                 this.$el.find(".add-rule").hide();
                 this.$el.find(".opt-ctn .compare").hide();
                 this.$el.find(".opt-ctn .save").hide();
@@ -162,10 +167,36 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                         "type": null,
                         'remark': null,
                         'upType': 1,
+                        'topoId':null,
                         "rule": []
                     }
                     this.initSetup();
+
+                    var topoArgs = {
+                        page:1,
+                        size:9999
+                    };
+                    this.collection.getTopoinfo(topoArgs);
                 }
+            },
+
+            onGetTopuInfo:function(res){
+                var rows = res.rows;
+                var topoList = [];
+                _.each(res.rows,function(list){
+                    var obj = {
+                        name:list.name,
+                        value:list.id
+                    }
+                    topoList.push(obj);
+                });
+
+                var rootNode = this.$el.find(".dropdown-topo");
+                Utility.initDropMenu(rootNode, topoList, function(value) {
+                    this.defaultParam.topoId = value;
+                }.bind(this));
+                this.defaultParam.topoId = topoList[0].value;
+                rootNode.find(".cur-value").html(topoList[0].name);
             },
 
             onSendSuccess:function(){
@@ -215,6 +246,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     "id": res.id || this.model.get('id'),
                     "name": res.name,
                     "remark": res.remark,
+                    "topoId" : res.topoId,
                     "rule": res.rule,
                     "type": res.type
                 }
@@ -226,6 +258,8 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     this.$el.find("#input-name").val(res.name + "-副本");
                 }
                 console.log("编辑的分层策略: ", this.defaultParam)
+                this.$el.find('#dropdown-topo .cur-value').html(res.topoName);
+                this.$el.find("#dropdown-topo").attr("disabled", "disabled")
                 this.initSetup();
             },
 
@@ -396,6 +430,7 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 postTopo.id = this.defaultParam.id;
                 postTopo.name = this.defaultParam.name;
                 postTopo.type = this.defaultParam.type;
+                postTopo.topoId = this.defaultParam.topoId;
                 postTopo.rule = postRules;
                 postTopo.remark = this.$el.find("#secondary").val();
                 return postTopo;                
@@ -724,6 +759,9 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                 this.collection.on("send.success", $.proxy(this.onSendSuccess, this));
                 this.collection.on("send.error", $.proxy(this.onSendError, this));
 
+                this.collection.on('get.topoInfo.success',$.proxy(this.onGetTopuInfo, this));
+                this.collection.on('get.topoInfo.error',$.proxy(this.onGetError, this));
+
                 // if (AUTH_OBJ.QueryTopos) {
                 this.$el.find(".opt-ctn .query").on("click", $.proxy(this.resetList, this));
                 this.on('enterKeyBindQuery', $.proxy(this.resetList, this));
@@ -743,9 +781,15 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
                     "name": null,
                     "type": null,
                     "page": 1,
-                    "size": 10
+                    "size": 10,
+                    "topoId":null
                 }
                 this.collection.getDeviceTypeList();
+                var topoArgs = {
+                    page:1,
+                    size:9999
+                };
+                this.collection.getTopoinfo(topoArgs);
                 this.onClickQueryButton();
             },
 
@@ -772,6 +816,31 @@ define("specialLayerManage.view", ['require', 'exports', 'template', 'modal.view
             onGetStrategySuccess: function() {
                 this.initTable();
                 if (!this.isInitPaginator) this.initPaginator();
+            },
+
+            onGetTopuInfo:function(res){
+                var rows = res.rows;
+                var topoList = [{
+                    name:"全部",
+                    value:"All"
+                }];
+                _.each(res.rows,function(list){
+                    var obj = {
+                        name:list.name,
+                        value:list.id
+                    }
+                    topoList.push(obj);
+                });
+
+                var rootNode = this.$el.find(".dropdown-topo");
+                Utility.initDropMenu(rootNode, topoList, function(value) {
+                    if (value == "All"){
+                        this.queryArgs.topoId = null
+                    }
+                    else{
+                        this.queryArgs.topoId = value
+                    }
+                }.bind(this));
             },
 
             onClickQueryButton: function() {

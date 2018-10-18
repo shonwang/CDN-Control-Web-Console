@@ -8,6 +8,8 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.options = options;
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
+                this.topoId = options.topoId;
+                this.showRemoveSpecialLayer = options.showRemoveSpecialLayer || false;
 
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
                     data: {
@@ -19,17 +21,33 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
 
                 this.$el.find("#input-layer").on('keyup', $.proxy(this.onKeyupLayerInput, this));
 
-                require(["specialLayerManage.model"], function(SpecialLayerManageModel) {
-                    this.mySpecialLayerManageModel = new SpecialLayerManageModel();
-                    this.mySpecialLayerManageModel.on("get.strategyList.success", $.proxy(this.initTable, this));
-                    this.mySpecialLayerManageModel.on("get.strategyList.error", $.proxy(this.onGetError, this));
+                this.setStrategyList(this.topoId);
+            },
+
+            setStrategyList:function(topoId){
+                if(!this.mySpecialLayerManageModel){                
+                    require(["specialLayerManage.model"], function(SpecialLayerManageModel) {
+                        this.mySpecialLayerManageModel = new SpecialLayerManageModel();
+                        this.mySpecialLayerManageModel.on("get.strategyList.success", $.proxy(this.initTable, this));
+                        this.mySpecialLayerManageModel.on("get.strategyList.error", $.proxy(this.onGetError, this));
+                        this.mySpecialLayerManageModel.getStrategyList({
+                            name: null,
+                            page: 1,
+                            size: 99999,
+                            type: this.options.applicationType,
+                            topoId:topoId
+                        });
+                    }.bind(this))  
+                }
+                else{
                     this.mySpecialLayerManageModel.getStrategyList({
                         name: null,
                         page: 1,
                         size: 99999,
-                        type: this.options.applicationType
-                    });
-                }.bind(this))
+                        type: this.options.applicationType,
+                        topoId:topoId
+                    });                    
+                }              
             },
 
             initDomainList: function() {
@@ -60,13 +78,15 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
             },
 
             initTable: function() {
+                
                 this.table = $(_.template(template['tpl/specialLayerManage/specialLayerManage.radio.table.html'])({
                     data: this.mySpecialLayerManageModel.models,
+                    showRemoveSpecialLayer:this.showRemoveSpecialLayer
                 }));
-                if (this.mySpecialLayerManageModel.models.length !== 0)
+                //if (this.mySpecialLayerManageModel.models.length !== 0)
                     this.$el.find(".table-ctn").html(this.table[0]);
-                else
-                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
+                // else
+                //     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
             },
 
             onSure: function() {
@@ -111,6 +131,7 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 this.options = options;
                 this.collection = options.collection;
                 this.domainArray = options.domainArray;
+                this.showRemoveSpecialLayer = options.showRemoveSpecialLayer || false;
 
                 this.$el = $(_.template(template['tpl/setupChannelManage/setupChannelManage.select.topo.html'])({
                     data: {
@@ -138,11 +159,13 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 var mySelectLayerView = new SelectLayerView({
                     collection: this.collection,
                     domainArray: this.domainArray,
-                    applicationType: this.options.applicationType
+                    applicationType: this.options.applicationType,
+                    showRemoveSpecialLayer:this.showRemoveSpecialLayer
                 });
 
                 mySelectLayerView.$el.find(".domain-list").remove()
-                mySelectLayerView.render(this.$el.find(".layer-ctn"))
+                mySelectLayerView.render(this.$el.find(".layer-ctn"));
+                this.mySelectStragyLayerView = mySelectLayerView;
             },
 
             onClickToggle: function() {
@@ -175,6 +198,13 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
                 this.table.find("[data-toggle='popover']").popover();
+                this.table.find("input[name=options-topo]").on("click",$.proxy(this.onTopoRadioChange,this));
+            },
+
+            onTopoRadioChange:function(event){
+                var eventTarget = event.srcElement || event.target;
+                var topoId = $(eventTarget).attr("id");
+                this.mySelectStragyLayerView.setStrategyList(topoId);
             },
 
             onSure: function() {
@@ -183,6 +213,8 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                     Utility.alerts("请选择一个拓扑关系")
                     return false;
                 }
+
+
                 var topoId = selectedTopo.get(0).id,
 
                     topologyName = selectedTopo.siblings('span').html(),
@@ -199,6 +231,17 @@ define("setupChannelManage.select.view", ['require', 'exports', 'template', 'mod
                 };
 
                 var isOpenLayer = this.$el.find(".layer-toggle .togglebutton input").get(0).checked;
+
+                // var specialruleNameList = _.filter(this.domainArray,function(el){
+                //     if(el.specialruleName){
+                //         return true;
+                //     };
+                // });
+                
+                // if(!isOpenLayer && specialruleNameList.length > 0){
+                //     Utility.alerts("更换拓扑时请同时更换特殊分层策略")
+                //     return false;
+                // }
 
                 if (isOpenLayer) {
                     var selectedLayer = this.$el.find(".layer input:checked");

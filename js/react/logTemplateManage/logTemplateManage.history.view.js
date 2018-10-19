@@ -221,7 +221,7 @@ define("logTemplateManage.history.view", ['require', 'exports', 'template', 'bas
                     dataIndex: 'createTime',
                     key: 'createTime',
                     render: function render(text, record) {
-                        return new Date(record.updateTime).format("yyyy/MM/dd hh:mm:ss");
+                        return new Date(record.createTime).format("yyyy/MM/dd hh:mm:ss");
                     }
                 }, {
                     title: '修改时间',

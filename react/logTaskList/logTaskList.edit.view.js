@@ -160,7 +160,7 @@ define("logTaskList.edit.view", ['require','exports', 'template', 'base.view', '
                     tokenKey: res.taskFieldJson.tokenKey,
                     taskTokenType: res.taskFieldJson.taskTokenType, 
                     taskTokenTimeType: res.taskFieldJson.taskTokenTimeType,
-                    taskConditionList: res.taskFieldJson.taskConditionList,
+                    taskConditionList: res.taskConditionList,
 
                     isLoadingTplDetail: false,
                 });

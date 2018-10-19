@@ -1,6 +1,6 @@
-define("deviceHistoryTask.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
+define("deviceHistoryTask.detail.view", ['require','exports', 'template', 'modal.view', 'utility'], function(require, exports, template, Modal, Utility) {
     
-    var DeviceHistoryTaskView = Backbone.View.extend({
+    var DeviceHistoryTaskDetailView = Backbone.View.extend({
         events: {},
 
         initialize: function(options) {

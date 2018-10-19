@@ -17,8 +17,8 @@ define("playback.model", ['require','exports', 'utility'], function(require, exp
             if (startTimestamp) this.set("startTimestampFormated", new Date(startTimestamp).format("yyyy/MM/dd hh:mm:ss"));
             if (startTime) this.set("startTimeFormated", new Date(startTime).format("yyyy/MM/dd hh:mm:ss"));
 
-            if (replayType == 2) this.set("replayTypeName",'cache');
-            if (replayType == 1) this.set("replayTypeName",'relay');
+            if (replayType == 202) this.set("replayTypeName",'cache');
+            if (replayType == 201) this.set("replayTypeName",'relay');
 
             if (progress) this.set("progressName", progress*100 + "%");
         }

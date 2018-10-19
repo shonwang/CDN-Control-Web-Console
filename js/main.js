@@ -175,6 +175,8 @@
   "interfaceQuota.view": "customerSetup/interfaceQuota/interfaceQuota.view",
   "pnoSetup.model": "customerSetup/pnoSetup/pnoSetup.model",
   "pnoSetup.view": "customerSetup/pnoSetup/pnoSetup.view",
+  "deviceHistoryTask.model": "deviceManage/deviceHistoryTask/deviceHistoryTask.model",
+  "deviceHistoryTask.view": "deviceManage/deviceHistoryTask/deviceHistoryTask.view",
   "deviceManage.edit.view": "deviceManage/deviceManage.edit.view",
   "deviceManage.importDevice.view": "deviceManage/deviceManage.importDevice.view",
   "deviceManage.ipManage.view": "deviceManage/deviceManage.ipManage.view",

@@ -18,6 +18,7 @@ define("deviceHistoryTask.model", ['require','exports', 'utility'], function(req
 
             if (replayType == 202) this.set("replayTypeName",'cache');
             if (replayType == 201) this.set("replayTypeName",'relay');
+            if (replayType == 203) this.set("replayTypeName",'live');
         }
     });
 

@@ -19,6 +19,7 @@ define("playback.model", ['require','exports', 'utility'], function(require, exp
 
             if (replayType == 202) this.set("replayTypeName",'cache');
             if (replayType == 201) this.set("replayTypeName",'relay');
+            if (replayType == 203) this.set("replayTypeName",'live');
 
             if (progress) this.set("progressName", progress*100 + "%");
         }

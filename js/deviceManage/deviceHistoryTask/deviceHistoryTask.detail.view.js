@@ -6,86 +6,34 @@ define("deviceHistoryTask.detail.view", ['require','exports', 'template', 'modal
         initialize: function(options) {
             this.options = options;
             this.collection = options.collection;
-            this.$el = $(_.template(template['tpl/deviceManage/deviceHistoryTask/deviceHistoryTask.html'])());
-            
-            this.collection.on("get.task.history.success", $.proxy(this.onTaksListSuccess, this));
-            this.collection.on("get.task.history.error", $.proxy(this.onGetError, this));
-
-            this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
-            this.enterKeyBindQuery();
-            this.initDeviceDropMenu();
-            this.queryArgs = {
-                  "replayType": 0,
-                  "replayStatus": 0,
-                  "pageNum": 1,
-                  "pageSize": 10
-             }
-            this.onClickQueryButton();
-        },
-
-        enterKeyBindQuery: function() {
-            $(document).on('keydown', function(e) {
-                if (e.keyCode == 13) {
-                    this.onClickQueryButton();
-                }
-            }.bind(this));
-        },
-
-        onGetError: function(error){
-            if (error&&error.message)
-                Utility.alerts(error.message)
-            else
-                Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
-        },
-
-        onTaksListSuccess: function(){
-            this.initTable();
-            if (!this.isInitPaginator) this.initPaginator();
-        },
-
-        initPaginator: function() {
-            this.$el.find(".total-items span").html(this.collection.total)
-            if (this.collection.total <= this.queryArgs.pageSize) return;
-            var total = Math.ceil(this.collection.total / this.queryArgs.pageSize);
-            this.$el.find(".pagination").jqPaginator({
-                totalPages: total,
-                visiblePages: 10,
-                currentPage: 1,
-                onPageChange: function(num, type) {
-                    if (type !== "init") {
-                        this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-                        var args = _.extend(this.queryArgs);
-                        args.pageNum = num;
-                        args.pageSize = this.queryArgs.pageSize;
-                        this.collection.getTaskHistory(args);
-                    }
-                }.bind(this)
-            });
-            this.isInitPaginator = true;
-        },
-
-        onClickQueryButton: function(){
-            this.isInitPaginator = false;
-            this.queryArgs.page = 1;
-            this.$el.find(".table-ctn").html(_.template(template['tpl/loading.html'])({}));
-            this.collection.getTaskHistory(this.queryArgs);
+            var tpl = '<div class="form-inline">' + 
+                            '<div class="form-group">' +
+                                '<label for="dropdown-type">设备类型</label>' +
+                            '</div>' +
+                            '<div class="form-group dropdown-type">' +
+                                '<div class="dropdown">' +
+                                   '<button class="btn btn-default dropdown-toggle" type="button" id="dropdown-type" data-toggle="dropdown">' +
+                                        '<span class="cur-value">全部</span>' +
+                                        '<span class="caret"></span>' +
+                                    '</button>' +
+                                    '<ul class="dropdown-menu"></ul>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>'
+            this.$el = $(_.template(tpl)());
+            this.deviceDetail = this.options.deviceDetail;
+            this.initDeviceDropMenu()
+            this.initTable()
         },
 
         initTable: function(){
-            this.table = $(_.template(template['tpl/deviceManage/deviceHistoryTask/deviceHistoryTask.taskItem.html'])({
-                data: this.collection.models,
+            this.table = $(_.template(template['tpl/deviceManage/deviceHistoryTask/deviceHistoryTask.deviceItem.html'])({
+                data: this.deviceDetail,
             }));
-            if (this.collection.models.length !== 0)
+            if (this.deviceDetail.length !== 0)
                 this.$el.find(".table-ctn").html(this.table[0]);
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
-
-            this.table.find(".btn-ctn .device-detail").on("click", $.proxy(this.onClickItemOpt, this, 1));
-        },
-
-        onClickItemOpt: function(status, event){
-            var eventTarget = event.srcElement || event.target, id;
-            id = $(eventTarget).attr("id");
         },
 
         initDeviceDropMenu: function() {
@@ -101,61 +49,14 @@ define("deviceHistoryTask.detail.view", ['require','exports', 'template', 'modal
                 },{
                     name: 'cache',
                     value: 202
+                },{
+                    name: 'live',
+                    value: 203
                 }],
                 rootNode = this.$el.find(".dropdown-type");
             Utility.initDropMenu(rootNode, typeArray, function(value) {
-                this.queryArgs.replayType = parseInt(value)
+
             }.bind(this));
-
-            var statusArray = [{
-                    name: '全部',
-                    value: 0
-                },{
-                    name: '已完成',
-                    value: 4
-                },{
-                    name: '已放弃',
-                    value: 5
-                },{
-                    name: '回放失败',
-                    value: 6
-                }],
-                rootNode = this.$el.find(".dropdown-status");
-            Utility.initDropMenu(rootNode, statusArray, function(value) {
-                this.queryArgs.replayStatus = parseInt(value)
-            }.bind(this));
-
-            var pageNum = [{
-                name: "10条",
-                value: 10
-            }, {
-                name: "20条",
-                value: 20
-            }, {
-                name: "50条",
-                value: 50
-            }, {
-                name: "100条",
-                value: 100
-            }]
-            Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
-                this.queryArgs.pageSize = parseInt(value);
-                this.queryArgs.pageNum = 1;
-                this.onClickQueryButton();
-            }.bind(this));
-        },
-
-        hide: function(){
-            this.$el.hide();
-            $(document).off('keydown')
-        },
-
-        update: function(target) {
-            this.collection.off();
-            this.collection.reset();
-            this.remove();
-            this.initialize(this.options);
-            this.render(target);
         },
 
         render: function(target) {
@@ -163,5 +64,5 @@ define("deviceHistoryTask.detail.view", ['require','exports', 'template', 'modal
         }
     });
 
-    return DeviceHistoryTaskView;
+    return DeviceHistoryTaskDetailView;
 });

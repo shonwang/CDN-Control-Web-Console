@@ -80,12 +80,33 @@ define("deviceHistoryTask.view", ['require','exports', 'template', 'modal.view',
             else
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
-            this.table.find(".btn-ctn .device-detail").on("click", $.proxy(this.onClickItemOpt, this, 1));
+            this.table.find(".device-detail").on("click", $.proxy(this.onClickItemOpt, this, 1));
         },
 
         onClickItemOpt: function(status, event){
             var eventTarget = event.srcElement || event.target, id;
             id = $(eventTarget).attr("id");
+            var model = this.collection.get(id);
+
+            if (this.detailDevicePopup) $("#" + this.detailDevicePopup.modalId).remove();
+
+            require(["deviceHistoryTask.detail.view"], function(DeviceHistoryTaskDetailView) {
+                var deviceHistoryTaskDetailView = new DeviceHistoryTaskDetailView({
+                    collection: this.collection, 
+                    model: model
+                });
+                var options = {
+                    title:"设备详情",
+                    body: deviceHistoryTaskDetailView,
+                    backdrop: 'static',
+                    type: 1,
+                    onOKCallback:  function(){
+                        this.detailDevicePopup.$el.modal("hide");
+                    }.bind(this),
+                    onHiddenCallback: function(){}.bind(this)
+                }
+                this.detailDevicePopup = new Modal(options);
+            }.bind(this));
         },
 
         initDeviceDropMenu: function() {

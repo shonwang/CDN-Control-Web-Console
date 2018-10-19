@@ -198,7 +198,7 @@ define("logTemplateManage.history.view", ['require','exports', 'template', 'base
                     title: '创建时间',
                     dataIndex: 'createTime',
                     key: 'createTime',
-                    render: (text, record) => (new Date(record.updateTime).format("yyyy/MM/dd hh:mm:ss"))
+                    render: (text, record) => (new Date(record.createTime).format("yyyy/MM/dd hh:mm:ss"))
                 },{
                     title: '修改时间',
                     dataIndex: 'updateTime',

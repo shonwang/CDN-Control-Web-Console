@@ -7,7 +7,8 @@ define("deviceHistoryTask.model", ['require','exports', 'utility'], function(req
                 startTimestamp = this.get("startTimestamp"),
                 startTime = this.get("startTime"),
                 histoTime = this.get("histoTime"),
-                replayType = this.get("replayType");
+                replayType = this.get("replayType"),
+                replayStatus = this.get("replayStatus");
 
             if (taskId) this.set("id", taskId)
             if (endTimestamp) this.set("endTimestampFormated", new Date(endTimestamp).format("yyyy/MM/dd hh:mm:ss"));
@@ -19,6 +20,10 @@ define("deviceHistoryTask.model", ['require','exports', 'utility'], function(req
             if (replayType == 202) this.set("replayTypeName",'cache');
             if (replayType == 201) this.set("replayTypeName",'relay');
             if (replayType == 203) this.set("replayTypeName",'live');
+
+            if (replayStatus == 4) this.set("replayStatusName",'已完成');
+            if (replayStatus == 5) this.set("replayStatusName",'已放弃');
+            if (replayStatus == 6) this.set("replayStatusName",'回放失败');
         }
     });
 

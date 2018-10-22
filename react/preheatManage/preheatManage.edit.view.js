@@ -35,6 +35,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 this.handleSubmit = this.handleSubmit.bind(this);
 
                 this.state = {
+                    loading: false,
                     //上传
                     fileList: [],
                     disabledUpload: false,
@@ -78,7 +79,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 }
                 const collection = this.props.preHeatProps.collection;
                 collection.on("refresh.commit.success", $.proxy(this.onSubmitSuccess, this));
-                collection.on("refresh.commit.error", $.proxy(this.onGetError, this));     
+                collection.on("refresh.commit.error", $.proxy(this.onGetSubmitError, this));     
             }
 
             componentWillUnmount() {
@@ -95,6 +96,13 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 });
             }
 
+            onGetSubmitError (error){
+                this.setState({
+                    loading: false
+                })
+                this.onGetError(error);
+            }
+
             onGetError (error){
                 if (error && error.message)
                     Utility.alerts(error.message);
@@ -103,6 +111,9 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
             }
 
             onSubmitSuccess (){
+                this.setState({
+                    loading: false
+                })
                 Utility.alerts("保存成功！", "success", 2000);
                 this.onClickCancel();
             }
@@ -114,6 +125,13 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
 
             handleSubmit(e) {
                 e.preventDefault();
+
+                if (this.state.loading) return
+
+                this.setState({
+                    loading: true
+                })
+
                 const { resetFields, validateFields } = this.props.form;
                 resetFields("nodesList")
                 var checkArray = ["taskName", "taskDomain", "rangeTimePicker", "nodesList", "fileList"];
@@ -879,7 +897,7 @@ define("preheatManage.edit.view", ['require','exports', 'template', 'base.view',
                 const preheatNodesView = this.renderNodesTableView(formItemLayout);
                 let saveButton = null;
                 if (!this.props.isView)
-                    saveButton = (<Button type="primary" htmlType="submit">保存</Button>)
+                    saveButton = (<Button type="primary" htmlType="submit" loading={this.state.loading}>保存</Button>)
 
                 return (
                     <div>

@@ -55,6 +55,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
             _this.handleSubmit = _this.handleSubmit.bind(_this);
 
             _this.state = {
+                loading: false,
                 //上传
                 fileList: [],
                 disabledUpload: false,
@@ -101,7 +102,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 }
                 var collection = this.props.preHeatProps.collection;
                 collection.on("refresh.commit.success", $.proxy(this.onSubmitSuccess, this));
-                collection.on("refresh.commit.error", $.proxy(this.onGetError, this));
+                collection.on("refresh.commit.error", $.proxy(this.onGetSubmitError, this));
             }
         }, {
             key: 'componentWillUnmount',
@@ -119,6 +120,14 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 });
             }
         }, {
+            key: 'onGetSubmitError',
+            value: function onGetSubmitError(error) {
+                this.setState({
+                    loading: false
+                });
+                this.onGetError(error);
+            }
+        }, {
             key: 'onGetError',
             value: function onGetError(error) {
                 if (error && error.message) Utility.alerts(error.message);else Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
@@ -126,6 +135,9 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
         }, {
             key: 'onSubmitSuccess',
             value: function onSubmitSuccess() {
+                this.setState({
+                    loading: false
+                });
                 Utility.alerts("保存成功！", "success", 2000);
                 this.onClickCancel();
             }
@@ -139,6 +151,13 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
             key: 'handleSubmit',
             value: function handleSubmit(e) {
                 e.preventDefault();
+
+                if (this.state.loading) return;
+
+                this.setState({
+                    loading: true
+                });
+
                 var _props$form = this.props.form,
                     resetFields = _props$form.resetFields,
                     validateFields = _props$form.validateFields;
@@ -1106,7 +1125,7 @@ define("preheatManage.edit.view", ['require', 'exports', 'template', 'base.view'
                 var saveButton = null;
                 if (!this.props.isView) saveButton = React.createElement(
                     Button,
-                    { type: 'primary', htmlType: 'submit' },
+                    { type: 'primary', htmlType: 'submit', loading: this.state.loading },
                     '\u4FDD\u5B58'
                 );
 

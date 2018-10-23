@@ -169,7 +169,7 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
             this.table.find("#device-opt-"+ id + " .less").hide()
         },
 
-        onSetTaskStatusSuccess(){
+        onSetTaskStatusSuccess: function(){
             Utility.alerts("操作成功", "success", 5000);
             this.onClickQueryButton();
         },

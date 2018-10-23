@@ -23,7 +23,7 @@ define("deviceHistoryTask.model", ['require','exports', 'utility'], function(req
 
             if (replayStatus == 4) this.set("replayStatusName",'已完成');
             if (replayStatus == 5) this.set("replayStatusName",'已放弃');
-            if (replayStatus == 6) this.set("replayStatusName",'回放失败');
+            if (replayStatus == 9) this.set("replayStatusName",'回放失败');
         }
     });
 

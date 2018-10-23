@@ -84,7 +84,7 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
                 if (obj.replayStatus == 0) {
                     statusStr = '<img src="images/task_wait.svg" style="max-width:50px;margin-top:50px">' + 
                     '<p>排队中</p>'
-                } else if (obj.replayStatus == 7) {
+                } else if (obj.replayStatus == 10) {
                     statusStr = '<img src="images/task_wait.svg" style="max-width:50px;margin-top:50px">' + 
                     '<p>排队中（<span class="text-danger">优先</span>）</p>'
                 } else if (obj.replayStatus == 1) {
@@ -99,7 +99,7 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
                 } else if (obj.replayStatus == 4) {
                     statusStr = '<img src="images/task_done.svg" style="max-width:50px;margin-top:50px">' + 
                     '<p style="margin-top:10px">回放完成</p>'
-                } else if (obj.replayStatus == 6) {
+                } else if (obj.replayStatus == 9) {
                     statusStr = '<img src="images/task_failed.svg" style="max-width:50px;margin-top:50px">' +
                     '<p style="margin-top:10px">回放失败</p>'
                 }

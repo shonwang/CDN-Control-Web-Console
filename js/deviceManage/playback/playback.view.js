@@ -70,7 +70,8 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
                     taskId: model.get("id")
                 });
             }.bind(this))
-            this.collection.getTaskProgress(idObjArray)
+            if (idObjArray.length > 0)
+                this.collection.getTaskProgress(idObjArray)
         },
 
         onTaskProgressSuccess: function(res){
@@ -94,7 +95,7 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
                     statusStr = '<img src="images/task_pause.svg" style="max-width:50px;margin-top:50px">' + 
                     '<p style="margin-top:10px">暂停中</p>'
                 } else if (obj.replayStatus == 3) {
-                    statusStr = '<img src="images/task_pause.svg" style="max-width:50px;margin-top:50px">' + 
+                    statusStr = '<img src="images/holdup.svg" style="max-width:50px;margin-top:50px">' + 
                     '<p style="margin-top:10px">已挂起</p>'
                 } else if (obj.replayStatus == 4) {
                     statusStr = '<img src="images/task_done.svg" style="max-width:50px;margin-top:50px">' + 

@@ -78,6 +78,7 @@ define("deviceHistoryTask.detail.view", ['require','exports', 'template', 'modal
                 if (value == 0) {
                     this.formatDeviceDetail()
                 } else {
+                    this.formatDeviceDetail()
                     this.deviceDetail = _.filter(this.deviceDetail, function(obj){
                         return obj.replayType == value
                     }.bind(this))

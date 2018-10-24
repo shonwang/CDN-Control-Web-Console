@@ -81,6 +81,8 @@ define("deviceHistoryTask.view", ['require','exports', 'template', 'modal.view',
                 this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
 
             this.table.find(".device-detail").on("click", $.proxy(this.onClickItemOpt, this, 1));
+
+            console.log(this.collection.models)
         },
 
         onClickItemOpt: function(status, event){

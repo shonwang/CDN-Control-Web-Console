@@ -10,7 +10,7 @@ define("deviceHistoryTask.model", ['require','exports', 'utility'], function(req
                 replayType = this.get("replayType"),
                 replayStatus = this.get("replayStatus");
 
-            if (taskId) this.set("id", taskId)
+            if (taskId != undefined) this.set("id", taskId)
             if (endTimestamp) this.set("endTimestampFormated", new Date(endTimestamp).format("yyyy/MM/dd hh:mm:ss"));
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm:ss"));
             if (startTimestamp) this.set("startTimestampFormated", new Date(startTimestamp).format("yyyy/MM/dd hh:mm:ss"));

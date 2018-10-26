@@ -620,6 +620,10 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
             {
                 name: "直播推流加速",
                 value: "3"
+            },
+            {
+                name: "小文件下载",
+                value: "5"
             }
         ],
 
@@ -627,7 +631,8 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
             1:"音视频点播",
             2:"流媒体直播",
             3:"直播推流加速",
-            4:"大文件下载"
+            4:"大文件下载",
+            5:"小文件下载"
         },
 
         getTimeStampUnit:function(unit){

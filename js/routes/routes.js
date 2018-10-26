@@ -74,6 +74,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "domainList/:query/openAPILogSetup/:query2": "openAPILogSetup",
                 "codeRate/:query": "codeRate",
                 "codeRate/:query/manage/:query2": "codeRateManage",
+                "netRateLimiting/:query": "netRateLimiting",
 
                 //Lua 下载域名配置
                 "domainList/:query/luaBasicInformation/:query2": "luaBasicInformation",

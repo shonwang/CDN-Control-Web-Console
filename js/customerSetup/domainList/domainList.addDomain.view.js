@@ -1068,7 +1068,7 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     //     })
                     // }
 
-                    if (cdnType == "1" || cdnType == "4") {
+                    if (cdnType == "1" || cdnType == "4" || cdnType == "5") {
                         this.downloadAndLiveView = new AddDownloadView({
                             collection: this.collection,
                             obj: this

@@ -26,6 +26,30 @@ define("routes.customerSetup", ['require', 'exports'],
                 }.bind(this));                
             },
 
+            netRateLimiting: function(query) {
+                require(['netRateLimiting.view', 'netRateLimiting.model'], function(NetRateLimitingView, NetRateLimitingModel) {
+                    this.curPage = 'customerSetup-netRateLimiting';
+                    this.navbarView.select('customerSetup', $.proxy(this.removeSubSideBar, this));
+                    this.setupCustomerSetupNavbar(query)
+                    var renderTarget = this.customerSetupNavbar.$el.find('.sub-content');
+
+                    if (!this.netRateLimitingModel)
+                        this.netRateLimitingModel = new NetRateLimitingModel();
+                    if (!this.netRateLimitingView) {
+                        var options = {
+                            collection: this.netRateLimitingModel,
+                            query: query
+                        };
+                        this.netRateLimitingView = new NetRateLimitingView(options);
+                        this.netRateLimitingView.render(renderTarget);
+                    } else {
+                        this.netRateLimitingView.update(query, renderTarget);
+                    }
+                    this.customerSetupNavbar.select(this.curPage);
+                    this.curView = this.netRateLimitingView;
+                }.bind(this));
+            },
+
             pnoSetup: function(query) {
                 if (!AUTH_OBJ.DomainLists || !AUTH_OBJ.ManageCustomer ) return;
                 require(['pnoSetup.view', 'pnoSetup.model'], function(PNOSetupView, PNOSetupModel) {

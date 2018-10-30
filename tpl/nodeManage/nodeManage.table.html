@@ -93,7 +93,7 @@
 				         <%}%>
               </td>
       			  <td>
-      				<% if (data[i].attributes.status !== 1 && permission.EnableorPauseNode) { %>
+      				<% if (permission.EnableorPauseNode) { %>
                         <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="operateDetail">
                             操作详情
                         </a>

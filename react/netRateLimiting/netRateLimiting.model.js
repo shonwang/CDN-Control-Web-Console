@@ -10,7 +10,7 @@ define("netRateLimiting.model", ['require', 'exports', 'utility'], function(requ
         initialize: function(){},
 
         gettAllLimitRateGroup: function(args) {
-            var url = BASE_URL + "/channelManager/globalLimitRate/gettAllLimitRateGroup",
+            var url = BASE_URL + "/channelManager/globalLimitRate/getAllLimitRateGroup",
                 successCallback = function(res) {
                     if (res) {
                         this.trigger("get.allLimit.success", res);

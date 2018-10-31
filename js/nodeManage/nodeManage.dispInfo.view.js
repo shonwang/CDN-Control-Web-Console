@@ -55,6 +55,9 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
 
         onKeyFilter: function(){
             if (!this.channelList || this.channelList.length === 0) return;
+            _.each(this.channelList,function(el){
+                el.isChecked = false;
+            });
             var keyWord = this.$el.find("#disp-filter").val();
             var topoId = this.topoId;
             _.each(this.channelList, function(model, index, list){
@@ -129,14 +132,8 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
                 this.target.find(".deleteTopo").on("click", $.proxy(this.onDeleteTopo, this));
             }
             
-            var count = 0;
             this.isCheckedAll = false;
             _.each(this.channelList, function(el, index, list) {
-                if (el.associated === 0) el.isChecked = false;
-                if (el.associated === 1) {
-                    el.isChecked = true;
-                    count = count + 1
-                }
                 el.isDisplay = true;
                 if (el.status === 0) el.statusName = '<span class="label label-danger">已停止</span>';
                 if (el.status === 1) el.statusName = '<span class="label label-success">运行中</span>';
@@ -147,7 +144,6 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
                 if (el.priority == 3) el.priorityName = '兼顾成本与质量';
             }.bind(this))
 
-            if (count === this.channelList.length) this.isCheckedAll = true
             this.initTable();
             this.$el.find("#disp-filter").val("")
             this.$el.find("#disp-filter").off("keyup");
@@ -201,10 +197,13 @@ define("nodeManage.dispInfo.view", ['require', 'exports', 'template', 'modal.vie
             var eventTarget = event.srcElement || event.target;
             if (eventTarget.tagName !== "INPUT") return;
             this.table.find("tbody tr").find("input").each(function(index, node) {
-                if (!$(node).prop("disabled")) {
-                    $(node).prop("checked", eventTarget.checked);
-                    this.channelList[index].isChecked = eventTarget.checked
-                }
+                var id = $(node).attr("id");
+                $(node).prop("checked", eventTarget.checked);
+                _.each(this.channelList,function(el){
+                    if(el.dispId == id)   {
+                        el.isChecked = eventTarget.checked;
+                    }
+                })
             }.bind(this))
         },
 

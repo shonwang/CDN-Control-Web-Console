@@ -28,6 +28,15 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
             },
 
             onRadioOriginChange: function() {
+                var val = this.$el.find("input[name=radio-origin]:checked").val();
+                if(val == "HTTPS"){
+                    this.$el.find("#radio-port2").prop("checked",true);
+                    this.args.OriginPort = 443;
+                }
+                else{
+                    this.$el.find("#radio-port1").prop("checked",true);
+                    this.args.OriginPort = 80;
+                }
                 this.$el.find("#cdn-originProtocol-error").hide();
             },
 

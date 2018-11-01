@@ -1,6 +1,6 @@
 <div class="addDomain-download-layer">
 
-	<div class="cdn-row clearfix margin-top10">
+	<div class="cdn-row clearfix margin-top10" style="display: none;">
 		<div class="label-text-show">访问协议：</div>
 		<div class="label-content-show margin-left10">
 			<div class="radio">
@@ -34,6 +34,14 @@
 					<span class="circle"></span>
 					<span class="check"></span>
 					http
+				</label>
+			</div>	
+			<div class="radio">
+				<label for="radio-origin2">
+					<input type="radio" name="radio-origin" id="radio-origin2" value="HTTPS">
+					<span class="circle"></span>
+					<span class="check"></span>
+					https
 				</label>
 			</div>	
 			<div class="ks-form-control add-domain-error-tips">
@@ -99,7 +107,7 @@
 	<!-- 源站类型下载 -->
 
 	<!-- 端口 -->
-	<div class="cdn-download-live-port">
+	<div class="cdn-download-live-port" style="display: none;">
 		<div class="cdn-row clearfix margin-top10">
 			<div class="label-text-show">端口：</div>
 			<div class="label-content-show margin-left10">
@@ -120,9 +128,9 @@
 							443
 						</label>
 					</div>
-					<div class="ks-form-control add-domain-error-tips">
+					<!--div class="ks-form-control add-domain-error-tips">
 						<div class="error dir-refresh-error textarea-error-tip">暂不支持443端口</div>
-					</div>
+					</div-->
 				</div>
 				<p class="text-muted">源站的443端口需要提供HTTPS服务，需使用正规CA签发的证书，否则可能造成无法正常回源。</p>
 			</div>

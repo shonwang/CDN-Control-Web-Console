@@ -34,7 +34,7 @@ define("deviceHistoryTask.model", ['require','exports', 'utility'], function(req
         initialize: function(){},
         
         getTaskHistory: function(args){
-            var url = BASE_URL + "/refresh/archive/task/history",
+            var url = BASE_URL + "/replay/archive/task/history",
             successCallback = function(res){
                 this.reset();
                 if (res){

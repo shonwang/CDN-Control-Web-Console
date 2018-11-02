@@ -399,7 +399,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                         else if (record.currentMode == 2)
                             tag = "自定义状态码: " + text
                         else if (record.currentMode == 3)
-                            tag = "自定义限速: " + text + "kbps"
+                            tag = "自定义限速: " + text + "Kbps"
                         return tag
                     }
                 },{
@@ -649,7 +649,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             </Col>
                             <Col span={4} >
                                 <FormItem style={{display: this.state.curEditField.currentMode == 3 ? "list-item" : "none"}}>
-                                    <span style={{marginLeft: "10px"}}>kbps</span>
+                                    <span style={{marginLeft: "10px"}}>Kbps</span>
                                 </FormItem>
                             </Col>
                         </FormItem>

@@ -346,7 +346,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                         })(
                                         <InputNumber style={{ width: 150 }} min={2000}/>
                                     )}
-                                    <span style={{marginLeft: "10px"}}>kbps</span>
+                                    <span style={{marginLeft: "10px"}}>Kbps</span>
                                 </FormItem>
                                 <FormItem style={{display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none"}}>
                                     {getFieldDecorator('strategyCode', {

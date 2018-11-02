@@ -480,7 +480,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 React.createElement(
                                     'span',
                                     { style: { marginLeft: "10px" } },
-                                    'kbps'
+                                    'Kbps'
                                 )
                             ),
                             React.createElement(

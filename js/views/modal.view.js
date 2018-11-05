@@ -100,6 +100,5 @@ define("modal.view", ['require','exports', 'template', 'utility'],
         }
 
     });
-
     return ModalView;
 });

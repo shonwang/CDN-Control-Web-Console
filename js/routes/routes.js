@@ -40,6 +40,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "setupAppManage": "setupAppManage",
                 "setupTopoManage": "setupTopoManage",
                 "specialLayerManage": "specialLayerManage",
+                "chargeManage":"chargeManage",//计费管理
 
                 //常用工具
                 "speedMeasure" : "speedMeasure",

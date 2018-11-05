@@ -118,7 +118,6 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                             if (DEBUG === 1 || DEBUG === 1.1 || DEBUG === 1.2)
                                 window.AUTH_OBJ[el.value] === true;
                         })
-                        console.log(AUTH_OBJ)
                         callback&&callback();
                         if (!this.isRender) this.render();
                     } else {

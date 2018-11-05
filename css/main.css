@@ -2,7 +2,9 @@ body {
   font-family: "Microsoft Yahei";
   background-color: #eee;
 }
-
+.floatRight{
+  float: right;
+}
 .total-items {
   text-align: center;/*    margin: 26px 0;*/
 }
@@ -1375,3 +1377,35 @@ ul, li {
 .user-move-label {min-width:110px;}
 
 .dropdown-reason-list .select-container {left:0;}
+/*alert-model 新增计费组*/
+.modal-backdrop{
+  top: 100%;
+}
+.modal-content{
+  top:250px;
+  left: 100px;
+}
+.modal-footer{
+  text-align: center;
+}
+.modal-title{
+  color: red;
+  text-align: center;
+}
+.modal-header{
+  border-bottom: 1px solid #8c8c8c;
+}
+#mergeNode{
+  width: 100%;
+  height: 300px;
+  margin-top: 50px;
+  background: #bce8f1;
+}
+#mergeNode h4{
+  text-align: center;
+  padding: 20px 0 20px 0;
+  border-bottom: 1px solid #8c8c8c;
+}
+#mergeNode .nodeNameMerge{
+  margin: 5px 218px;
+}

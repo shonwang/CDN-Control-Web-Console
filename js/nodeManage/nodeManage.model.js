@@ -5,8 +5,8 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 createTime = this.get("createTime"),
                 chargingType = this.get("chargingType"),
                 updateTime = this.get("updateTime"),
-                startChargingTime = this.get("startChargingTime");
-
+                startChargingTime = this.get("startChargingTime"),
+                sharePortTag = this.get("sharePortTag");
             var tips = '<a href="javascript:void(0)" class="label label-danger"' + 
                                 'data-container="body"' + 
                                 'data-trigger="hover"' +
@@ -33,11 +33,25 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
     });
 
     var NodeManageCollection = Backbone.Collection.extend({
-        
+
         model: Model,
 
         initialize: function(){},
-
+        getAssociationNodeByTags:function(args){
+            //这部分是为了获取共享出口的节点
+            var url = BASE_URL + "/rs/node/getAssosicationNodeByTags";
+            successCallback = function(res) {
+                if(res){
+                    this.trigger("get.getAssociationNodeInfo.success", res);
+                } else {
+                    this.trigger("get.getAssociationNodeInfo.error", res);
+                }
+            }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.getAssociationNodeInfo.error', response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
         getNodeList: function(args){
             // 这部分应该返回的是所有节点
             var url = BASE_URL + "/rs/node/list";

@@ -8,8 +8,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.model = options.model;
             var args = options.args || {};
             this.isEdit = options.isEdit || false;
+            this.isChargeEdit = options.isChargeEdit || false;
             this.isMultiwire = options.isMultiwire || false; //是否是多线
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.args = {
                     "index": this.ispIndex,
                     "isMultiwire": this.isMultiwire,
@@ -22,6 +23,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "unitPrice": args.unitPrice || '', //成本权值
                     "inZabName": args.inZabName || '', //入口带宽zabbix名称
                     "outZabName": args.outZabName || '', //出口带宽zabbix名称
+                    "buildBandwidth ":args.buildBandwidth  || '',//建设带宽名称
                     //"startChargingTime": args.startChargingTime || '',//开始计费日期
                     //"rsNodeCorpDtos":args.rsNodeCorpDtos  || ''                 //单项添加不需要此项
                 }
@@ -39,6 +41,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "unitPrice": '', //成本权值
                     "inZabName": '', //入口带宽zabbix名称
                     "outZabName": '', //出口带宽zabbix名称
+                    "buildBandwidth ":'',//冷备带宽名称
                 };
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({
@@ -49,12 +52,21 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             if (this.isMultiwire) {
                 this.setOperatorDorpDownList();
             }
+            if(this.isChargeEdit){
+                this.disable();
+            }
             this.$el.find("#input-maxbandwidth").on("blur",$.proxy(this.onMaxBandwidthBlur,this));
         },
-
+        disable:function(){
+            this.$el.find('#input-maxbandwidth').attr("disabled","disabled");
+            this.$el.find('#input-minbandwidth').attr("disabled","disabled");
+            this.$el.find('#input-backupBandwidth').attr("disabled","disabled");
+            this.$el.find('#input-threshold').attr("disabled","disabled");
+            this.$el.find('#input-minthreshold').attr("disabled","disabled");
+        },
         onMaxBandwidthBlur:function(){
             var _value = this.$el.find("#input-maxbandwidth").val();
-            if(this.isEdit){
+            if(this.isEdit || this.isChargeEdit){
                 if(_value != this.args.maxBandwidth){
                     this.$el.find(".up-bandwidth-change-tips").show();
                 }
@@ -66,7 +78,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             Utility.initDropMenu(this.$el.find(".dropdown-ispList"), operatorList, function(value) {
                 this.args.operatorId = parseInt(value);
             }.bind(this));
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 var defaultValue = _.find(operatorList, function(object) {
                     return object.value === this.args.operatorId;
                 }.bind(this));
@@ -118,19 +130,19 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 }
             ];
 
-            if(this.isEdit){
+            if(this.isEdit || this.isChargeEdit){
                 defaultValue = _.find(nameList, function(object) {
                     return object.value === this.args.chargingType
                 }.bind(this));  
             }             
             Utility.initDropMenu(this.$el.find(".dropdown-charging"), nameList, function(value) {
-                if(this.isEdit && defaultValue.value != value){
+                if(this.isEdit || this.isChargeEdit && defaultValue.value != value){
                     this.$el.find(".charge-change-tips").show();
                 }
                 this.args.chargingType = parseInt(value);
             }.bind(this));
 
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
             } else {
                 this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
@@ -149,7 +161,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 format: 'Y/m/d',
                 value: startVal,
                 onChangeDateTime: function() {
-                    //this.args.startChargingTime = new Date(arguments[0]).valueOf();
+                    // this.args.startChargingTime = new Date(arguments[0]).valueOf();
                 }.bind(this)
             };
             this.$el.find("#input-start").datetimepicker(startOption);
@@ -163,9 +175,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 maxBandwidth = this.$el.find("#input-maxbandwidth").val(), //上联带宽
                 minBandwidth = this.$el.find("#input-minbandwidth").val(), //保底带宽
                 unitPrice = this.$el.find("#input-unitprice").val(), //成本权值
+                buildBandwidth = this.$el.find("#input-backupBandwidth").val(),//冷备带宽
                 //longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
-                outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""), //出口带宽zabbix名称
-                inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""), //入口带宽zabbix名称
+                // outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""), //出口带宽zabbix名称
+                // inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""), //入口带宽zabbix名称
                 re = /^[0-9]+(.[0-9]+)?$/,
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
@@ -173,7 +186,18 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
 
 
 
-
+            if(!re.test(buildBandwidth)){
+                Utility.warning("建设带宽只能填入数字！");
+                return false;
+            }
+            if(parseInt(buildBandwidth) > 100000000 || parseInt(buildBandwidth) < 0 ){
+                Utility.warning("建设带宽：0-100000000（0-100T，单位转换按1000算）");
+                return false;
+            }
+            if (parseInt(maxBandwidth) <= parseInt(buildBandwidth)) {
+                Utility.warning("上联带宽小于等于建设带宽！");
+                return false;
+            }
             if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
                 Utility.warning("上联带宽和保底带宽只能填入数字！");
                 return false;
@@ -226,9 +250,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.args.maxBandwidthThreshold = maxBandwidthThreshold;
             this.args.minBandwidthThreshold = minBandwidthThreshold;
             this.args.unitPrice = unitPrice;
-            this.args.inZabName = inzabname;
-            this.args.outZabName = outzabname;
-
+            // this.args.inZabName = inzabname;
+            // this.args.outZabName = outzabname;
+            this.args.buildBandwidth = buildBandwidth;
 
             return this.args;
         },
@@ -249,13 +273,13 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             var args = options.args;
             this.model = options.model;
             this.isEdit = options.isEdit || false;
+            this.isChargeEdit = options.isChargeEdit || false;
             this.isMultiwire = true;
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.args = {
                     isMultiwire: true,
                     "rsNodeCorpDtos": args.rsNodeCorpDtos || [] //为了兼容老版库里没有数据的情况
                 }
-
             } else {
                 this.args = {
                     isMultiwire: true,
@@ -340,6 +364,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 operatorList: this.operatorList,
                 args: _data,
                 isEdit: true,
+                isChargeEdit:true,
                 isMultiwire: true
             });
             var options = {
@@ -382,6 +407,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 operatorList: this.operatorList,
                 args: null,
                 isEdit: false,
+                isChargeEdit:false,
                 isMultiwire: true
             });
             var options = {
@@ -455,13 +481,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         initialize: function(options) {
             this.collection = options.collection;
             this.isEdit = options.isEdit;
+            this.isChargeEdit = options.isChargeEdit;
             this.model = options.model;
             this.showParentList = options.showList;
             this.onOKCallback = options.onOKCallback || null;
             this.onHiddenCallback = options.onHiddenCallback || null;
-
             if (this.isEdit) {
-
                 this.args = {
                     "id": this.model.get("id"),
                     "name": this.model.get("name"),
@@ -473,16 +498,39 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "maxBandwidthThreshold": this.model.get("maxBandwidthThreshold"),
                     "minBandwidthThreshold": this.model.get("minBandwidthThreshold"),
                     "unitPrice": this.model.get("unitPrice"),
-                    "inZabName": this.model.get("inZabName"),
-                    "outZabName": this.model.get("outZabName"),
                     "remark": this.model.get("remark"),
                     "operatorId": this.model.get("operatorId"),
                     "operatorName": this.model.get("operatorName"),
                     "startChargingTime": this.model.get("startChargingTime"),
                     "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos"),   
-
+                    "freeStartTime":this.model.get("freeStartTime"),
+                    "freeEndTime":this.model.get("freeEndTime"),
                     "cacheLevel": this.model.get("cacheLevel"),
-                    "liveLevel":this.model.get("liveLevel")
+                    "liveLevel":this.model.get("liveLevel"),
+                    "buildBandwidth ":this.model.get("buildBandwidth ") //建设带宽
+                }
+            }else if(this.isChargeEdit){
+                this.args = {
+                    "id": this.model.get("id"),
+                    "name": this.model.get("name"),
+                    "chName": this.model.get("chName"),
+                    "operator": this.model.get("operator"),
+                    "chargingType": this.model.get("chargingType"),
+                    "minBandwidth": this.model.get("minBandwidth"),
+                    "maxBandwidth": this.model.get("maxBandwidth"),
+                    "maxBandwidthThreshold": this.model.get("maxBandwidthThreshold"),
+                    "minBandwidthThreshold": this.model.get("minBandwidthThreshold"),
+                    "unitPrice": '',
+                    "remark": this.model.get("remark"),
+                    "operatorId": this.model.get("operatorId"),
+                    "operatorName": this.model.get("operatorName"),
+                    "startChargingTime": this.model.get("startChargingTime"),
+                    "rsNodeCorpDtos": this.model.get("rsNodeCorpDtos"),
+                    "freeStartTime":this.model.get("freeStartTime"),
+                    "freeEndTime":this.model.get("freeEndTime"),
+                    "cacheLevel": this.model.get("cacheLevel"),
+                    "liveLevel":this.model.get("liveLevel"),
+                    "buildBandwidth ":this.model.get("buildBandwidth ") //建设带宽
                 }
             } else {
                 this.args = {
@@ -503,12 +551,13 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "operatorName": "",
                     "startChargingTime": new Date().valueOf(),
                     "rsNodeCorpDtos": [],
-
+                    "freeStartTime":"",
+                    "freeEndTime":"",
                     "cacheLevel": 0,
-                    "liveLevel": 0
+                    "liveLevel": 0,
+                    "buildBandwidth ":''
                 }
             }
-
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({
                 data: this.args
             }));
@@ -522,7 +571,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.collection.off("get.location.success");
             this.collection.off("get.location.error");
             this.collection.on("get.location.success", $.proxy(this.onGetLocation, this));
-            this.collection.on("get.location.error", $.proxy(this.onGetLocation, this));
+            this.collection.on("get.location.error", $.proxy(this.onGetError, this));
 
             this.collection.off("get.continent.success");
             this.collection.off("get.continent.error");
@@ -552,11 +601,18 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find(".save").on("click", $.proxy(this.onSaveClick, this));
             this.$el.find(".cancel").on("click", $.proxy(this.onCancelClick, this));
 
-            if (this.isEdit)
+            if (this.isEdit){
                 this.$el.find("small").html("/编辑");
+            }else if(this.isChargeEdit){
+                // this.$el.find("#h4-j").html("<small>/计费详情</small>")
+                this.$el.find("small").html("/计费详情");
+            }
+
 
             this.initDropList(options.list);
             this.initChargeDatePicker();
+            this.initFreeStartTime();
+            this.initFreeEndTime();
         },
 
         initLiveLevelDropMenu: function() {
@@ -576,7 +632,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             Utility.initDropMenu(this.$el.find(".dropdown-liveLevel"), liveLevelArray, function(value) {
                 this.liveLevel = parseInt(value);
             }.bind(this));
-            if(this.isEdit){
+            if(this.isEdit || this.isChargeEdit){
                 // this.$el.find("#dropdown-liveLevel").attr("disabled","disabled");
                 var defaultValue = _.find(liveLevelArray, function(object) {
                     return object.value === this.model.attributes.liveLevel
@@ -611,7 +667,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             Utility.initDropMenu(this.$el.find(".dropdown-cacheLevel"), cacheLevelArray, function(value) {
                 this.cacheLevel = parseInt(value);
             }.bind(this));
-            if(this.isEdit){
+            if(this.isEdit || this.isChargeEdit){
                 var defaultValue = _.find(cacheLevelArray, function(object) {
                     return object.value === this.model.attributes.cacheLevel
                 }.bind(this));
@@ -675,8 +731,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             var outZabName = ispTempalteData.outZabName || null;
             var inZabName = ispTempalteData.inZabName || null;
             var rsNodeCorpDtos = ispTempalteData.rsNodeCorpDtos || null;
-            var startChargingTime = ispTempalteData.startChargingTime || null;
             var chargingType = ispTempalteData.chargingType || null;
+            var buildBandwidth  = ispTempalteData.buildBandwidth  || null;
             var args = {
                 "id": this.model ? this.model.get("id") : 0,
                 "name": this.$el.find("#input-english").val().replace(/\s+/g, ""),
@@ -685,7 +741,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "operatorName": this.operatorName,
                 "liveLevel": this.liveLevel,
                 "cacheLevel": this.cacheLevel,
-
                 "remark": this.$el.find("#textarea-comment").val(),
                 "startChargingTime": this.args.startChargingTime,
                 //"chargingType": this.args.chargingType,
@@ -702,7 +757,11 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "rsNodeCorpDtos": this.operatorId == 9 ? rsNodeCorpDtos : [],
                 "cityId": this.cityId,
                 "lon": this.$el.find('#input-longitude-latitude').val().split("----")[0],
-                "lat": this.$el.find('#input-longitude-latitude').val().split("----")[1]
+                "lat": this.$el.find('#input-longitude-latitude').val().split("----")[1],
+                //freeStartTime
+                "freeStartTime":this.args.freeStartTime,
+                "freeEndTime":this.args.freeEndTime,
+                "buildBandwidth ":buildBandwidth ,
             }
             if(args.cacheLevel === 0 && args.liveLevel === 0){
                 alert("节点的直播或点播层级属性设置错误");
@@ -725,7 +784,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.operatorId = value;
                 this.setIspTemplate();
             }.bind(this));
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.$el.find("#dropdown-operator").attr("disabled","disabled");
                 var defaultValue = _.find(nameList, function(object) {
                     return object.value === this.model.attributes.operatorId
@@ -763,6 +822,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.ispTemplate = new MultiwireTemplateView({
                     operatorList: this.operatorList,
                     isEdit: isEdit,
+                    isChargeEdit:this.isChargeEdit,
                     args: args
                 });
             } else {
@@ -770,6 +830,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.ispTemplate = new IspTemplateView({
                     operatorList: this.operatorList,
                     isEdit: isEdit,
+                    isChargeEdit:this.isChargeEdit,
                     args: args
                 });
             }
@@ -799,7 +860,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 })
             }.bind(this));
 
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.$el.find("#dropdown-continent").attr("disabled","disabled");
                 this.$el.find(".dropdown-continent .cur-value").html(this.model.get("continentName"));
                 this.collection.getCountryByContinent({
@@ -813,7 +874,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 })
             }
         },
-
         onGetAllProvince: function(list) {
             var nameList = [];
             _.each(list, function(el, inx, list) {
@@ -840,7 +900,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 }.bind(this)
             });
 
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.$el.find("#dropdown-province").attr("disabled","disabled");
                 this.$el.find(".dropdown-province .cur-value").html(this.model.get("provName") || nameList[0].name);
                 this.collection.getAllCityAndBigArea({
@@ -857,7 +917,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         onGetAllCityAndBigArea: function(res) {
             var area = res.cityProvArea.name,
                 list = res.list;
-
             var cityArray = [];
             _.each(list, function(el, index, list) {
                 cityArray.push({
@@ -888,7 +947,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
 
             this.$el.find('#input-longitude-latitude').val("查找中...");
             this.$el.find('#dropdown-region .cur-value').html(area);
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.$el.find("#dropdown-region").attr("disabled","disabled");
                 this.$el.find("#dropdown-city").attr("disabled","disabled");
                 this.cityId = this.model.get("cityId") || cityArray[0].value;
@@ -933,7 +992,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     })
                 }.bind(this)
             });
-            if (this.isEdit) {
+            if (this.isEdit || this.isChargeEdit) {
                 this.$el.find("#dropdown-country").attr("disabled","disabled");
                 this.$el.find(".dropdown-country .cur-value").html(this.model.get("countryName"));
                 this.collection.getOperationByCountry({
@@ -993,7 +1052,42 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             }
             this.$el.find('#dropdown-city').removeAttr("disabled");
         },
-
+        //免费带宽开始计费日期
+        initFreeStartTime:function(){
+            var startVal = null,
+                endVal = null;
+            if (this.args.freeStartTime)
+                startVal = new Date(this.args.freeStartTime).format("yyyy/MM/dd");
+            var startOption = {
+                lang: 'ch',
+                timepicker: false,
+                scrollInput: false,
+                format: 'Y/m/d',
+                value: startVal,
+                onChangeDateTime: function() {
+                    this.args.freeStartTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#free-start-time").datetimepicker(startOption);
+        },
+        //免费带宽结束时间
+        initFreeEndTime:function(){
+            var startVal = null,
+                endVal = null;
+            if (this.args.freeEndTime)
+                startVal = new Date(this.args.freeEndTime).format("yyyy/MM/dd");
+            var startOption = {
+                lang: 'ch',
+                timepicker: false,
+                scrollInput: false,
+                format: 'Y/m/d',
+                value: startVal,
+                onChangeDateTime: function() {
+                    this.args.freeEndTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#free-end-time").datetimepicker(startOption);
+        },
         initChargeDatePicker: function() {
             var startVal = null,
                 endVal = null;

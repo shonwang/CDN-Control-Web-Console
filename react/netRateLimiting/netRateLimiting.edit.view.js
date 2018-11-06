@@ -280,7 +280,8 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                                 placeholder={'请选择'}
                                                 maxTagCount={1}
                                                 notFoundContent={<Spin size="small" />} 
-                                                filterOption={false} >
+                                                optionFilterProp="children"
+                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
                                                 {this.state.dataSourceDomains}       
                                         </Select>
                                     )}

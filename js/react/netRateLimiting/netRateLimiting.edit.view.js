@@ -362,7 +362,10 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                         placeholder: '请选择',
                                         maxTagCount: 1,
                                         notFoundContent: React.createElement(Spin, { size: 'small' }),
-                                        filterOption: false },
+                                        optionFilterProp: 'children',
+                                        filterOption: function filterOption(input, option) {
+                                            return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                                        } },
                                     this.state.dataSourceDomains
                                 ))
                             )
@@ -536,7 +539,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     key: 'currentValue',
                     render: function render(text, record) {
                         var tag = null;
-                        if (record.currentMode == 1) tag = "自定义回源: " + text;else if (record.currentMode == 2) tag = "自定义状态码: " + text;else if (record.currentMode == 3) tag = "自定义限速: " + text + "kbps";
+                        if (record.currentMode == 1) tag = "自定义回源: " + text;else if (record.currentMode == 2) tag = "自定义状态码: " + text;else if (record.currentMode == 3) tag = "自定义限速: " + text + "Kbps";
                         return tag;
                     }
                 }, {
@@ -840,7 +843,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 React.createElement(
                                     'span',
                                     { style: { marginLeft: "10px" } },
-                                    'kbps'
+                                    'Kbps'
                                 )
                             )
                         )

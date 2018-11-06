@@ -32,7 +32,7 @@ define("playback.model", ['require','exports', 'utility'], function(require, exp
         initialize: function(){},
         
         getTaskInfo: function(args){
-            var url = BASE_URL + "/replay/archive/task/query",
+            var url = BASE_URL + "/refreshArchive/archive/task/query",
             successCallback = function(res){
                 this.reset();
                 if (res){
@@ -51,7 +51,7 @@ define("playback.model", ['require','exports', 'utility'], function(require, exp
         },
         
         getTaskProgress:function(args){
-            var url = BASE_URL + "/replay/archive/task/progress",
+            var url = BASE_URL + "/refreshArchive/archive/task/progress",
             successCallback = function(res){
                 if (res) {
                     this.total = res.total;
@@ -67,7 +67,7 @@ define("playback.model", ['require','exports', 'utility'], function(require, exp
         },
 
         setTaskStatus:function(args){
-            var url = BASE_URL + "/replay/archive/task/change",
+            var url = BASE_URL + "/refreshArchive/archive/task/change",
             successCallback = function(res){
                 if (res){
                     this.trigger("set.task.status.success",res);

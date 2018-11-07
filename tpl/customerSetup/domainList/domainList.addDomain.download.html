@@ -107,34 +107,36 @@
 	<!-- 源站类型下载 -->
 
 	<!-- 端口 -->
-	<div class="cdn-download-live-port" style="display: none;">
-		<div class="cdn-row clearfix margin-top10">
-			<div class="label-text-show">端口：</div>
-			<div class="label-content-show margin-left10">
-				<div class="clearfix">
-					<div class="radio">
-						<label for="radio-port1">
-							<input type="radio" name="radio-port" id="radio-port1" checked value="80">
-							<span class="circle"></span>
-							<span class="check"></span>
-							80
-						</label>
-					</div>	
-					<div class="radio">
-						<label for="radio-port2">
-							<input type="radio" name="radio-port" id="radio-port2" value="443" disabled="disabled">
-							<span class="circle"></span>
-							<span class="check"></span>
-							443
-						</label>
+	<div style="display: none;">
+		<div class="cdn-download-live-port" style="display: none;">
+			<div class="cdn-row clearfix margin-top10">
+				<div class="label-text-show">端口：</div>
+				<div class="label-content-show margin-left10">
+					<div class="clearfix">
+						<div class="radio">
+							<label for="radio-port1">
+								<input type="radio" name="radio-port" id="radio-port1" checked disabled="disabled" value="80">
+								<span class="circle"></span>
+								<span class="check"></span>
+								80
+							</label>
+						</div>	
+						<div class="radio">
+							<label for="radio-port2">
+								<input type="radio" name="radio-port" id="radio-port2" value="443" disabled="disabled">
+								<span class="circle"></span>
+								<span class="check"></span>
+								443
+							</label>
+						</div>
+						<!--div class="ks-form-control add-domain-error-tips">
+							<div class="error dir-refresh-error textarea-error-tip">暂不支持443端口</div>
+						</div-->
 					</div>
-					<!--div class="ks-form-control add-domain-error-tips">
-						<div class="error dir-refresh-error textarea-error-tip">暂不支持443端口</div>
-					</div-->
+					<p class="text-muted">源站的443端口需要提供HTTPS服务，需使用正规CA签发的证书，否则可能造成无法正常回源。</p>
 				</div>
-				<p class="text-muted">源站的443端口需要提供HTTPS服务，需使用正规CA签发的证书，否则可能造成无法正常回源。</p>
+				
 			</div>
-			
 		</div>
 	</div>
 	<!-- 端口 -->

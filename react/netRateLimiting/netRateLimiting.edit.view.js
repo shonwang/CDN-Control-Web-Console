@@ -93,7 +93,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     totalQuota: res.group.totalQuota,               
                     advanceStrategy: advanceStrategy,
                     defaultStrategy: defaultStrategy,
-                    isAdvance:  res.advancedConf == 1 ? true : false//advanceStrategy.length > 0 ? true : false
+                    isAdvance:  res.group.advancedConf == 1 ? true : false//advanceStrategy.length > 0 ? true : false
                 });
 
                 var collection = this.props.limitProps.collection;

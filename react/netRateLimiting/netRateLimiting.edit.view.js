@@ -704,11 +704,11 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             "group": {
                                 "quotaUnits": vals.quotaUnits,
                                 "totalQuota": vals.totalQuota,
-                                "userId": this.props.limitProps.userInfo.uid
+                                "userId": this.props.limitProps.userInfo.uid,
+                                "advancedConf": this.state.isAdvance ? 1 : 0
                             },
                             "origins": origins,
-                            "strategys": strategys,
-                            "advancedConf": this.state.isAdvance ? 1 : 0
+                            "strategys": strategys
                         }
 
                         if (this.props.isEdit) {

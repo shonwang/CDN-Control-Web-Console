@@ -116,7 +116,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     totalQuota: res.group.totalQuota,
                     advanceStrategy: advanceStrategy,
                     defaultStrategy: defaultStrategy,
-                    isAdvance: advanceStrategy.length > 0 ? true : false
+                    isAdvance: res.advancedConf == 1 ? true : false //advanceStrategy.length > 0 ? true : false
                 });
 
                 var collection = this.props.limitProps.collection;
@@ -907,7 +907,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 "userId": this.props.limitProps.userInfo.uid
                             },
                             "origins": origins,
-                            "strategys": strategys
+                            "strategys": strategys,
+                            "advancedConf": this.state.isAdvance ? 1 : 0
                         };
 
                         if (this.props.isEdit) {

@@ -123,7 +123,9 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 this.$el.find("#text-domainName").on("focus",$.proxy(this.focus,this));
                 this.$el.find("#text-origin-url-name").on("focus",$.proxy(this.focus,this));
                 this.$el.find("[data-toggle='tooltip']").tooltip();
+                this.$el.find(".httpheader-textarea").on("focus",$.proxy(this.hideHttpheaderError,this));
                 this.setInitDropdownMenu();
+                this.setInitHttpHeaderDropdownMenu();
                 this.initUsersDropMenu();
                 
             },
@@ -162,6 +164,39 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                     this.$el.find("#cdn-type-error").html('请选择校验方式').show();
                     return false;
                 }
+
+                if(!this.checkArgs.verifyHeadersType){
+                    this.$el.find("#cdn-httpheader-error").show();
+                    return false;
+                }
+
+                var verifyHeadersType = this.checkArgs.verifyHeadersType;
+                if(verifyHeadersType == 'null'){
+                    this.checkArgs.headers = null;
+                }
+                else if(verifyHeadersType == 'custom'){
+                    var _value = this.$el.find(".httpheader-textarea").val();
+                    if(!_value){
+                        this.$el.find("#cdn-httpheader-texteare-error-text").html("请填写请求头");
+                        this.$el.find("#cdn-httpheader-texteare-error").show();
+                        return false;
+                    }
+                    var obj = this.getTextAreaVerifyHeadersList();
+                    if(!obj){
+                        this.$el.find("#cdn-httpheader-texteare-error-text").html("请求头的格式不正确");
+                        this.$el.find("#cdn-httpheader-texteare-error").show();
+                        return false;
+                    }
+                    this.checkArgs.headers = obj;
+                }
+                else{
+                    var obj = {};
+                    var headers = this.checkArgs.verifyHeadersType;
+                    var verifyHeadersList = headers.split(":");
+                    obj[verifyHeadersList[0]] = verifyHeadersList[1];
+                    this.checkArgs.headers = obj;
+                }
+
                 var originVerifyCode = this.$el.find("#text-origin-url-name").val();
                 if(!originVerifyCode){
                     this.$el.find("#origin-url-name-error").show();
@@ -169,6 +204,31 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 }
                 this.checkArgs.originVerifyCode = originVerifyCode;
                 return this.checkArgs;
+            },
+
+
+            hideHttpheaderError:function(){
+                this.$el.find("#cdn-httpheader-error").hide();
+                this.$el.find("#cdn-httpheader-texteare-error").hide();
+            },
+
+            getTextAreaVerifyHeadersList:function(){
+                var _value = this.$el.find(".httpheader-textarea").val();
+                var arr = _value.split("\n");
+                var obj = {};
+                var isTrueFormat = true;
+                for(var i=0;i<arr.length;i++){
+                    if(arr[i].indexOf(":") == -1){
+                        isTrueFormat = false;
+                        break;
+                    }
+                    var valueArr = arr[i].split(":");
+                    obj[valueArr[0]] = valueArr[1];
+                }
+                if(!isTrueFormat){
+                    return false;
+                }
+                return obj;
             },
 
             onClickCheckBtn:function(){
@@ -215,6 +275,26 @@ define("checkUrl.view", ['require', 'exports', 'template', 'utility', "modal.vie
                 }.bind(this));
             },
 
+            setInitHttpHeaderDropdownMenu:function(){
+                var httpHeaderArr = [
+                    {name:"无",value:'null'},
+                    {name:"Accept-Encoding:gzip",value:"Accept-Encoding:gzip"},
+                    {name:"Accept-Encoding:gzip,deflate",value:"Accept-Encoding:gzip,deflate"},
+                    {name:"自定义",value:'custom'}
+                ];
+                var rootNode = this.$el.find('#dropdown-menu-httpheader');
+                Utility.initDropMenu(rootNode, httpHeaderArr, function(obj) {
+                    this.focus();
+                    this.checkArgs.verifyHeadersType = value;
+                    if(value == "custom"){
+                        this.$el.find(".custom-httpheader").show();
+                    }
+                    else{
+                        this.$el.find(".custom-httpheader").hide();
+                    }
+                    this.hideHttpheaderError();
+                }.bind(this));
+            },
 
             getArgs:function(){
                 var val = this.$el.find(".check-domain-input").val();

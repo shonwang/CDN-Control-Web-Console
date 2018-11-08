@@ -300,7 +300,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                             initialValue: this.state.totalQuota,
                                             rules: [{ required: true, message: '请输入限速阈值!' }],
                                         })(
-                                        <InputNumber style={{ width: 150 }}/>
+                                        <InputNumber style={{ width: 150 }} min={1}/>
                                     )}
                                 </FormItem>
                             </Col>

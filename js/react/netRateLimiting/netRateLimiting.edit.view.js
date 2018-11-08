@@ -398,7 +398,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 getFieldDecorator('totalQuota', {
                                     initialValue: this.state.totalQuota,
                                     rules: [{ required: true, message: '请输入限速阈值!' }]
-                                })(React.createElement(InputNumber, { style: { width: 150 } }))
+                                })(React.createElement(InputNumber, { style: { width: 150 }, min: 1 }))
                             )
                         ),
                         React.createElement(

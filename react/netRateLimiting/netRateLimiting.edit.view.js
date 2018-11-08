@@ -192,6 +192,18 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     callback();
                 } else if (currentMode == 1 && value && Utility.isIP(value)) {
                     callback();
+                } else if (currentMode == 1 && value && value.indexOf(",") > -1) {
+                    var ipArray = value.split(","), correctCount = 0;
+                    for (var i = 0; i < ipArray.length; i++) {
+                        if (Utility.isIP(ipArray[i])) {
+                            correctCount = correctCount + 1;
+                        } 
+                    }
+                    if (correctCount == ipArray.length) {
+                        callback();
+                    } else {
+                        callback('请输入正确的自定义回源！')
+                    }
                 } else if (currentMode == 1) {
                     callback('请输入正确的自定义回源！')
                 } else {
@@ -231,6 +243,18 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     callback();
                 } else if (currentMode == 1 && value && Utility.isIP(value)) {
                     callback();
+                } else if (currentMode == 1 && value && value.indexOf(",") > -1) {
+                    var ipArray = value.split(","), correctCount = 0;
+                    for (var i = 0; i < ipArray.length; i++) {
+                        if (Utility.isIP(ipArray[i])) {
+                            correctCount = correctCount + 1;
+                        } 
+                    }
+                    if (correctCount == ipArray.length) {
+                        callback();
+                    } else {
+                        callback('请输入正确的自定义回源！')
+                    }
                 } else if (currentMode == 1) {
                     callback('请输入正确的自定义回源！')
                 } else {
@@ -366,7 +390,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                                 { validator: $.proxy(this.validateStrategyOrigin, this) },
                                             ],
                                         })(
-                                        <Input />
+                                        <Input.TextArea />
                                     )}
                                 </FormItem>
                             </Col>
@@ -644,7 +668,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                                 { validator: $.proxy(this.validateAdvanceStrategyOrigin, this) },
                                             ],
                                         })(
-                                        <Input style= {{ width: 200 }} />
+                                        <Input.TextArea />
                                     )}
                                 </FormItem>
                             </Col>

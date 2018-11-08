@@ -200,10 +200,10 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             correctCount = correctCount + 1;
                         } 
                     }
-                    if (correctCount == ipArray.length) {
-                        callback();
-                    } else if (ipArray.length > 10) {
+                    if (ipArray.length > 10) {
                         callback('支持多个ip的填写，用逗号分隔，最多为10个')
+                    } else if (correctCount == ipArray.length) {
+                        callback();
                     } else {
                         callback('请输入正确的自定义回源！')
                     }
@@ -253,10 +253,10 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             correctCount = correctCount + 1;
                         } 
                     }
-                    if (correctCount == ipArray.length) {
-                        callback();
-                    } else if (ipArray.length > 10) {
+                    if (ipArray.length > 10) {
                         callback('支持多个ip的填写，用逗号分隔，最多为10个')
+                    } else if (correctCount == ipArray.length) {
+                        callback();
                     } else {
                         callback('请输入正确的自定义回源！')
                     }

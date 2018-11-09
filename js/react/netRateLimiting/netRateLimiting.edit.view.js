@@ -174,6 +174,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
 
                 var defaultStrategy = this.state.defaultStrategy;
                 defaultStrategy.currentMode = value;
+                defaultStrategy.currentValue = null;
                 this.setState({
                     defaultStrategy: defaultStrategy
                 });
@@ -188,6 +189,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
 
                 var curEditField = this.state.curEditField;
                 curEditField.currentMode = value;
+                curEditField.currentValue = null;
                 this.setState({
                     curEditField: curEditField
                 });
@@ -240,10 +242,10 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             correctCount = correctCount + 1;
                         }
                     }
-                    if (correctCount == ipArray.length) {
-                        callback();
-                    } else if (ipArray.length > 10) {
+                    if (ipArray.length > 10) {
                         callback('支持多个ip的填写，用逗号分隔，最多为10个');
+                    } else if (correctCount == ipArray.length) {
+                        callback();
                     } else {
                         callback('请输入正确的自定义回源！');
                     }
@@ -297,10 +299,10 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             correctCount = correctCount + 1;
                         }
                     }
-                    if (correctCount == ipArray.length) {
-                        callback();
-                    } else if (ipArray.length > 10) {
+                    if (ipArray.length > 10) {
                         callback('支持多个ip的填写，用逗号分隔，最多为10个');
+                    } else if (correctCount == ipArray.length) {
+                        callback();
                     } else {
                         callback('请输入正确的自定义回源！');
                     }
@@ -325,7 +327,15 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     setFieldsValue = _props$form2.setFieldsValue,
                     getFieldValue = _props$form2.getFieldValue;
 
-                var baseInfoView = null;
+                var baseInfoView = null,
+                    initialValueStr;
+                if (this.state.defaultStrategy.currentMode == 1) {
+                    initialValueStr = this.state.defaultStrategy.currentValue || "";
+                } else if (this.state.defaultStrategy.currentMode == 2) {
+                    initialValueStr = this.state.defaultStrategy.currentValue || 404;
+                } else if (this.state.defaultStrategy.currentMode == 3) {
+                    initialValueStr = this.state.defaultStrategy.currentValue || 2000;
+                }
 
                 baseInfoView = React.createElement(
                     'div',
@@ -508,7 +518,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyLimit', {
-                                    initialValue: parseInt(this.state.defaultStrategy.currentValue) || 2000,
+                                    initialValue: initialValueStr,
                                     rules: [{ validator: $.proxy(this.validateStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 }, min: 2000 })),
                                 React.createElement(
@@ -521,7 +531,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyCode', {
-                                    initialValue: parseInt(this.state.defaultStrategy.currentValue) || 404,
+                                    initialValue: initialValueStr,
                                     rules: [{ validator: $.proxy(this.validateStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 } }))
                             ),
@@ -529,7 +539,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyOrigin', {
-                                    initialValue: this.state.defaultStrategy.currentValue,
+                                    initialValue: initialValueStr,
                                     rules: [{ validator: $.proxy(this.validateStrategyOrigin, this) }]
                                 })(React.createElement(Input.TextArea, null))
                             )
@@ -790,7 +800,16 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     curEditField = _state3.curEditField,
                     isEditField = _state3.isEditField;
 
-                var addEditNodesView = "";
+                var addEditNodesView = "",
+                    initialValueStr;
+                if (this.state.curEditField.currentMode == 1) {
+                    initialValueStr = this.state.curEditField.currentValue || "";
+                } else if (this.state.curEditField.currentMode == 2) {
+                    initialValueStr = this.state.curEditField.currentValue || 404;
+                } else if (this.state.curEditField.currentMode == 3) {
+                    initialValueStr = this.state.curEditField.currentValue || 2000;
+                }
+
                 addEditNodesView = React.createElement(
                     Form,
                     null,
@@ -844,7 +863,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyLimit', {
-                                    initialValue: parseInt(this.state.curEditField.currentValue) || 2000,
+                                    initialValue: initialValueStr,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 }, min: 2000 }))
                             ),
@@ -852,7 +871,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyCode', {
-                                    initialValue: parseInt(this.state.curEditField.currentValue) || 404,
+                                    initialValue: initialValueStr,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 } }))
                             ),
@@ -860,7 +879,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyOrigin', {
-                                    initialValue: this.state.curEditField.currentValue,
+                                    initialValue: initialValueStr,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyOrigin, this) }]
                                 })(React.createElement(Input.TextArea, null))
                             )

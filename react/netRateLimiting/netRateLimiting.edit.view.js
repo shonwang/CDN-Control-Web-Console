@@ -277,13 +277,13 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
 
             renderBaseInfoView(formItemLayout) {
                 const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
-                var baseInfoView = null, initialValueStr;
+                var baseInfoView = null, initialValueLimit = 2000, initialValueCode = 404, initialValueOrigin = "";
                 if (this.state.defaultStrategy.currentMode == 1) {
-                    initialValueStr = this.state.defaultStrategy.currentValue || ""
+                    initialValueOrigin = this.state.defaultStrategy.currentValue || ""
                 } else if (this.state.defaultStrategy.currentMode == 2) {
-                    initialValueStr = this.state.defaultStrategy.currentValue || 404
+                    initialValueCode = this.state.defaultStrategy.currentValue || 404
                 } else if (this.state.defaultStrategy.currentMode == 3) {
-                    initialValueStr = this.state.defaultStrategy.currentValue || 2000
+                    initialValueLimit = this.state.defaultStrategy.currentValue || 2000
                 }
 
                 baseInfoView = (
@@ -378,7 +378,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             <Col span={12} >
                                 <FormItem style={{display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none"}}>
                                     {getFieldDecorator('strategyLimit', {
-                                            initialValue: initialValueStr,
+                                            initialValue: initialValueLimit,
                                             rules: [
                                                 { validator: $.proxy(this.validateStrategyLimit, this) },
                                             ],
@@ -389,7 +389,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </FormItem>
                                 <FormItem style={{display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none"}}>
                                     {getFieldDecorator('strategyCode', {
-                                            initialValue: initialValueStr,
+                                            initialValue: initialValueCode,
                                             rules: [
                                                 { validator: $.proxy(this.validateStrategyCode, this) },
                                             ],
@@ -399,7 +399,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </FormItem>
                                 <FormItem style={{display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none"}}>
                                     {getFieldDecorator('strategyOrigin', {
-                                            initialValue: initialValueStr,
+                                            initialValue: initialValueOrigin,
                                             rules: [
                                                 { validator: $.proxy(this.validateStrategyOrigin, this) },
                                             ],
@@ -623,13 +623,13 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
             renderAddEditFieldView(formItemLayout) {
                 const { getFieldDecorator } = this.props.form;
                 const { curEditField, isEditField} = this.state;
-                var addEditNodesView = "", initialValueStr;
+                var addEditNodesView = "", initialValueLimit = 2000, initialValueCode = 404, initialValueOrigin = "";
                 if (this.state.curEditField.currentMode == 1) {
-                    initialValueStr = this.state.curEditField.currentValue || ""
+                    initialValueOrigin = this.state.curEditField.currentValue || ""
                 } else if (this.state.curEditField.currentMode == 2) {
-                    initialValueStr = this.state.curEditField.currentValue || 404
+                    initialValueCode = this.state.curEditField.currentValue || 404
                 } else if (this.state.curEditField.currentMode == 3) {
-                    initialValueStr = this.state.curEditField.currentValue || 2000
+                    initialValueLimit = this.state.curEditField.currentValue || 2000
                 }
 
                 addEditNodesView = (
@@ -665,7 +665,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             <Col span={12} >
                                 <FormItem style={{display: this.state.curEditField.currentMode == 3 ? "list-item" : "none"}}>
                                     {getFieldDecorator('advanceStrategyLimit', {
-                                            initialValue: initialValueStr,
+                                            initialValue: initialValueLimit,
                                             rules: [
                                                 { validator: $.proxy(this.validateAdvanceStrategyLimit, this) },
                                             ],
@@ -675,7 +675,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </FormItem>
                                 <FormItem style={{display: this.state.curEditField.currentMode == 2 ? "list-item" : "none"}}>
                                     {getFieldDecorator('advanceStrategyCode', {
-                                            initialValue: initialValueStr,
+                                            initialValue: initialValueCode,
                                             rules: [
                                                 { validator: $.proxy(this.validateAdvanceStrategyCode, this) },
                                             ],
@@ -685,7 +685,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </FormItem>
                                 <FormItem style={{display: this.state.curEditField.currentMode == 1 ? "list-item" : "none"}}>
                                     {getFieldDecorator('advanceStrategyOrigin', {
-                                            initialValue: initialValueStr,
+                                            initialValue: initialValueOrigin,
                                             rules: [
                                                 { validator: $.proxy(this.validateAdvanceStrategyOrigin, this) },
                                             ],

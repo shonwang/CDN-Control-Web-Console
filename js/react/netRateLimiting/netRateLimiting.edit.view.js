@@ -328,13 +328,15 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     getFieldValue = _props$form2.getFieldValue;
 
                 var baseInfoView = null,
-                    initialValueStr;
+                    initialValueLimit = 2000,
+                    initialValueCode = 404,
+                    initialValueOrigin = "";
                 if (this.state.defaultStrategy.currentMode == 1) {
-                    initialValueStr = this.state.defaultStrategy.currentValue || "";
+                    initialValueOrigin = this.state.defaultStrategy.currentValue || "";
                 } else if (this.state.defaultStrategy.currentMode == 2) {
-                    initialValueStr = this.state.defaultStrategy.currentValue || 404;
+                    initialValueCode = this.state.defaultStrategy.currentValue || 404;
                 } else if (this.state.defaultStrategy.currentMode == 3) {
-                    initialValueStr = this.state.defaultStrategy.currentValue || 2000;
+                    initialValueLimit = this.state.defaultStrategy.currentValue || 2000;
                 }
 
                 baseInfoView = React.createElement(
@@ -518,7 +520,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyLimit', {
-                                    initialValue: initialValueStr,
+                                    initialValue: initialValueLimit,
                                     rules: [{ validator: $.proxy(this.validateStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 }, min: 2000 })),
                                 React.createElement(
@@ -531,7 +533,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyCode', {
-                                    initialValue: initialValueStr,
+                                    initialValue: initialValueCode,
                                     rules: [{ validator: $.proxy(this.validateStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 } }))
                             ),
@@ -539,7 +541,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyOrigin', {
-                                    initialValue: initialValueStr,
+                                    initialValue: initialValueOrigin,
                                     rules: [{ validator: $.proxy(this.validateStrategyOrigin, this) }]
                                 })(React.createElement(Input.TextArea, null))
                             )
@@ -801,13 +803,15 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     isEditField = _state3.isEditField;
 
                 var addEditNodesView = "",
-                    initialValueStr;
+                    initialValueLimit = 2000,
+                    initialValueCode = 404,
+                    initialValueOrigin = "";
                 if (this.state.curEditField.currentMode == 1) {
-                    initialValueStr = this.state.curEditField.currentValue || "";
+                    initialValueOrigin = this.state.curEditField.currentValue || "";
                 } else if (this.state.curEditField.currentMode == 2) {
-                    initialValueStr = this.state.curEditField.currentValue || 404;
+                    initialValueCode = this.state.curEditField.currentValue || 404;
                 } else if (this.state.curEditField.currentMode == 3) {
-                    initialValueStr = this.state.curEditField.currentValue || 2000;
+                    initialValueLimit = this.state.curEditField.currentValue || 2000;
                 }
 
                 addEditNodesView = React.createElement(

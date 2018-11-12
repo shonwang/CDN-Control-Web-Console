@@ -867,7 +867,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyLimit', {
-                                    initialValue: initialValueStr,
+                                    initialValue: initialValueLimit,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 }, min: 2000 }))
                             ),
@@ -875,7 +875,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyCode', {
-                                    initialValue: initialValueStr,
+                                    initialValue: initialValueCode,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 } }))
                             ),
@@ -883,7 +883,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyOrigin', {
-                                    initialValue: initialValueStr,
+                                    initialValue: initialValueOrigin,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyOrigin, this) }]
                                 })(React.createElement(Input.TextArea, null))
                             )

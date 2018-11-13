@@ -105,6 +105,22 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
                     '<p style="margin-top:10px">回放失败</p>'
                 }
                 this.$el.find("#status-" + obj.taskId).html(statusStr)
+
+                var optNode = this.$el.find("#opt-" + obj.taskId)
+                if (obj.replayStatus == 1) {
+                    optNode.find(".cutinline").remove();
+                    optNode.find(".holdup").remove();
+                    if (!optNode.find(".pause").get(0)) {
+                        var tpl = '<div style="margin-bottom:10px">' + 
+                                    '<a href="javascript:void(0)" class="btn btn-primary btn-sm pause" style="width:70px" id="' + obj.taskId + '">暂停</a>' + 
+                                  '</div>'
+                        var pauseNode = $(tpl)
+                        pauseNode.on("click", $.proxy(this.onClickItemOpt, this, 1))
+                        pauseNode.insertBefore(optNode.find(".giveup"))
+                    }
+                } else if(obj.replayStatus == 9 || obj.replayStatus == 4) {
+                    optNode.html("")
+                }
             }.bind(this))
         },
 

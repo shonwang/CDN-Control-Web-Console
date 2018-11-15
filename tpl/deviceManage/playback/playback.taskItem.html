@@ -1,0 +1,173 @@
+<div>
+<% for(var i = 0; i < data.length; i++) { %>
+    <div id='<%=data[i].get("taskId")%>'>
+        <hr>
+        <div class="row">
+            <div class="col-md-9" id='detail-<%=data[i].get("id")%>'>
+                <div class="row">
+                    <div class="col-md-10 text-center replay-position">
+                        <%=data[i].get("replayPositionFormated")%>
+                    </div>
+                </div>
+                <div class="row">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label" style="padding-top:0">Task <%=data[i].get("taskId")%></label>
+                            <div class="col-sm-7">
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-success" style='width: <%=data[i].get("progressName")%>'>
+                                        <span><%=data[i].get("progressName")%></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 remaining-minute">
+                                <p>预计还需<span><%=data[i].get("remainingMinute")%></span>分钟</p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">所属节点</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("nodeName")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">下线时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("endTimestampFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">入库时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("createTimeFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">回放类型</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("replayTypeName")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">上线时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("startTimestampFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-4 control-label">开始时间</label>
+                                <div class="col-sm-6">
+                                    <p class="form-control-static"><%=data[i].get("startTimeFormated")%></p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 text-center" id='status-<%=data[i].get("id")%>'>
+                <% if (data[i].get("replayStatus") == 0) { %>
+                    <img src="images/task_wait.svg" style="max-width:50px;margin-top:50px">
+                    <p>排队中</p>
+                <% } else if (data[i].get("replayStatus") == 10) { %>
+                    <img src="images/task_wait.svg" style="max-width:50px;margin-top:50px">
+                    <p>排队中（<span class="text-danger">优先</span>）</p>
+                <% } else if (data[i].get("replayStatus") == 1) { %>
+                    <img src="images/task_running.svg" style="max-width:50px;margin-top:50px">
+                    <p>回放中</p>
+                <% } else if (data[i].get("replayStatus") == 2) { %>
+                    <img src="images/task_pause.svg" style="max-width:50px;margin-top:50px">
+                    <p style="margin-top:10px">暂停中</p>
+                <% } else if (data[i].get("replayStatus") == 3) { %>
+                    <img src="images/holdup.svg" style="max-width:50px;margin-top:50px">
+                    <p style="margin-top:10px">已挂起</p>
+                <% } else if (data[i].get("replayStatus") == 4) { %>
+                    <img src="images/task_done.svg" style="max-width:50px;margin-top:50px">
+                    <p style="margin-top:10px">回放完成</p>
+                <% } else if (data[i].get("replayStatus") == 9) { %>
+                    <img src="images/task_failed.svg" style="max-width:50px;margin-top:50px">
+                    <p style="margin-top:10px">回放失败</p>
+                <% } %>
+            </div>
+            <div class="col-md-1 btn-ctn" id='opt-<%=data[i].get("id")%>'>
+                <% if (data[i].get("replayStatus") == 1) { %>
+                    <div style="margin-bottom:10px">
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm pause" style="width:70px" id='<%=data[i].get("id")%>'>暂停</a>
+                    </div>
+                <% } %>
+                <% if (data[i].get("replayStatus") == 2) { %>
+                    <div style="margin-bottom:10px">
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm start" style="width:70px" id='<%=data[i].get("id")%>'>开启</a>
+                    </div>
+                <% } %>
+                <% if (data[i].get("replayStatus") == 0) { %>
+                    <div style="margin-bottom:10px">
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm cutinline" style="width:70px" id='<%=data[i].get("id")%>'>插队</a>
+                    </div>
+                <% } %>
+                <% if (data[i].get("replayStatus") == 10) { %>
+                    <div style="margin-bottom:10px">
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm cancel-cut" id='<%=data[i].get("id")%>'>取消插队</a>
+                    </div>
+                <% } %>
+                <% if (data[i].get("replayStatus") == 10 || data[i].get("replayStatus") == 0 || data[i].get("replayStatus") == 2) { %>
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm holdup" style="width:70px" id='<%=data[i].get("id")%>'>挂起</a>
+                </div>
+                <% } %>
+                <% if (data[i].get("replayStatus") == 3) { %>
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm cancel-holdup" id='<%=data[i].get("id")%>'>取消挂起</a>
+                </div>
+                <% } %>
+                <% if (data[i].get("replayStatus") == 3 || data[i].get("replayStatus") == 1 || data[i].get("replayStatus") == 2 || data[i].get("replayStatus") == 0 || data[i].get("replayStatus") == 7 || data[i].get("replayStatus") == 10) { %>
+                    <div style="margin-bottom:10px">
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm giveup" style="width:70px" id='<%=data[i].get("id")%>'>放弃</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+        <div class="row device-ctn">
+            <div class="col-md-11">
+                <ul class="list-unstyled node-ctn" style="max-height: 90px; overflow: hidden;" id='device-<%=data[i].get("id")%>'>
+                    <% for(var k = 0; k < data[i].get("devices").split(";").length; k++) { %>
+                        <li class="node-item"><%=data[i].get("devices").split(";")[k]%></li>
+                    <% } %> 
+                </ul>
+            </div>
+            <div class="col-md-1" id='device-opt-<%=data[i].get("id")%>'>
+                <div style="margin-bottom:10px">
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm more" id='<%=data[i].get("id")%>'>显示更多</a>
+                    <a href="javascript:void(0)" class="btn btn-primary btn-sm less" id='<%=data[i].get("id")%>' style="display:none">显示更少</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %> 
+</div>

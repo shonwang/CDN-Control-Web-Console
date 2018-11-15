@@ -1,0 +1,18 @@
+<table class="table table-striped table-hover table-bordered">  
+<thead> 
+  <tr>
+    <th>名称</th>
+    <th>节点</th>
+    <th>类型</th>
+  </tr>
+</thead>
+<tbody>
+    <% for(var i = 0; i < data.length; i++) { %>
+    <tr data-id="<%=data[i].id%>">
+        <td><%=data[i].relayName%></td>
+        <td><%=data[i].nodeName%></td>
+        <td><%=data[i].replayTypeName%></td>
+    </tr>
+    <% } %>  
+</tbody>
+</table>

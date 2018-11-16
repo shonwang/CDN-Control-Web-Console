@@ -392,6 +392,11 @@ define("setupSending.detail.view", ['require','exports', 'template', 'modal.view
             // }
             // this.configFilePopup = new Modal(options);
 
+            if (!clickedObj.domainVersion) {
+                Utility.alerts("此域名没有版本，不支持查看，具体请咨询开发测试人员", "danger", 5000)
+                return;
+            }
+
             require(["react.config.panel"], function(ReactConfigPanelComponent){
                 var ReactTableView = React.createFactory(ReactConfigPanelComponent);
                 var reactTableView = ReactTableView({

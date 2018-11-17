@@ -192,13 +192,15 @@ define("chargeManage.model", ['require','exports', 'utility'],function (require,
         addMergeTags:function (args) {
             var url = BASE_URL + "/rs/node/modifyMergeCharge",
             successCallback = function(res){
-                if (res)
+                if (res){
                     this.trigger("addCharge.success", res);
-                else
+                }
+                else{
                     this.trigger("addCharge.error", res);
+                }
             }.bind(this),
                 errorCallback = function(response){
-                    this.trigger("get.cityByProvince.error", response);
+                    this.trigger("addCharge.error", response);
                 }.bind(this);
             Utility.putAjax(url,args,successCallback,errorCallback,30000)
         },
@@ -220,10 +222,12 @@ define("chargeManage.model", ['require','exports', 'utility'],function (require,
         getMergeTagOtherNodeInfo:function (args) {
             var url = BASE_URL + "/rs/node/getMergeChargeByTag?chargeTag=" + args,
                 successCallback = function(res) {
-                    if (res)
+                    if (res){
                         this.trigger("get.MergeChargeTagOtherNodeInfo.success", res);
-                    else
+                    }
+                    else{
                         this.trigger("get.MergeChargeTagOtherNodeInfo.error", res);
+                    }
                 }.bind(this),
                 errorCallback = function(response) {
                     this.trigger("get.MergeChargeTagOtherNodeInfo.error", response);

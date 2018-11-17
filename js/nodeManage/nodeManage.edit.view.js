@@ -21,8 +21,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "maxBandwidthThreshold": args.maxBandwidthThreshold || '', //上联带宽阈值
                     "minBandwidthThreshold": args.minBandwidthThreshold || '', //保低带宽阈值
                     "unitPrice": args.unitPrice || '', //成本权值
-                    "inZabName": args.inZabName || '', //入口带宽zabbix名称
-                    "outZabName": args.outZabName || '', //出口带宽zabbix名称
+                    // "inZabName": args.inZabName || '', //入口带宽zabbix名称
+                    // "outZabName": args.outZabName || '', //出口带宽zabbix名称
                     "buildBandwidth ":args.buildBandwidth  || '',//建设带宽名称
                     //"startChargingTime": args.startChargingTime || '',//开始计费日期
                     //"rsNodeCorpDtos":args.rsNodeCorpDtos  || ''                 //单项添加不需要此项
@@ -39,8 +39,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "maxBandwidthThreshold": '', //上联带宽阈值
                     "minBandwidthThreshold": '', //保低带宽阈值
                     "unitPrice": '', //成本权值
-                    "inZabName": '', //入口带宽zabbix名称
-                    "outZabName": '', //出口带宽zabbix名称
+                    // "inZabName": '', //入口带宽zabbix名称
+                    // "outZabName": '', //出口带宽zabbix名称
                     "buildBandwidth ":'',//冷备带宽名称
                 };
             }
@@ -194,7 +194,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 Utility.warning("建设带宽：0-100000000（0-100T，单位转换按1000算）");
                 return false;
             }
-            if (parseInt(maxBandwidth) <= parseInt(buildBandwidth)) {
+            if (parseInt(maxBandwidth) >= parseInt(buildBandwidth)) {
                 Utility.warning("上联带宽小于等于建设带宽！");
                 return false;
             }
@@ -544,8 +544,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "maxBandwidthThreshold": "",
                     "minBandwidthThreshold": "",
                     "unitPrice": "",
-                    "inZabName": "",
-                    "outZabName": "",
+                    // "inZabName": "",
+                    // "outZabName": "",
                     "remark": "",
                     "operatorId": "",
                     "operatorName": "",
@@ -728,8 +728,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             var maxBandwidth = ispTempalteData.maxBandwidth || null;
             var minBandwidth = ispTempalteData.minBandwidth || null;
             var unitPrice = ispTempalteData.unitPrice || null;
-            var outZabName = ispTempalteData.outZabName || null;
-            var inZabName = ispTempalteData.inZabName || null;
+            // var outZabName = ispTempalteData.outZabName || null;
+            // var inZabName = ispTempalteData.inZabName || null;
             var rsNodeCorpDtos = ispTempalteData.rsNodeCorpDtos || null;
             var chargingType = ispTempalteData.chargingType || null;
             var buildBandwidth  = ispTempalteData.buildBandwidth  || null;
@@ -750,8 +750,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "maxBandwidthThreshold": maxBandwidthThreshold,
                 "minBandwidthThreshold": minBandwidthThreshold,
                 "unitPrice": unitPrice,
-                "inZabName": inZabName,
-                "outZabName": outZabName,
+                // "inZabName": inZabName,
+                // "outZabName": outZabName,
                 //"startChargingTime": startChargingTime,
                 "chargingType": chargingType,
                 "rsNodeCorpDtos": this.operatorId == 9 ? rsNodeCorpDtos : [],

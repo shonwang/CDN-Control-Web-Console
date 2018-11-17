@@ -16,9 +16,14 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 _.each(this.checkedList,function (el) {
                     nodeNameList.push(el.get("chName"))
                 })
+                var nodeNameListHtml = [];
+                for(var i=0;i<nodeNameList.length;i++){
+                    var _html = '<div>'+nodeNameList[i]+'</div>';
+                    nodeNameListHtml.push(_html);
+                }
                 mergeTagName = this.checkedList[0].get("mergeChargeTag");
                 this.$el.find("#inputMergeTagName").val(mergeTagName);
-                this.$el.find("#inputNodeName").val(nodeNameList.join('  '))
+                this.$el.find("#inputNodeName").html(nodeNameListHtml.join(""))
                 this.collection.getAllMergeTagNames();
                 if(this.isEdit) {
                     this.mergeList = options.mergeList
@@ -29,10 +34,12 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 }else if(!this.isEdit){
                     this.$el.find("#modify").hide();
                 }
+                var mergeTagVal = this.$el.find("#dropdown-merge .cur-value").text();
+                this.collection.getMergeTagOtherNodeInfo(mergeTagVal);
             },
             initDropDownMenu:function(res){
                 var mergeNameList = res,
-                    mergeNameobj = [];
+                    mergeNameobj = [{name:'null'}];
                 _.each(mergeNameList,function (val) {
                     mergeNameobj.push({
                         name:val
@@ -52,36 +59,45 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     }.bind(this)
                 });
                 this.$el.find("#dropdown-merge .cur-value").html(mergeNameobj[0].name);
-                var mergeTagVal = this.$el.find("#dropdown-merge .cur-value").text();
-                this.collection.getMergeTagOtherNodeInfo(mergeTagVal);
+
             },
             getAllList:function(){
                 var nodeIds = [];
                 _.each(this.checkedList,function (el) {
                     nodeIds.push(el.get('id'))
                 })
-                var obj = {
-                    mergeChargeTag:this.$el.find("#inputMergeTagName").val(),
-                    nodeIds:nodeIds.join(','),
-                    operateAction:this.type
-                };
-                console.log(obj)
-                return obj;
+                if(this.isEdit){
+                    var obj = {
+                        mergeChargeTag:this.$el.find("#dropdown-merge .cur-value").text(),
+                        nodeIds:nodeIds.join(','),
+                        operateAction:this.type
+                    };
+                    return obj;
+                }else{
+                    var obj = {
+                        mergeChargeTag:this.$el.find("#inputMergeTagName").val(),
+                        nodeIds:nodeIds.join(','),
+                        operateAction:this.type
+                    };
+                    return obj;
+                }
             },
             alertTips:function(event){
                 var eventTarget = event.srcElement || event.target,
                     val = $(eventTarget).val();
-                re = /^[a-zA-Z\W][0-9a-zA-Z_]{4,30}/
+                re = /^[\u4E00-\u9FFFa-zA-Z][\w\u4E00-\u9FFF]{3,29}$/g
                 if(!re.test(val)){
-                    Utility.warning("中英文开始、数字，长度在4-30字符之间");
+                    Utility.warning("中英文开始、可包含数字下划线，长度在4-30字符之间");
                     return false;
                 }
             },
             onGetError: function(error) {
-                if (error && error.message)
+                if (error && error.message){
                     Utility.alerts(error.message)
-                else
+                }
+                else{
                     Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！")
+                }
             },
             render:function (target) {
                     this.$el.appendTo(target);
@@ -92,7 +108,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 _.each(nodeInfoList,function (el) {
                     nodeNameList.push(el.chName)
                 })
-                var tipsHTML = [" <h4>计费组下关联的信息</h4>"];
+                var tipsHTML = [];
                 for(var i=0;i<nodeNameList.length;i++){
                     var _html = '<div class="nodeNameMerge">'+nodeNameList[i]+'</div>';
                     tipsHTML.push(_html);
@@ -386,6 +402,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     onOKCallback: function() {
                         var result = this.selectChargeView.getAllList();
                         this.collection.addMergeTags(result);
+                        this.selectChargeViewPopup.$el.modal("hide");
                     }.bind(this),
                     onHiddenCallback: function() {}.bind(this)
                 }
@@ -433,6 +450,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     onOKCallback: function() {
                         var result = this.selectChargeView.getAllList();
                         this.collection.addMergeTags(result);
+                        this.selectChargeViewPopup.$el.modal("hide")
                     }.bind(this),
                     onHiddenCallback: function() {}.bind(this)
                 }

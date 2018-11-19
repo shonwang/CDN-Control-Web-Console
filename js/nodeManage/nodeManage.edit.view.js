@@ -23,7 +23,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "unitPrice": args.unitPrice || '', //成本权值
                     // "inZabName": args.inZabName || '', //入口带宽zabbix名称
                     // "outZabName": args.outZabName || '', //出口带宽zabbix名称
-                    "buildBandwidth ":args.buildBandwidth  || '',//建设带宽名称
+                    "buildBandwidth":args.buildBandwidth  || '',//建设带宽名称
                     //"startChargingTime": args.startChargingTime || '',//开始计费日期
                     //"rsNodeCorpDtos":args.rsNodeCorpDtos  || ''                 //单项添加不需要此项
                 }
@@ -41,7 +41,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "unitPrice": '', //成本权值
                     // "inZabName": '', //入口带宽zabbix名称
                     // "outZabName": '', //出口带宽zabbix名称
-                    "buildBandwidth ":'',//冷备带宽名称
+                    "buildBandwidth":'',//冷备带宽名称
                 };
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({
@@ -507,7 +507,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "freeEndTime":this.model.get("freeEndTime"),
                     "cacheLevel": this.model.get("cacheLevel"),
                     "liveLevel":this.model.get("liveLevel"),
-                    "buildBandwidth ":this.model.get("buildBandwidth ") //建设带宽
+                    "buildBandwidth":this.model.get("buildBandwidth") //建设带宽
                 }
             }else if(this.isChargeEdit){
                 this.args = {
@@ -530,7 +530,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "freeEndTime":this.model.get("freeEndTime"),
                     "cacheLevel": this.model.get("cacheLevel"),
                     "liveLevel":this.model.get("liveLevel"),
-                    "buildBandwidth ":this.model.get("buildBandwidth ") //建设带宽
+                    "buildBandwidth":this.model.get("buildBandwidth") //建设带宽
                 }
             } else {
                 this.args = {
@@ -555,7 +555,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "freeEndTime":"",
                     "cacheLevel": 0,
                     "liveLevel": 0,
-                    "buildBandwidth ":''
+                    "buildBandwidth": ""
                 }
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({
@@ -732,7 +732,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             // var inZabName = ispTempalteData.inZabName || null;
             var rsNodeCorpDtos = ispTempalteData.rsNodeCorpDtos || null;
             var chargingType = ispTempalteData.chargingType || null;
-            var buildBandwidth  = ispTempalteData.buildBandwidth  || null;
+            var buildBandwidth  = ispTempalteData.buildBandwidth || null;
             var args = {
                 "id": this.model ? this.model.get("id") : 0,
                 "name": this.$el.find("#input-english").val().replace(/\s+/g, ""),
@@ -761,7 +761,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 //freeStartTime
                 "freeStartTime":this.args.freeStartTime,
                 "freeEndTime":this.args.freeEndTime,
-                "buildBandwidth ":buildBandwidth ,
+                "buildBandwidth":buildBandwidth ,
             }
             if(args.cacheLevel === 0 && args.liveLevel === 0){
                 alert("节点的直播或点播层级属性设置错误");

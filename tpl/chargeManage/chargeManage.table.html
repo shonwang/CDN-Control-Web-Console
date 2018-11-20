@@ -16,7 +16,7 @@
     <tbody>
        <tr data-id="<%=data[i].attributes.id%>" style="background-color:<%if(i%2==0){%>#fff;<%}else{%>#f9f9f9;<%}%>">
            <th scope="row">
-               <input type="checkbox" id="<%=data[i].attributes['id']%>" <% if (data[i].attributes["isChecked"]) { %>checked="true"<% } %>>
+               <input type="checkbox" class="checkedBox" id="<%=data[i].attributes['id']%>" <% if (data[i].attributes["isChecked"]) { %>checked="true"<% } %>>
            </th>
            <td>
                <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="node-name">
@@ -26,7 +26,20 @@
            <td><%=data[i].attributes["name"]%></td>
            <%if(data[i].attributes.operatorId != 9){ %>
                 <% for(var j = 0; j < titleList.length;j++) { %>
-                    <td><%=data[i].attributes[titleList[j].key]%></td>
+                   <% if (titleList[j].isChecked) { %>
+                       <%if(titleList[j].key == 'sharePortTag'){%>
+                       <td><a href="javascript:void(0)" class="hoverTag"
+                                data-key="<%=data[i].attributes[titleList[j].key]%>"
+                                data-container="body"
+                                data-trigger="hover"
+                                data-toggle="popover1"
+                                data-placement="top"
+                                data-content=""
+                       ><%=data[i].attributes[titleList[j].key]%></a></td>
+                       <%}else{%>
+                       <td><%=data[i].attributes[titleList[j].key]%></td>
+                       <%}%>
+                  <% } %>
                 <% } %>
            <% }else{ %>
                     <% for (var j = 0;j < titleList.length;j++) { %>
@@ -45,7 +58,18 @@
                            <%}%>
                        </td>
                        <% }else if(titleList[j].isChecked){ %>
-                         <td><%=data[i].attributes[titleList[j].key]%></td>
+                           <%if(titleList[j].key == 'sharePortTag'){%>
+                           <td><a href="javascript:void(0)" class="hoverTag"
+                                  data-key="<%=data[i].attributes[titleList[j].key]%>"
+                                  data-container="body"
+                                    data-trigger="hover"
+                                    data-toggle="popover1"
+                                    data-placement="top"
+                                    data-content=""
+                           ><%=data[i].attributes[titleList[j].key]%></a></td>
+                           <%}else{%>
+                           <td><%=data[i].attributes[titleList[j].key]%></td>
+                           <%}%>
                         <% } %>
                  <% } %>
            <% } %>

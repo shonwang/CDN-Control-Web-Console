@@ -390,7 +390,6 @@ define("utility", ['require','exports',"react", "react-dom"], function(require, 
                 contentType: "application/json",
                 processData: false
             };
-            
             if (dataType) defaultParas.dataType = dataType;
             if (notJson){
                 delete defaultParas.contentType;

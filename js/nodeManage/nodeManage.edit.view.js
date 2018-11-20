@@ -918,53 +918,57 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             var area = res.cityProvArea.name,
                 list = res.list;
             var cityArray = [];
-            _.each(list, function(el, index, list) {
-                cityArray.push({
-                    name: el.name,
-                    value: el.id,
-                    isDisplay: true
-                })
-            }.bind(this))
-            var searchSelect = new SearchSelect({
-                containerID: this.$el.find('.dropdown-city').get(0),
-                panelID: this.$el.find('#dropdown-city').get(0),
-                isSingle: true,
-                openSearch: true,
-                selectWidth: 200,
-                isDataVisible: true,
-                onOk: function() {},
-                data: cityArray,
-                callback: function(data) {
-                    this.$el.find('#dropdown-city .cur-value').html(data.name);
-                    this.$el.find('#input-longitude-latitude').val("查找中...");
-                    this.$el.find('#dropdown-city').attr("disabled", "disabled");
-                    this.collection.getLocation({
-                        addr: data.name
-                    });
-                    this.cityId = data.value;
-                }.bind(this)
-            });
-
-            this.$el.find('#input-longitude-latitude').val("查找中...");
-            this.$el.find('#dropdown-region .cur-value').html(area);
-            if (this.isEdit || this.isChargeEdit) {
-                this.$el.find("#dropdown-region").attr("disabled","disabled");
-                this.$el.find("#dropdown-city").attr("disabled","disabled");
-                this.cityId = this.model.get("cityId") || cityArray[0].value;
-                this.$el.find('#dropdown-city .cur-value').html(this.model.get("cityName") || cityArray[0].name);
-                if (!this.model.get("lon") || !this.model.get("lat"))
-                    this.collection.getLocation({
-                        addr: this.model.get("cityName") || cityArray[0].name
-                    });
-                else
-                    this.$el.find('#input-longitude-latitude').val(this.model.get("lon") + "----" + this.model.get("lat"));
-            } else {
-                this.collection.getLocation({
-                    addr: cityArray[0].name
+            if(list.length > 0){
+                _.each(list, function(el, index, list) {
+                    cityArray.push({
+                        name: el.name,
+                        value: el.id,
+                        isDisplay: true
+                    })
+                }.bind(this))
+                var searchSelect = new SearchSelect({
+                    containerID: this.$el.find('.dropdown-city').get(0),
+                    panelID: this.$el.find('#dropdown-city').get(0),
+                    isSingle: true,
+                    openSearch: true,
+                    selectWidth: 200,
+                    isDataVisible: true,
+                    onOk: function() {},
+                    data: cityArray,
+                    callback: function(data) {
+                        this.$el.find('#dropdown-city .cur-value').html(data.name);
+                        this.$el.find('#input-longitude-latitude').val("查找中...");
+                        this.$el.find('#dropdown-city').attr("disabled", "disabled");
+                        this.collection.getLocation({
+                            addr: data.name
+                        });
+                        this.cityId = data.value;
+                    }.bind(this)
                 });
-                this.$el.find('#dropdown-city').attr("disabled", "disabled");
-                this.$el.find('#dropdown-city .cur-value').html(cityArray[0].name);
-                this.cityId = cityArray[0].value;
+
+                this.$el.find('#input-longitude-latitude').val("查找中...");
+                this.$el.find('#dropdown-region .cur-value').html(area);
+                if (this.isEdit || this.isChargeEdit) {
+                    this.$el.find("#dropdown-region").attr("disabled","disabled");
+                    this.$el.find("#dropdown-city").attr("disabled","disabled");
+                    this.cityId = this.model.get("cityId") || cityArray[0].value;
+                    this.$el.find('#dropdown-city .cur-value').html(this.model.get("cityName") || cityArray[0].name);
+                    if (!this.model.get("lon") || !this.model.get("lat"))
+                        this.collection.getLocation({
+                            addr: this.model.get("cityName") || cityArray[0].name
+                        });
+                    else
+                        this.$el.find('#input-longitude-latitude').val(this.model.get("lon") + "----" + this.model.get("lat"));
+                } else {
+                    this.collection.getLocation({
+                        addr: cityArray[0].name
+                    });
+                    this.$el.find('#dropdown-city').attr("disabled", "disabled");
+                    this.$el.find('#dropdown-city .cur-value').html(cityArray[0].name);
+                    this.cityId = cityArray[0].value;
+                }
+            } else {
+               return
             }
         },
 

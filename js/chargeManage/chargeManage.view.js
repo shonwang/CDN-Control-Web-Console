@@ -27,21 +27,23 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 this.collection.getAllMergeTagNames();
                 if(this.isEdit) {
                     this.mergeList = options.mergeList
+                    this.collection.off("get.MergeChargeTags.success");
+                    this.collection.off("get.MergeChargeTags.error");
                     this.collection.on("get.MergeChargeTags.success",$.proxy(this.initDropDownMenu, this));
                     this.collection.on("get.MergeChargeTags.error", $.proxy(this.onGetError, this));
                     this.$el.find("#inputNodeName2").val(nodeNameList.join('  '))
                     this.$el.find("#add").hide();
                 }else if(!this.isEdit){
+                    this.collection.off("get.MergeChargeTags.success");
+                    this.collection.off("get.MergeChargeTags.error");
                     this.$el.find("#modify").hide();
                 }
-                var mergeTagVal = this.$el.find("#dropdown-merge .cur-value").text();
-                this.collection.getMergeTagOtherNodeInfo(mergeTagVal);
             },
             initDropDownMenu:function(res){
                 var mergeNameList = res,
                     mergeNameobj = [{name:'null'}];
                 _.each(mergeNameList,function (val) {
-                    mergeNameobj.push({
+                    mergeNameobj.unshift({
                         name:val
                     })
                 })
@@ -59,7 +61,8 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     }.bind(this)
                 });
                 this.$el.find("#dropdown-merge .cur-value").html(mergeNameobj[0].name);
-
+                var mergeTagVal = this.$el.find("#dropdown-merge .cur-value").text();
+                this.collection.getMergeTagOtherNodeInfo(mergeTagVal);
             },
             getAllList:function(){
                 var nodeIds = [];
@@ -127,6 +130,9 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 this.collection = options.collection;
                 this.isInitPaginator = false;
                 this.$el = $(_.template(template['tpl/chargeManage/chargeManage.html'])());
+                //查询共享出口的相关信息
+                this.collection.on("get.getAssociationNodeInfo.success", $.proxy(this.onGetNodeIdInfoSuccess, this));
+                this.collection.on("get.getAssociationNodeInfo.error", $.proxy(this.onGetError, this));
                 this.collection.on("get.node.success",$.proxy(this.onNodeListSuccess, this));
                 this.collection.on("get.node.error", $.proxy(this.onGetError, this));
                 this.collection.on("updateCharge.node.success", function() {
@@ -223,6 +229,10 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 this.initTable();
                 if(!this.isInitPaginator) this.initPaginator();
             },
+            //获取共享出口的节点相关信息
+            onGetNodeIdInfoSuccess:function(res){
+                this.mergeArgs = res;
+            },
             initTable:function () {
                 this.table = $(_.template(template['tpl/chargeManage/chargeManage.table.html'])({
                     data: this.collection.models,
@@ -231,11 +241,37 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 }));
                 if(this.collection.models.length !== 0){
                     this.$el.find(".table-ctn").html(this.table[0]);
-                    this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                    this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-                    this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-                    this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+                } else{
+                    this.table.find("tbody .delete").remove();
                 }
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
+                this.table.find("tbody tr").find(".checkedBox").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+                this.table.find("tbody .hoverTag").on("mouseover",$.proxy(this.onHoverNodeString,this))
+                this.table.find("[data-toggle='popover1']").popover({
+                    html:true
+                });
+                var sharePortTagList = [];
+                _.each(this.collection.models,function (model) {
+                    if(model.get("sharePortTag")) {
+                        sharePortTagList.push(model.get("sharePortTag"));
+                    }
+                });
+                this.collection.getAssociationNodeByTags(sharePortTagList);
+            },
+            onHoverNodeString:function(event){
+                var eventTarget = event.srcElement || event.target;
+                var content = $(eventTarget).attr("data-content");
+                if(content){return false;}
+                var id = $(eventTarget).attr("data-key");
+                var valueList = this.mergeArgs[id];
+                var tipsHTML = ["<h4><b>当前机房出口所有关联的节点</b></h4>"];
+                for (var i = 0; i < valueList.length; i++) {
+                    var _html = '<div>' + valueList[i] + '</div>';
+                    tipsHTML.push(_html);
+                }
+                $(eventTarget).attr('data-content', tipsHTML.join(''))
             },
             initPaginator:function () {
                 this.$el.find(".total-items span").html(this.collection.total)
@@ -463,7 +499,6 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 var id = $(eventTarget).attr("id");
                 var model = this.collection.get(id);
                 model.set("isChecked", eventTarget.checked)
-
                 var checkedList = this.collection.filter(function(model) {
                     return model.get("isChecked") === true;
                 })

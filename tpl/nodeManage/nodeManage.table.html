@@ -31,13 +31,14 @@
                 <% for(var j = 0; j < titleList.length; j++) { %>
                    <% if (titleList[j].isChecked) { %>
                         <%if(titleList[j].key == 'sharePortTag'){%>
-                            <td><div class="<%=data[i].attributes['sharePortTag']%>"
+                            <td><a href="javascript:void(0)" class="hoverTag"
+                                   data-key="<%=data[i].attributes[titleList[j].key]%>"
                                     data-container="body"
                                     data-trigger="hover"
                                     data-toggle="popover1"
                                     data-placement="top"
                                     data-content=""
-                            ><%=data[i].attributes[titleList[j].key]%></div></td>
+                            ><%=data[i].attributes[titleList[j].key]%></a></td>
                         <%}else{%>
                             <td><%=data[i].attributes[titleList[j].key]%></td>
                         <%}%>
@@ -61,13 +62,14 @@
                       </td>
                    <% } else if (titleList[j].isChecked){ %>
                         <%if(titleList[j].key == 'sharePortTag'){%>
-                        <td><div class="<%=data[i].attributes['sharePortTag']%>"
+                        <td><a href="javascript:void(0)" class="hoverTag"
+                               data-key="<%=data[i].attributes[titleList[j].key]%>"
                                  data-container="body"
                                  data-trigger="hover"
                                  data-toggle="popover1"
                                  data-placement="top"
                                  data-content=""
-                        ><%=data[i].attributes[titleList[j].key]%></div></td>
+                        ><%=data[i].attributes[titleList[j].key]%></a></td>
                         <%}else{%>
                             <td><%=data[i].attributes[titleList[j].key]%></td>
                         <%}%>

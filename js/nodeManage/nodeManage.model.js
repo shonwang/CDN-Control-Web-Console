@@ -13,7 +13,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                                 'data-toggle="popover"' + 
                                 'data-placement="top"' + 
                                 'data-content="' + this.get("opRemark") + '">'
-
+            if(sharePortTag) this.set("sharePortTagName",sharePortTag.replace(/\&/g,''));
             if (status === 3) this.set("statusName", tips + '关闭</a>');
             if (status === 4) this.set("statusName", tips + '暂停</a>');
             if (status === 2) this.set("statusName",'<span class="label label-warning">挂起</span>');
@@ -39,7 +39,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
         initialize: function(){},
         getAssociationNodeByTags:function(args){
             //这部分是为了获取共享出口的节点
-            var url = BASE_URL + "/rs/node/getAssosicationNodeByTags";
+            var url = BASE_URL + "/rs/node/getAssosicationNodeByTags",
             successCallback = function(res) {
                 if(res){
                     this.trigger("get.getAssociationNodeInfo.success", res);
@@ -50,7 +50,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 errorCallback = function(response) {
                     this.trigger('get.getAssociationNodeInfo.error', response);
                 }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
         getNodeList: function(args){
             // 这部分应该返回的是所有节点

@@ -4,7 +4,9 @@ define("chargeManage.model", ['require','exports', 'utility'],function (require,
             var freeStartTime = this.get("freeStartTime"),
                 freeEndTime = this.get("freeEndTime"),
                 startChargingTime = this.get("startChargingTime"),
-                mergeChargeTag = this.get("mergeChargeTag");
+                mergeChargeTag = this.get("mergeChargeTag"),
+                sharePortTag = this.get("sharePortTag");
+            if(sharePortTag) this.set("sharePortTagName",sharePortTag.replace(/\&/g,''));
             if(mergeChargeTag)this.set("mergeChargeTagName",mergeChargeTag);
             if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
             if (freeStartTime) this.set("freeStartTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
@@ -17,6 +19,21 @@ define("chargeManage.model", ['require','exports', 'utility'],function (require,
         model:Model,
 
         initialize: function(){},
+        getAssociationNodeByTags:function(args){
+            //这部分是为了获取共享出口的节点
+            var url = BASE_URL + "/rs/node/getAssosicationNodeByTags",
+                successCallback = function(res) {
+                    if(res){
+                        this.trigger("get.getAssociationNodeInfo.success", res);
+                    } else {
+                        this.trigger("get.getAssociationNodeInfo.error", res);
+                    }
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger('get.getAssociationNodeInfo.error', response);
+                }.bind(this);
+            Utility.postAjax(url, args, successCallback, errorCallback);
+        },
         getNodeList:function (args) {
             //返回的是所有的节点信息
             var url = BASE_URL + "/rs/node/list";

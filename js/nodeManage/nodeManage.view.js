@@ -164,21 +164,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             },
             //获取共享出口的节点相关信息
             onGetNodeIdInfoSuccess:function(res){
-               var data = res;
-               for(var item in data ){
-                   var key = item;
-                   var valueList = data[item];
-                   var tipsHTML = ["<h4><b>当前机房出口所有关联的节点</b></h4>"];
-                   for(var i=0;i<valueList.length;i++){
-                       var _html = '<div>'+valueList[i]+'</div>';
-                       tipsHTML.push(_html);
-                   }
-                   $("."+key).attr("data-content",tipsHTML.join(" "));
-
-               }
-                this.table.find("[data-toggle='popover1']").popover({
-                    html:true
-                });
+                this.mergeArgs = res;
             },
 
             onUpdateRemarkSuccess:function(){
@@ -390,38 +376,50 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }));
                 if (this.collection.models.length !== 0) {
                     this.$el.find(".table-ctn").html(this.table[0]);
-                    this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                    this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-                    if (AUTH_OBJ.DeleteNode)
-                        this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-                    else
-                        this.table.find("tbody .delete").remove();
-                    this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
-                    this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
-                    this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
-                    this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
-                    this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
-                    this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
-                    this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
-
-                    this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-                    this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
-
-                    this.table.find("[data-toggle='popover']").popover();
-
                 } else {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
                 }
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
+                if (AUTH_OBJ.DeleteNode)
+                    this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                else
+                    this.table.find("tbody .delete").remove();
+                this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
+                this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
+                this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
+                this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+                this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
+                this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
+                this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
+
+                this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+                this.table.find("tbody .hoverTag").on("mouseover",$.proxy(this.onHoverNodeString,this))
+                this.table.find("[data-toggle='popover1']").popover({
+                    html:true
+                });
+                // this.table.find("tbody .KSCCDN-HeFeiCT01").attr('data-content','111111111')
                 var sharePortTagList = [];
                 _.each(this.collection.models,function (model) {
                     if(model.get("sharePortTag")) {
                         sharePortTagList.push(model.get("sharePortTag"));
                     }
                 });
-                var obj = {
-                    tags:sharePortTagList.join(",")
-                };
-                this.collection.getAssociationNodeByTags(obj);
+                this.collection.getAssociationNodeByTags(sharePortTagList);
+            },
+            onHoverNodeString:function(event){
+                var eventTarget = event.srcElement || event.target;
+                var content = $(eventTarget).attr("data-content");
+                if(content){return false;}
+                var id = $(eventTarget).attr("data-key");
+                var valueList = this.mergeArgs[id];
+                var tipsHTML = ["<h4><b>当前机房出口所有关联的节点</b></h4>"];
+                for (var i = 0; i < valueList.length; i++) {
+                    var _html = '<div>' + valueList[i] + '</div>';
+                    tipsHTML.push(_html);
+                }
+                $(eventTarget).attr('data-content', tipsHTML.join(''))
             },
             onClickDispGroupInfo: function(event) {
                 var eventTarget = event.srcElement || event.target,
@@ -838,6 +836,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 var eventTarget = event.srcElement || event.target;
                 if (eventTarget.tagName !== "INPUT") return;
                 var id = $(eventTarget).attr("id");
+                console.log(id)
                 var model = this.collection.get(id);
                 model.set("isChecked", eventTarget.checked)
 

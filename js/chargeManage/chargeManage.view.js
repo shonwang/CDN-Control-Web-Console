@@ -440,8 +440,11 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                         var result = this.selectChargeView.getAllList();
                         this.collection.addMergeTags(result);
                         this.selectChargeViewPopup.$el.modal("hide");
+                        this.enterKeyBindQuery();
                     }.bind(this),
-                    onHiddenCallback: function() {}.bind(this)
+                    onHiddenCallback: function() {
+                        this.enterKeyBindQuery();
+                    }.bind(this)
                 }
                 this.selectChargeViewPopup = new Modal(options);
             },
@@ -487,9 +490,12 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     onOKCallback: function() {
                         var result = this.selectChargeView.getAllList();
                         this.collection.addMergeTags(result);
-                        this.selectChargeViewPopup.$el.modal("hide")
+                        this.selectChargeViewPopup.$el.modal("hide");
+                        this.enterKeyBindQuery();
                     }.bind(this),
-                    onHiddenCallback: function() {}.bind(this)
+                    onHiddenCallback: function() {
+                        this.enterKeyBindQuery();
+                    }.bind(this)
                 }
                 this.selectChargeViewPopup = new Modal(options);
 

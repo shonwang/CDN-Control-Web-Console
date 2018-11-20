@@ -148,6 +148,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     this.onClickQueryButton();
                 }.bind(this));
                 this.collection.on("addCharge.error", $.proxy(this.onGetError, this));
+                this.enterKeyBindQuery();
                 if (AUTH_OBJ.QueryNode) {
                     this.$el.find(".opt-ctn .query").on("click", $.proxy(this.onClickQueryButton, this));
                     this.enterKeyBindQuery();
@@ -242,7 +243,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 if(this.collection.models.length !== 0){
                     this.$el.find(".table-ctn").html(this.table[0]);
                 } else{
-                    this.table.find("tbody .delete").remove();
+                    this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
                 }
                 this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
                 this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));

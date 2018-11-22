@@ -37,7 +37,11 @@
                                 data-content=""
                        ><%=data[i].attributes[titleList[j].key]%></a></td>
                        <%}else{%>
-                       <td><%=data[i].attributes[titleList[j].key]%></td>
+                            <% if (titleList[j].key == 'mergeChargeTagName'&&data[i].attributes[titleList[j].key] == null){%>
+                                     <td>无</td>
+                            <%}else{%>
+                                 <td><%=data[i].attributes[titleList[j].key]%></td>
+                                <%}%>
                        <%}%>
                   <% } %>
                 <% } %>
@@ -68,7 +72,11 @@
                                     data-content=""
                            ><%=data[i].attributes[titleList[j].key]%></a></td>
                            <%}else{%>
-                           <td><%=data[i].attributes[titleList[j].key]%></td>
+                               <% if (titleList[j].key == 'mergeChargeTagName'&&data[i].attributes[titleList[j].key] == null){%>
+                               <td>无</td>
+                               <%}else{%>
+                               <td><%=data[i].attributes[titleList[j].key]%></td>
+                               <%}%>
                            <%}%>
                         <% } %>
                  <% } %>

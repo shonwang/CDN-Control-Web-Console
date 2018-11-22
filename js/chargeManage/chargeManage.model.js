@@ -5,12 +5,13 @@ define("chargeManage.model", ['require','exports', 'utility'],function (require,
                 freeEndTime = this.get("freeEndTime"),
                 startChargingTime = this.get("startChargingTime"),
                 mergeChargeTag = this.get("mergeChargeTag"),
-                sharePortTag = this.get("sharePortTag");
+                sharePortTag = this.get("sharePortTag"),
+                mergeChargeTag = this.get("mergeChargeTag");
             if(sharePortTag) this.set("sharePortTagName",sharePortTag.replace(/\&/g,''));
-            if(mergeChargeTag)this.set("mergeChargeTagName",mergeChargeTag);
+            if(mergeChargeTag)this.set("mergeChargeTagName",mergeChargeTag.replace(/\s+/g));
             if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
-            if (freeStartTime) this.set("freeStartTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
-            if (freeEndTime) this.set("freeEndTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
+            if (freeStartTime) this.set("freeStartTimeFormated", new Date(freeStartTime).format("yyyy/MM/dd hh:mm"));
+            if (freeEndTime) this.set("freeEndTimeFormated", new Date(freeEndTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);
         }
     });

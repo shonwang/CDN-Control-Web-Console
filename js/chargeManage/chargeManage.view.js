@@ -8,10 +8,10 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 this.checkedListNotNull = options.checkedListNotNull;
                 this.type = options.type;
                 this.$el = $(_.template(template['tpl/chargeManage/chargeManage.selectCharge.html'])());
-                this.$el.find("#inputMergeTagName").on("blur",$.proxy(this.alertTips,this));
                 this.collection.on("get.MergeChargeTagOtherNodeInfo.success",$.proxy(this.onNodeInfoSuccess, this));
                 this.collection.on("get.MergeChargeTagOtherNodeInfo.error", $.proxy(this.onGetError, this));
                 this.$el.find("#dropdown-merge").on("change",$.proxy(this.addNodeClick,this))
+                this.unique();
                 var mergeTagName,nodeNameList = [];
                 _.each(this.checkedList,function (el) {
                     nodeNameList.push(el.get("chName"))
@@ -31,19 +31,32 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     this.collection.off("get.MergeChargeTags.error");
                     this.collection.on("get.MergeChargeTags.success",$.proxy(this.initDropDownMenu, this));
                     this.collection.on("get.MergeChargeTags.error", $.proxy(this.onGetError, this));
-                    this.$el.find("#inputNodeName2").val(nodeNameList.join('  '))
+                    this.$el.find("#inputNodeName2").html(nodeNameListHtml.join(""))
                     this.$el.find("#add").hide();
                 }else if(!this.isEdit){
                     this.collection.off("get.MergeChargeTags.success");
                     this.collection.off("get.MergeChargeTags.error");
                     this.$el.find("#modify").hide();
                 }
+
+            },
+            unique:function(){
+                console.log(this.checkedList[0].attributes.mergeChargeTag)
+                for(var item in this.checkedList){
+                    if(this.checkedList[item].attributes.mergeChargeTag){
+                        this.checkedMergeName = this.checkedList[item].mergeChargeTag;
+                    }
+                }
+                for(var i in this.checkedListNotNull){
+                    this.checkedMergeNameNotNull = this.checkedListNotNull[i].attributes.mergeChargeTag;
+                }
+
             },
             initDropDownMenu:function(res){
                 var mergeNameList = res,
-                    mergeNameobj = [{name:'null'}];
+                    mergeNameobj = [{name:'无'}];
                 _.each(mergeNameList,function (val) {
-                    mergeNameobj.unshift({
+                    mergeNameobj.push({
                         name:val
                     })
                 })
@@ -60,11 +73,18 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                         this.$el.find('#dropdown-merge .cur-value').html(data.name);
                     }.bind(this)
                 });
-                this.$el.find("#dropdown-merge .cur-value").html(mergeNameobj[0].name);
-                var mergeTagVal = this.$el.find("#dropdown-merge .cur-value").text();
-                this.collection.getMergeTagOtherNodeInfo(mergeTagVal);
+                if(this.checkedMergeName != null){
+                    this.$el.find("#dropdown-merge .cur-value").html(this.checkedMergeName);
+                }else if(this.checkedMergeNameNotNull != null){
+                    this.$el.find("#dropdown-merge .cur-value").html(this.checkedMergeNameNotNull);
+                }
+                var mergeTagVal = this.$el.find("#dropdown-merge .cur-value").text().trim();
+                if(mergeTagVal != ''){
+                    this.collection.getMergeTagOtherNodeInfo(mergeTagVal);
+                }
             },
             getAllList:function(){
+
                 var nodeIds = [];
                 _.each(this.checkedList,function (el) {
                     nodeIds.push(el.get('id'))
@@ -77,6 +97,12 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     };
                     return obj;
                 }else{
+                    var val = this.$el.find("#inputMergeTagName").val();
+                    re = /^[\u4E00-\u9FFFa-zA-Z][\w\u4E00-\u9FFF]{3,29}$/g
+                    if(!re.test(val)){
+                        Utility.warning("中英文开始、可包含数字下划线，长度在4-30字符之间");
+                        return false;
+                    }
                     var obj = {
                         mergeChargeTag:this.$el.find("#inputMergeTagName").val(),
                         nodeIds:nodeIds.join(','),

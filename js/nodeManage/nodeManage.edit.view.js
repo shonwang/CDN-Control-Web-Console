@@ -58,11 +58,11 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find("#input-maxbandwidth").on("blur",$.proxy(this.onMaxBandwidthBlur,this));
         },
         disable:function(){
-            this.$el.find('#input-maxbandwidth').attr("disabled","disabled");
-            this.$el.find('#input-minbandwidth').attr("disabled","disabled");
-            this.$el.find('#input-backupBandwidth').attr("disabled","disabled");
-            this.$el.find('#input-threshold').attr("disabled","disabled");
-            this.$el.find('#input-minthreshold').attr("disabled","disabled");
+            this.$el.find('#input-maxbandwidth').attr("readonly", true);
+            this.$el.find('#input-minbandwidth').attr("readonly", true);
+            this.$el.find('#input-backupBandwidth').attr("readonly", true);
+            this.$el.find('#input-threshold').attr("readonly", true);
+            this.$el.find('#input-minthreshold').attr("readonly", true);
         },
         onMaxBandwidthBlur:function(){
             var _value = this.$el.find("#input-maxbandwidth").val();
@@ -143,6 +143,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             }.bind(this));
 
             if (this.isEdit || this.isChargeEdit) {
+                if(this.isChargeEdit){
+                    this.$el.find("#dropdown-charging").attr("disabled","diaabled")
+                }
                 this.$el.find(".dropdown-charging .cur-value").html(defaultValue.name)
             } else {
                 this.$el.find(".dropdown-charging .cur-value").html(nameList[0].name)
@@ -176,6 +179,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 minBandwidth = this.$el.find("#input-minbandwidth").val(), //保底带宽
                 unitPrice = this.$el.find("#input-unitprice").val(), //成本权值
                 buildBandwidth = this.$el.find("#input-backupBandwidth").val(),//冷备带宽
+                freeStartTime = this.$el.find("#free-start-time").val()
                 //longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
                 // outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""), //出口带宽zabbix名称
                 // inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""), //入口带宽zabbix名称
@@ -606,6 +610,11 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             }else if(this.isChargeEdit){
                 // this.$el.find("#h4-j").html("<small>/计费详情</small>")
                 this.$el.find("small").html("/计费详情");
+                this.$el.find("#input-start").attr("disabled","disabled")
+                this.$el.find("#free-start-time").attr("disabled","disabled")
+                this.$el.find("#free-end-time").attr("disabled","disabled")
+                this.$el.find("#input-name").attr("readonly",true)
+                this.$el.find("#input-english").attr("readonly",true)
             }
 
 
@@ -638,9 +647,15 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     return object.value === this.model.attributes.liveLevel
                 }.bind(this));
                 if (defaultValue) {
+                    if(this.isChargeEdit){
+                        this.$el.find("#dropdown-liveLevel").attr("disabled","disabled")
+                    }
                     this.$el.find(".dropdown-liveLevel .cur-value").html(defaultValue.name)
                     this.liveLevel = defaultValue.value;
                 } else {
+                    if(this.isChargeEdit){
+                        this.$el.find("#dropdown-liveLevel").attr("disabled","disabled")
+                    }
                     this.$el.find(".dropdown-liveLevel .cur-value").html(liveLevelArray[0].name);
                     this.liveLevel = liveLevelArray[0].value;
                 }
@@ -672,9 +687,15 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     return object.value === this.model.attributes.cacheLevel
                 }.bind(this));
                 if (defaultValue) {
+                    if(this.isChargeEdit){
+                        this.$el.find("#dropdown-cacheLevel").attr("disabled","disabled")
+                    }
                     this.$el.find(".dropdown-cacheLevel .cur-value").html(defaultValue.name)
                     this.cacheLevel = defaultValue.value;
                 } else {
+                    if(this.isChargeEdit){
+                        this.$el.find("#dropdown-cacheLevel").attr("disabled","disabled")
+                    }
                     this.$el.find(".dropdown-cacheLevel .cur-value").html(cacheLevelArray[0].name);
                     this.cacheLevel = cacheLevelArray[0].value;
                 }
@@ -703,13 +724,17 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         getArgs: function() {
             var enName = this.$el.find("#input-english").val().replace(/\s+/g, ""),
                 chName = this.$el.find("#input-name").val().replace(/\s+/g, ""),
-                
+                freeStartTime = this.$el.find("#free-start-time").val().replace(/\s+/g, ""),
+                freeEndTime = this.$el.find("#free-end-time").val().replace(/\s+/g, ""),
                 longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
-                
                 re = /^\d+$/,
                 outzabnameRe = /^[0-9A-Za-z\-\[\]\_]+$/,
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
+            if(freeStartTime>freeEndTime){
+                Utility.warning("开始时间不能大于结束时间")
+                return
+            }
             if (!reLocation.test(longitudeLatitude)) {
                 Utility.warning("需要填写正确的经纬度，否则该节点无法在地图中展示！比如：108.953098----34.2778");
                 return

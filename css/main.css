@@ -1415,3 +1415,8 @@ ul, li {
   overflow: auto;
   margin-left: 35px;
 }
+#inputNodeName2{
+  width: 300px;
+  height: 60px;
+  overflow: auto;
+}

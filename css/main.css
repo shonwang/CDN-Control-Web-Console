@@ -1378,19 +1378,19 @@ ul, li {
 
 .dropdown-reason-list .select-container {left:0;}
 /*alert-model 新增计费组*/
-.modal-backdrop{
-  top: 100%;
-}
-.modal-content{
-  left: 100px;
-}
-.modal-footer{
-  text-align: center;
-}
-.modal-title{
-  color: red;
-  text-align: center;
-}
+/*.modal-backdrop{*/
+  /*top: 100%;*/
+/*}*/
+/*.modal-content{*/
+  /*left: 100px;*/
+/*}*/
+/*.modal-footer{*/
+  /*text-align: center;*/
+/*}*/
+/*.modal-title{*/
+  /*color: red;*/
+  /*text-align: center;*/
+/*}*/
 #mergeNode{
   width: 80%;
   height: 90px;

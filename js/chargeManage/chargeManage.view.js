@@ -41,7 +41,6 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
 
             },
             unique:function(){
-                console.log(this.checkedList[0].attributes.mergeChargeTag)
                 for(var item in this.checkedList){
                     if(this.checkedList[item].attributes.mergeChargeTag){
                         this.checkedMergeName = this.checkedList[item].mergeChargeTag;
@@ -459,6 +458,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 });
                 var options = {
                     title: "新增计费组",
+                    add:true,
                     body: this.selectChargeView,
                     backdrop: 'static',
                     type: 2,
@@ -510,6 +510,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 });
                 var options = {
                     title: "配置计费组",
+                    modify:true,
                     body: this.selectChargeView,
                     backdrop: 'static',
                     type: 2,

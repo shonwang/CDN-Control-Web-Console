@@ -222,10 +222,10 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                     name:"交换机名称",
                     isChecked: true,
                     key:"sharePortTag"
-                },
-                    {
+                }, {
                     name:"成本权值",
                     isChecked: true,
+                    isMultiRows: true,
                     key:"unitPrice"
                 }, {
                     name:"免费带宽开始日期",

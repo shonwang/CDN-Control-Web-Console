@@ -41,7 +41,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "unitPrice": '', //成本权值
                     // "inZabName": '', //入口带宽zabbix名称
                     // "outZabName": '', //出口带宽zabbix名称
-                    "buildBandwidth":'',//冷备带宽名称
+                    "buildBandwidth":'',//建设带宽名称
                 };
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({
@@ -127,7 +127,13 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 }, {
                     name: "第三峰",
                     value: 4
-                }
+                },{
+                name:"流量",
+                value:5
+            },{
+                name:"日95月均值",
+                value:6
+            }
             ];
 
             if(this.isEdit || this.isChargeEdit){
@@ -336,6 +342,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             2: "包端口",
             3: "峰值",
             4: "第三峰",
+            5:"流量",
+            6:"日95月均值"
         },
 
         setRsNodeCorpDtosTbody: function() {
@@ -363,14 +371,24 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             var id = parseInt($(eventTarget).attr("data-id"));
             var _data = rsNodeCorpDtosList[id];
             if (this.addIspPopup) $("#" + this.addIspPopup.modalId).remove();
-            var ispTemplateView = new IspTemplateView({
-                index: id,
-                operatorList: this.operatorList,
-                args: _data,
-                isEdit: true,
-                isChargeEdit:true,
-                isMultiwire: true
-            });
+            if(this.isEdit){
+                var ispTemplateView = new IspTemplateView({
+                    index: id,
+                    operatorList: this.operatorList,
+                    args: _data,
+                    isEdit: true,
+                    isMultiwire: true
+                });
+            }else if(this.isChargeEdit){
+                var ispTemplateView = new IspTemplateView({
+                    index: id,
+                    operatorList: this.operatorList,
+                    args: _data,
+                    isChargeEdit: true,
+                    isMultiwire: true
+                });
+            }
+
             var options = {
                 title: "编辑运营商",
                 body: ispTemplateView,
@@ -524,7 +542,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "maxBandwidth": this.model.get("maxBandwidth"),
                     "maxBandwidthThreshold": this.model.get("maxBandwidthThreshold"),
                     "minBandwidthThreshold": this.model.get("minBandwidthThreshold"),
-                    "unitPrice": '',
+                    "unitPrice":this.model.get("unitPrice"),
                     "remark": this.model.get("remark"),
                     "operatorId": this.model.get("operatorId"),
                     "operatorName": this.model.get("operatorName"),

@@ -155,6 +155,9 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 this.collection = options.collection;
                 this.isInitPaginator = false;
                 this.$el = $(_.template(template['tpl/chargeManage/chargeManage.html'])());
+
+                this.initNodeDropMenu();
+
                 //查询共享出口的相关信息
                 this.collection.on("get.getAssociationNodeInfo.success", $.proxy(this.onGetNodeIdInfoSuccess, this));
                 this.collection.on("get.getAssociationNodeInfo.error", $.proxy(this.onGetError, this));
@@ -238,6 +241,26 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 }];
                 this.collection.getNodeList(this.queryArgs);
                 this.collection.getAllMergeTagNames();
+            },
+            initNodeDropMenu:function(){
+                var pageNum = [{
+                    name: "10条",
+                    value: 10
+                }, {
+                    name: "20条",
+                    value: 20
+                }, {
+                    name: "50条",
+                    value: 50
+                }, {
+                    name: "100条",
+                    value: 100
+                }]
+                Utility.initDropMenu(this.$el.find(".page-num"), pageNum, function(value) {
+                    this.queryArgs.count = value;
+                    this.queryArgs.page = 1;
+                    this.onClickQueryButton();
+                }.bind(this));
             },
             render: function(target) {
                 this.$el.appendTo(target)

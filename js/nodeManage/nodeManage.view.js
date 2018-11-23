@@ -353,7 +353,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 1: "95峰值",
                 2: "包端口",
                 3: "峰值",
-                4: "第三峰"
+                4: "第三峰",
+                5:"流量",
+                6:"日95月均值"
             },
 
             initTable: function() {

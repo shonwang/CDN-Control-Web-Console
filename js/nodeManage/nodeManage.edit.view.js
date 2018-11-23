@@ -229,11 +229,11 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 return false;
             }
             if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)) {
-                Utility.warning("上联带宽阈值：0-上联带宽");
+                Utility.warning("上联带宽阈值:"+ 0 + "-"+maxBandwidth);
                 return false;
             }
             if (parseInt(minBandwidthThreshold) < 0 || parseInt(minBandwidthThreshold) > parseInt(maxBandwidth)) {
-                Utility.warning("保底带宽阈值：0-上联带宽");
+                Utility.warning("保底带宽阈值:"+ 0 + "-"+maxBandwidth);
                 return false;
             }
             if (parseInt(minBandwidthThreshold) < parseInt(minBandwidth)) {

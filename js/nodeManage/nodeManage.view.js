@@ -354,8 +354,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 2: "包端口",
                 3: "峰值",
                 4: "第三峰",
-                5:"流量",
-                6:"日95月均值"
+                5: "流量",
+                6: "日95月均值"
             },
 
             initTable: function() {
@@ -369,6 +369,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         _.each(_rsNodeCorpDtos, function(i) {
                             i.chargingTypeName = nameList[i.chargingType];
                         })
+                    }else {
+                        item.attributes.chargingTypeName = nameList[item.attributes.chargingType]
                     }
                 })
                 this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({

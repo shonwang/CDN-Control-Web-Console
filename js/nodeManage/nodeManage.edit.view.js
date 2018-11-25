@@ -127,12 +127,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 }, {
                     name: "第三峰",
                     value: 4
-                },{
-                name:"流量",
-                value:5
-            },{
-                name:"日95月均值",
-                value:6
+                }, {
+                   name:"流量",
+                   value:5
+            }, {
+                   name:"日95月均值",
+                   value:6
             }
             ];
 

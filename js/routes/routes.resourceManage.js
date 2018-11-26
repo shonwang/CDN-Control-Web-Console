@@ -138,7 +138,7 @@ define("routes.resourceManage", ['require', 'exports'],
                         this.chargeManageView = new ChargeManageView(options);
                         this.chargeManageView.render($('.ksc-content'));
                     } else {
-                        this.chargeManageView.$el.show();
+                        this.chargeManageView.update($('.ksc-content'));
                     }
                     this.curView = this.chargeManageView;
                 }.bind(this));

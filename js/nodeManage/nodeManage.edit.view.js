@@ -24,6 +24,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     // "inZabName": args.inZabName || '', //入口带宽zabbix名称
                     // "outZabName": args.outZabName || '', //出口带宽zabbix名称
                     "buildBandwidth":args.buildBandwidth  || '',//建设带宽名称
+                    "freeBandwidth":args.freeBandwidth || '',//免费带宽
                     //"startChargingTime": args.startChargingTime || '',//开始计费日期
                     //"rsNodeCorpDtos":args.rsNodeCorpDtos  || ''                 //单项添加不需要此项
                 }
@@ -42,6 +43,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     // "inZabName": '', //入口带宽zabbix名称
                     // "outZabName": '', //出口带宽zabbix名称
                     "buildBandwidth":'',//建设带宽名称
+                    "freeBandwidth":'',//免费带宽
                 };
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({
@@ -63,6 +65,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find('#input-backupBandwidth').attr("readonly", true);
             this.$el.find('#input-threshold').attr("readonly", true);
             this.$el.find('#input-minthreshold').attr("readonly", true);
+            this.$el.find('#input-freeBandwidth').attr("readonly", true);
         },
         onMaxBandwidthBlur:function(){
             var _value = this.$el.find("#input-maxbandwidth").val();
@@ -185,7 +188,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 minBandwidth = this.$el.find("#input-minbandwidth").val(), //保底带宽
                 unitPrice = this.$el.find("#input-unitprice").val(), //成本权值
                 buildBandwidth = this.$el.find("#input-backupBandwidth").val(),//冷备带宽
-                freeStartTime = this.$el.find("#free-start-time").val()
+                freeStartTime = this.$el.find("#free-start-time").val(),
+                freeBandwidth = this.$el.find("#input-freeBandwidth").val(),
                 //longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
                 // outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""), //出口带宽zabbix名称
                 // inzabname = this.$el.find("#input-inzabname").val().replace(/\s+/g, ""), //入口带宽zabbix名称
@@ -200,11 +204,19 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 Utility.warning("建设带宽只能填入数字！");
                 return false;
             }
+            if(!re.test(freeBandwidth)){
+                Utility.warning("免费带宽只能填入数字！");
+                return false;
+            }
+            if(parseInt(freeBandwidth) > parseInt(buildBandwidth)){
+                Utility.warning("免费带宽小于等于建设带宽");
+                return false;
+            }
             if(parseInt(buildBandwidth) > 100000000 || parseInt(buildBandwidth) < 0 ){
                 Utility.warning("建设带宽：0-100000000（0-100T，单位转换按1000算）");
                 return false;
             }
-            if (parseInt(maxBandwidth) >= parseInt(buildBandwidth)) {
+            if (parseInt(maxBandwidth) > parseInt(buildBandwidth)) {
                 Utility.warning("上联带宽小于等于建设带宽！");
                 return false;
             }
@@ -263,6 +275,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             // this.args.inZabName = inzabname;
             // this.args.outZabName = outzabname;
             this.args.buildBandwidth = buildBandwidth;
+            this.args.freeBandwidth = freeBandwidth;
 
             return this.args;
         },
@@ -529,7 +542,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "freeEndTime":this.model.get("freeEndTime"),
                     "cacheLevel": this.model.get("cacheLevel"),
                     "liveLevel":this.model.get("liveLevel"),
-                    "buildBandwidth":this.model.get("buildBandwidth") //建设带宽
+                    "buildBandwidth":this.model.get("buildBandwidth") ,//建设带宽
+                    "freeBandwidth":this.model.get("freeBandwidth")//免费带宽
                 }
             }else if(this.isChargeEdit){
                 this.args = {
@@ -552,7 +566,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "freeEndTime":this.model.get("freeEndTime"),
                     "cacheLevel": this.model.get("cacheLevel"),
                     "liveLevel":this.model.get("liveLevel"),
-                    "buildBandwidth":this.model.get("buildBandwidth") //建设带宽
+                    "buildBandwidth":this.model.get("buildBandwidth"), //建设带宽
+                    "freeBandwidth":this.model.get("freeBandwidth")//免费带宽
                 }
             } else {
                 this.args = {
@@ -577,7 +592,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     "freeEndTime":"",
                     "cacheLevel": 0,
                     "liveLevel": 0,
-                    "buildBandwidth": ""
+                    "buildBandwidth": "",
+                    "freeBandwidth":''
                 }
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.add&edit.html'])({
@@ -776,6 +792,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             var rsNodeCorpDtos = ispTempalteData.rsNodeCorpDtos || null;
             var chargingType = ispTempalteData.chargingType || null;
             var buildBandwidth  = ispTempalteData.buildBandwidth || null;
+            var freeBandwidth = ispTempalteData.freeBandwidth || null;
             var args = {
                 "id": this.model ? this.model.get("id") : 0,
                 "name": this.$el.find("#input-english").val().replace(/\s+/g, ""),
@@ -805,6 +822,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 "freeStartTime":this.args.freeStartTime,
                 "freeEndTime":this.args.freeEndTime,
                 "buildBandwidth":buildBandwidth ,
+                "freeBandwidth":freeBandwidth
             }
             if(args.cacheLevel === 0 && args.liveLevel === 0){
                 alert("节点的直播或点播层级属性设置错误");

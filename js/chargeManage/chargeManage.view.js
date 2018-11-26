@@ -241,6 +241,8 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 }];
                 this.collection.getNodeList(this.queryArgs);
                 this.collection.getAllMergeTagNames();
+                this.onClickQueryButton();
+                // this.update();
             },
             initNodeDropMenu:function(){
                 var pageNum = [{
@@ -281,6 +283,13 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
             //获取共享出口的节点相关信息
             onGetNodeIdInfoSuccess:function(res){
                 this.mergeArgs = res;
+            },
+            update: function(target) {
+                this.collection.off();
+                this.collection.reset();
+                this.$el.remove();
+                this.initialize(this.options);
+                this.render(target);
             },
             initTable:function () {
                 this.table = $(_.template(template['tpl/chargeManage/chargeManage.table.html'])({
@@ -369,7 +378,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                         }.bind(this),
                         onHiddenCallback: function() {
                             this.showList();
-                            if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+                            this.enterKeyBindQuery();
                         }.bind(this),
                         onOKCallback: function() {
                             var options = this.editNodeView.getArgs();
@@ -378,7 +387,7 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                             var args = _.extend(model.attributes, options)
                             this.collection.updateNode(args);
                             this.showList();
-                            if (AUTH_OBJ.QueryNode) this.enterKeyBindQuery();
+                            this.enterKeyBindQuery();
                         }.bind(this)
                     });
                     this.editNodeView.render(this.$el.find(".charge-manage-add-edit-pannel"));

@@ -50,6 +50,12 @@
 		</div>
 	</div>
 	<div class="form-group">
+		<label for="input-minbandwidth" class="col-sm-2 control-label">免费带宽</label>
+		<div class="col-sm-4">
+			<input type="text" class="form-control" id="input-freeBandwidth" value="<%=data.freeBandwidth  || ''%>" placeholder="单位: Gbps">
+		</div>
+	</div>
+	<div class="form-group">
 		<label for="input-threshold" class="col-sm-2 control-label">上联带宽阈值</label>
 		<div class="col-sm-4">
 			<input type="text" class="form-control" id="input-threshold" value="<%=data.maxBandwidthThreshold || ''%>" placeholder="单位: Gbps">

@@ -7,6 +7,19 @@ define("chargeManage.model", ['require','exports', 'utility'],function (require,
                 mergeChargeTag = this.get("mergeChargeTag"),
                 sharePortTag = this.get("sharePortTag"),
                 mergeChargeTag = this.get("mergeChargeTag");
+            var rsNodeCorpDtosList = this.get("rsNodeCorpDtos") || false;
+
+            if(rsNodeCorpDtosList){
+                for(var i = 0;i <rsNodeCorpDtosList.length;i++){
+                    if(rsNodeCorpDtosList[i].freeStartTime){
+                        rsNodeCorpDtosList[i].freeStartTimeFormated = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                    }
+                    if(rsNodeCorpDtosList[i].freeEndTime){
+                        rsNodeCorpDtosList[i].freeEndTimeFormated = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                        // rsNodeCorpDtosList[i].freeEndTime = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                    }
+                }
+            }
             if(sharePortTag) this.set("sharePortTagName",sharePortTag.replace(/\&/g,''));
             if(mergeChargeTag)this.set("mergeChargeTagName",mergeChargeTag.replace(/\s+/g));
             if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
@@ -220,7 +233,7 @@ define("chargeManage.model", ['require','exports', 'utility'],function (require,
                 errorCallback = function(response){
                     this.trigger("addCharge.error", response);
                 }.bind(this);
-            Utility.putAjax(url,args,successCallback,errorCallback,30000)
+            Utility.putAjax(url,args,successCallback,errorCallback,3000000)
         },
         //获取所有计费组名称
         getAllMergeTagNames:function (args) {

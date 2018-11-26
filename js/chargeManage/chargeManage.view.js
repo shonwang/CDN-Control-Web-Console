@@ -233,10 +233,12 @@ define("chargeManage.view",['require', 'exports', 'template', 'modal.view', 'uti
                 }, {
                     name:"免费带宽开始日期",
                     isChecked:true,
+                    isMultiRows: true,
                     key:"freeStartTimeFormated"
                 }, {
                     name:"免费带宽结束日期",
                     isChecked:true,
+                    isMultiRows: true,
                     key:"freeEndTimeFormated"
                 }];
                 this.collection.getNodeList(this.queryArgs);

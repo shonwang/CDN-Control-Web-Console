@@ -6,7 +6,24 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 chargingType = this.get("chargingType"),
                 updateTime = this.get("updateTime"),
                 startChargingTime = this.get("startChargingTime"),
-                sharePortTag = this.get("sharePortTag");
+                sharePortTag = this.get("sharePortTag"),
+                freeStartTime = this.get("freeStartTime"),
+                freeEndTime = this.get("freeEndTime");
+            var rsNodeCorpDtosList = this.get("rsNodeCorpDtos") || false;
+
+            if(rsNodeCorpDtosList){
+                for(var i = 0;i <rsNodeCorpDtosList.length;i++){
+                    if(rsNodeCorpDtosList[i].freeStartTime){
+                        rsNodeCorpDtosList[i].freeStartTimeFormated = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                        // rsNodeCorpDtosList[i].freeStartTime = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                    }
+                    if(rsNodeCorpDtosList[i].freeEndTime){
+                        rsNodeCorpDtosList[i].freeEndTimeFormated = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                        // rsNodeCorpDtosList[i].freeEndTime = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                    }
+                }
+            }
+
             var tips = '<a href="javascript:void(0)" class="label label-danger"' + 
                                 'data-container="body"' + 
                                 'data-trigger="hover"' +
@@ -24,10 +41,13 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             if (chargingType === 2) this.set("chargingTypeName", '包端口');
             if (chargingType === 3) this.set("chargingTypeName", '峰值');
             if (chargingType === 4) this.set("chargingTypeName", '第三峰');
-
+            if (chargingType === 5) this.set("chargingTypeName",'流量');
+            if (chargingType === 6) this.set("chargingTypeName",'日95月均值');
             if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
             if (startChargingTime) this.set("startChargingTimeFormated", new Date(startChargingTime).format("yyyy/MM/dd hh:mm"));
             if (updateTime) this.set("updateTimeFormated",new Date(updateTime).format("yyyy/MM/dd hh:mm"));
+            if (freeStartTime) this.set("freeStartTimeFormated", new Date(freeStartTime).format("yyyy/MM/dd hh:mm"));
+            if (freeEndTime) this.set("freeEndTimeFormated", new Date(freeEndTime).format("yyyy/MM/dd hh:mm"));
             this.set("isChecked", false);
         }
     });

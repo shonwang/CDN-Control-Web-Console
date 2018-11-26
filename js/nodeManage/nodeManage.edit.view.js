@@ -2,6 +2,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
 
     var IspTemplateView = Backbone.View.extend({
         initialize: function(options) {
+            this.args1 = options.args || {}
             this.operatorList = options.operatorList;
             this.operatorListArrToObj();
             this.ispIndex = options.index; //编辑的时候，需要用到ispIndex
@@ -25,6 +26,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     // "outZabName": args.outZabName || '', //出口带宽zabbix名称
                     "buildBandwidth":args.buildBandwidth  || '',//建设带宽名称
                     "freeBandwidth":args.freeBandwidth || '',//免费带宽
+                    "freeStartTime":args.freeStartTime || '',//免费带宽开始时间
+                    "freeEndTime":args.freeEndTime || '',//免费带宽结束时间
                     //"startChargingTime": args.startChargingTime || '',//开始计费日期
                     //"rsNodeCorpDtos":args.rsNodeCorpDtos  || ''                 //单项添加不需要此项
                 }
@@ -44,6 +47,9 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     // "outZabName": '', //出口带宽zabbix名称
                     "buildBandwidth":'',//建设带宽名称
                     "freeBandwidth":'',//免费带宽
+                    "freeStartTime":'',
+                    "freeEndTime":''
+
                 };
             }
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({
@@ -58,6 +64,44 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 this.disable();
             }
             this.$el.find("#input-maxbandwidth").on("blur",$.proxy(this.onMaxBandwidthBlur,this));
+            this.initFreeStartTime()
+            this.initFreeEndTime()
+        },
+        //免费带宽开始计费日期
+        initFreeStartTime:function(){
+            var startVal = null,
+                endVal = null;
+            if (this.args.freeStartTime)
+                startVal = new Date(this.args.freeStartTime).format("yyyy/MM/dd");
+            var startOption = {
+                lang: 'ch',
+                timepicker: false,
+                scrollInput: false,
+                format: 'Y/m/d',
+                value: startVal,
+                onChangeDateTime: function() {
+                    this.args.freeStartTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#free-start-time").datetimepicker(startOption);
+        },
+        //免费带宽结束时间
+        initFreeEndTime:function(){
+            var startVal = null,
+                endVal = null;
+            if (this.args.freeEndTime)
+                startVal = new Date(this.args.freeEndTime).format("yyyy/MM/dd");
+            var startOption = {
+                lang: 'ch',
+                timepicker: false,
+                scrollInput: false,
+                format: 'Y/m/d',
+                value: startVal,
+                onChangeDateTime: function() {
+                    this.args.freeEndTime = new Date(arguments[0]).valueOf();
+                }.bind(this)
+            };
+            this.$el.find("#free-end-time").datetimepicker(startOption);
         },
         disable:function(){
             this.$el.find('#input-maxbandwidth').attr("readonly", true);
@@ -66,6 +110,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find('#input-threshold').attr("readonly", true);
             this.$el.find('#input-minthreshold').attr("readonly", true);
             this.$el.find('#input-freeBandwidth').attr("readonly", true);
+            this.$el.find("#free-start-time").attr('disabled','disabled')
+            this.$el.find("#free-end-time").attr('disabled','disabled')
         },
         onMaxBandwidthBlur:function(){
             var _value = this.$el.find("#input-maxbandwidth").val();
@@ -189,6 +235,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 unitPrice = this.$el.find("#input-unitprice").val(), //成本权值
                 buildBandwidth = this.$el.find("#input-backupBandwidth").val(),//冷备带宽
                 freeStartTime = this.$el.find("#free-start-time").val(),
+                freeEndTime = this.$el.find("#free-end-time").val(),
                 freeBandwidth = this.$el.find("#input-freeBandwidth").val(),
                 //longitudeLatitude = this.$el.find('#input-longitude-latitude').val(),
                 // outzabname = this.$el.find('#input-outzabname').val().replace(/\s+/g, ""), //出口带宽zabbix名称
@@ -199,7 +246,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
 
 
-
+            if(freeStartTime > freeEndTime){
+                Utility.warning("免费带宽开始时间小于等于免费带宽结束时间!");
+                return false;
+            }
             if(!re.test(buildBandwidth)){
                 Utility.warning("建设带宽只能填入数字！");
                 return false;
@@ -276,7 +326,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             // this.args.outZabName = outzabname;
             this.args.buildBandwidth = buildBandwidth;
             this.args.freeBandwidth = freeBandwidth;
-
+            this.args.freeStartTime = this.args.freeStartTime;
+            this.args.freeEndTime = this.args.freeEndTime;
             return this.args;
         },
 
@@ -365,6 +416,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             _.each(obj, function(item) {
                 item.chargingTypeName = chargingNameList[item.chargingType];
                 item.operatorName = item.operatorId && this.operatorListObj[item.operatorId] || "---";
+                item.freeStartTimeFormated = item.freeStartTime && new Date(item.freeStartTime).format('yyyy/MM/dd hh:mm') || '---';
+                item.freeEndTimeFormated = item.freeEndTime && new Date(item.freeEndTime).format('yyyy/MM/dd hh:mm') || '---';
             }.bind(this));
             var rsNodeCorpDtosList = $(_.template(template['tpl/nodeManage/nodeManage.ispTbody.html'])({
                 data: obj
@@ -785,8 +838,10 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             var maxBandwidthThreshold = ispTempalteData.maxBandwidthThreshold || null;
             var minBandwidthThreshold = ispTempalteData.minBandwidthThreshold || null;
             var maxBandwidth = ispTempalteData.maxBandwidth || null;
-            var minBandwidth = ispTempalteData.minBandwidth || null;
             var unitPrice = ispTempalteData.unitPrice || null;
+            var minBandwidth = ispTempalteData.minBandwidth || null;
+            // var freeStartTime = ispTempalteData.freeStartTime || null;
+            // var freeEndTime  = ispTempalteData.freeEndTime || null;
             // var outZabName = ispTempalteData.outZabName || null;
             // var inZabName = ispTempalteData.inZabName || null;
             var rsNodeCorpDtos = ispTempalteData.rsNodeCorpDtos || null;
@@ -880,6 +935,8 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
 
             if (operatorId == 9) {
                 //加载运营商为多线的模板
+                this.$el.find("#free-start-time1").hide()
+                this.$el.find("#free-end-time1").hide()
                 this.ispTemplate = new MultiwireTemplateView({
                     operatorList: this.operatorList,
                     isEdit: isEdit,

@@ -156,7 +156,22 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     name:"交换机名称",
                     isChecked:true,
                     key:"sharePortTag"
-                    }];
+                    }, {
+                    name:"免费带宽",
+                    isChecked:true,
+                    key:"freeBandwidth"
+                    }, {
+                    name:"免费带宽开始时间",
+                        isChecked:false,
+                        isMultiRows: true,
+                        key:"freeStartTimeFormated"
+                    }, {
+                    name:"免费带宽结束时间",
+                        isChecked:false,
+                        isMultiRows: true,
+                        key:"freeEndTimeFormated"
+                    }
+                ];
                 this.initLiveLevelDropMenu();
                 this.initCacheLevelDropMenu();
                 this.initTableHeader();

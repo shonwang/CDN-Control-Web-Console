@@ -18,7 +18,7 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                         // rsNodeCorpDtosList[i].freeStartTime = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
                     }
                     if(rsNodeCorpDtosList[i].freeEndTime){
-                        rsNodeCorpDtosList[i].freeEndTimeFormated = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
+                        rsNodeCorpDtosList[i].freeEndTimeFormated = new Date(rsNodeCorpDtosList[i].freeEndTime).format("yyyy/MM/dd hh:mm");
                         // rsNodeCorpDtosList[i].freeEndTime = new Date(rsNodeCorpDtosList[i].freeStartTime).format("yyyy/MM/dd hh:mm");
                     }
                 }

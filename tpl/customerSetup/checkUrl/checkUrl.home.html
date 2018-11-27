@@ -29,6 +29,37 @@
 			</div>
 
 			<div class="cdn-row clearfix margin-top10">
+				<div class="label-text-show">&nbsp;&nbsp;&nbsp;请求头：</div>
+				<div class="label-content-show">
+					<div class="ks-dropdown margin-left10 margin-right10" id="dropdown-menu-httpheader">
+						<button type="button" id="httpheader-dropdown" class="ks-btn ks-dropdown-text" data-toggle="dropdown"><span class="ks-caret"></span><span class="cur-value">请选择</span></button>
+						<ul class="ks-dropdown-menu dropdown-menu" role="menu" aria-labelledby="url-dropdown" style="min-width: 240px;">
+						</ul>
+					</div>					
+				</div>
+				<div class="ks-form-control add-domain-error-tips margin-left10">
+					<div class="error dir-refresh-error cdn-error-tip" id="cdn-httpheader-error">请选择请求头</div>
+				</div>
+			</div>
+
+			<div class="cdn-row clearfix margin-top10 custom-httpheader" style="display: none;">
+				<div class="label-text-show">&nbsp;</div>
+				<div class="label-content-show">
+					<textarea class="margin-left10 origin-address httpheader-textarea" style="height: 130px;" placeholder="可输入多个请求头，各请求头之间以换行符分隔。&#10;示例：&#10;Accept-Encoding:gzip&#10;Accept-Encoding:gzip,deflate"></textarea>			
+				</div>
+				
+			</div>
+
+			<div class="cdn-row" id="cdn-httpheader-texteare-error" style="display: none;">
+				<div class="label-text-show">&nbsp;</div>
+				<div class="label-content-show">
+					<div class="clearfix ks-form-control add-domain-error-tips margin-left10">
+						<div class="error dir-refresh-error cdn-error-tip" id="cdn-httpheader-texteare-error-text" style="display: block;">请填写请求头</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="cdn-row clearfix margin-top10">
 				<div class="label-text-show">校验原值:</div>
 				<div class="ks-form-control floatLeft">
 					<input type="text" class="ks-form-text margin-left10" id="text-origin-url-name" placeholder="校验原值">
@@ -62,6 +93,7 @@
 					<th>URL</th>
 					<th>校验时间</th>
 					<th>校验方式</th>
+					<th>请求头</th>
 					<th>校验原值</th>
 					<th>状态</th>
 					<th>一致性</th>

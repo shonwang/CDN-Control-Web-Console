@@ -28,6 +28,18 @@
 			<input type="text" class="form-control" id="input-start" readonly="true">
 		</div>
 	</div-->
+	<div class="form-group" id="free-start-time12">
+		<label for="input-start" class="col-sm-2 control-label">免费带宽开始日期</label>
+		<div class="col-sm-6">
+			<input type="text" class="form-control" id="free-start-time" readonly="true">
+		</div>
+	</div>
+	<div class="form-group" id="free-end-time12">
+		<label for="input-end" class="col-sm-2 control-label">免费带宽结束日期</label>
+		<div class="col-sm-6">
+			<input type="text" class="form-control" id="free-end-time" readonly="true">
+		</div>
+	</div>
 	<div class="form-group">
 		<label for="input-maxbandwidth" class="col-sm-2 control-label">上联带宽</label>
 		<div class="col-sm-4">
@@ -49,18 +61,7 @@
 			<input type="text" class="form-control" id="input-backupBandwidth" value="<%=data.buildBandwidth  || ''%>" placeholder="单位: Gbps">
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="input-start" class="col-sm-2 control-label">免费带宽开始日期</label>
-		<div class="col-sm-6">
-			<input type="text" class="form-control" id="free-start-time" readonly="true">
-		</div>
-	</div>
-	<div class="form-group">
-		<label for="input-end" class="col-sm-2 control-label">免费带宽结束日期</label>
-		<div class="col-sm-6">
-			<input type="text" class="form-control" id="free-end-time" readonly="true">
-		</div>
-	</div>
+
 	<div class="form-group">
 		<label for="input-minbandwidth" class="col-sm-2 control-label">免费带宽</label>
 		<div class="col-sm-4">

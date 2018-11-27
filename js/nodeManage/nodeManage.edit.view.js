@@ -9,6 +9,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.model = options.model;
             var args = options.args || {};
             this.isEdit = options.isEdit || false;
+            this.isSingle = options.isSingle || false;
             this.isChargeEdit = options.isChargeEdit || false;
             this.isMultiwire = options.isMultiwire || false; //是否是多线
             if (this.isEdit || this.isChargeEdit) {
@@ -55,6 +56,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el = $(_.template(template['tpl/nodeManage/nodeManage.isp.html'])({
                 data: this.args
             }));
+            this.hideDate();
             this.setDropDownList();
             //this.initChargeDatePicker();
             if (this.isMultiwire) {
@@ -66,6 +68,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
             this.$el.find("#input-maxbandwidth").on("blur",$.proxy(this.onMaxBandwidthBlur,this));
             this.initFreeStartTime()
             this.initFreeEndTime()
+        },
+        hideDate:function(){
+            if (this.isSingle){
+                this.$el.find("#free-end-time12").hide();
+                this.$el.find("#free-start-time12").hide();
+            }
         },
         //免费带宽开始计费日期
         initFreeStartTime:function(){
@@ -945,10 +953,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 });
             } else {
                 //加载单个运营商模板
+
                 this.ispTemplate = new IspTemplateView({
                     operatorList: this.operatorList,
                     isEdit: isEdit,
                     isChargeEdit:this.isChargeEdit,
+                    isSingle:true,
                     args: args
                 });
             }

@@ -3,7 +3,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
         var NodeManageView = Backbone.View.extend({
             events: {},
-
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
@@ -52,6 +51,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
                 this.collection.on("get.province.success", $.proxy(this.onGetProvinceSuccess, this));
                 this.collection.on("get.province.error", $.proxy(this.onGetError, this));
+                //查询共享出口的相关信息
+                this.collection.on("get.getAssociationNodeInfo.success", $.proxy(this.onGetNodeIdInfoSuccess, this));
+                this.collection.on("get.getAssociationNodeInfo.error", $.proxy(this.onGetError, this));
 
                 this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
                 this.collection.on("operate.node.error", function(res) {
@@ -90,7 +92,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     "provinceId": null, //省份名称
                     "areaId": null, //大区名称
                     "opType": null,
-
+                    "tags":null,//共享出口的节点tag
                     "liveLevel": null,//直播层级，没有就null
                     "cacheLevel": null
                 }
@@ -124,17 +126,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     isChecked: false,
                     isMultiRows: true,
                     key: "minBandwidthThreshold"
-                }, {
-                    name: "入口带宽zabbix名称",
-                    isChecked: false,
-                    isMultiRows: true,
-                    key: "inZabName"
-                }, {
-                    name: "出口带宽zabbix名称",
-                    isChecked: false,
-                    isMultiRows: true,
-                    key: "outZabName"
-                }, {
+                },
+                    {
                     name: "计费类型",
                     isChecked: true,
                     isMultiRows: true,
@@ -159,11 +152,41 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     name: "大区",
                     isChecked: false,
                     key: "areaName"
-                }];
+                }, {
+                    name:"交换机名称",
+                    isChecked:true,
+                    key:"sharePortTag"
+                    }, {
+                    name:"免费带宽",
+                    isChecked:true,
+                    isMultiRows: true,
+                    key:"freeBandwidth"
+                    }, {
+                        name:"建设带宽",
+                        isChecked:false,
+                        isMultiRows:true,
+                        key:"buildBandwidth"
+                    },
+                    {
+                    name:"免费带宽开始时间",
+                        isChecked:false,
+                        isMultiRows: true,
+                        key:"freeStartTimeFormated"
+                    }, {
+                    name:"免费带宽结束时间",
+                        isChecked:false,
+                        isMultiRows: true,
+                        key:"freeEndTimeFormated"
+                    }
+                ];
                 this.initLiveLevelDropMenu();
                 this.initCacheLevelDropMenu();
                 this.initTableHeader();
                 this.onClickQueryButton();
+            },
+            //获取共享出口的节点相关信息
+            onGetNodeIdInfoSuccess:function(res){
+                this.mergeArgs = res;
             },
 
             onUpdateRemarkSuccess:function(){
@@ -352,12 +375,14 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 1: "95峰值",
                 2: "包端口",
                 3: "峰值",
-                4: "第三峰"
+                4: "第三峰",
+                5: "流量",
+                6: "日95月均值"
             },
 
             initTable: function() {
                 var nameList = this.nameList;
-                this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
+                this.$el.find(".opt-ctn .m").attr("disabled", "disabled");
                 this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
                 this.$el.find(".opt-ctn .multi-stop").attr("disabled", "disabled");
                 _.each(this.collection.models, function(item) {
@@ -366,6 +391,8 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         _.each(_rsNodeCorpDtos, function(i) {
                             i.chargingTypeName = nameList[i.chargingType];
                         })
+                    }else {
+                        item.attributes.chargingTypeName = nameList[item.attributes.chargingType]
                     }
                 })
                 this.table = $(_.template(template['tpl/nodeManage/nodeManage.table.html'])({
@@ -375,30 +402,51 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }));
                 if (this.collection.models.length !== 0) {
                     this.$el.find(".table-ctn").html(this.table[0]);
-                    this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                    this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-                    if (AUTH_OBJ.DeleteNode)
-                        this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-                    else
-                        this.table.find("tbody .delete").remove();
-                    this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
-                    this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
-                    this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
-                    this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
-                    this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
-                    this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
-                    this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
-
-                    this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-                    this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
-
-                    this.table.find("[data-toggle='popover']").popover();
-
                 } else {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
                 }
-            },
+                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
+                if (AUTH_OBJ.DeleteNode)
+                    this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                else
+                    this.table.find("tbody .delete").remove();
+                this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
+                this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
+                this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
+                this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+                this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
+                this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
+                this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
 
+                this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+                this.table.find("tbody .hoverTag").on("mouseover",$.proxy(this.onHoverNodeString,this))
+                this.table.find("[data-toggle='popover1']").popover({
+                    html:true
+                });
+                // this.table.find("tbody .KSCCDN-HeFeiCT01").attr('data-content','111111111')
+                var sharePortTagList = [];
+                _.each(this.collection.models,function (model) {
+                    if(model.get("sharePortTag")) {
+                        sharePortTagList.push(model.get("sharePortTag"));
+                    }
+                });
+                this.collection.getAssociationNodeByTags(sharePortTagList);
+            },
+            onHoverNodeString:function(event){
+                var eventTarget = event.srcElement || event.target;
+                var content = $(eventTarget).attr("data-content");
+                if(content){return false;}
+                var id = $(eventTarget).attr("data-key");
+                var valueList = this.mergeArgs[id];
+                var tipsHTML = ["<h4><b>当前机房出口所有关联的节点</b></h4>"];
+                for (var i = 0; i < valueList.length; i++) {
+                    var _html = '<div>' + valueList[i] + '</div>';
+                    tipsHTML.push(_html);
+                }
+                $(eventTarget).attr('data-content', tipsHTML.join(''))
+            },
             onClickDispGroupInfo: function(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
@@ -467,7 +515,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     this.editNodeView.destroy();
                     this.editNodeView = null;
                 }
-                
                 require(["nodeManage.edit.view"], function(AddOrEditNodeView) {
                     this.editNodeView = new AddOrEditNodeView({
                         collection: this.collection,
@@ -782,7 +829,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
 
             onGetProvinceSuccess: function(res) {
                 this.provinceList = res;
-
                 var nameList = [{
                     name: "全部",
                     value: "All"
@@ -816,6 +862,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 var eventTarget = event.srcElement || event.target;
                 if (eventTarget.tagName !== "INPUT") return;
                 var id = $(eventTarget).attr("id");
+                console.log(id)
                 var model = this.collection.get(id);
                 model.set("isChecked", eventTarget.checked)
 

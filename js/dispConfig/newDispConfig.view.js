@@ -650,7 +650,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             this.$el.find(".dropdown-disp .cur-value").html(temp[0].name)
             this.queryArgs = {
                 page : 1,
-                count: 999999,
+                count: 50,
                 groupId: temp[0].value
             }
             this.onClickQueryButton();

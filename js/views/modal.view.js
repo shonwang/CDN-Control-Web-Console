@@ -24,6 +24,8 @@ define("modal.view", ['require','exports', 'template', 'utility'],
             if (option)
                 _.extend(this.options, option);
 
+
+
             this.$el = $(_.template(template['tpl/modal.html'])());
 
             this.modalId = Utility.randomStr(24);
@@ -33,7 +35,12 @@ define("modal.view", ['require','exports', 'template', 'utility'],
             $(document).off('keydown');
 
             this.$el.find(".modal-title").html(this.options.title);
-            
+
+            if(option.add || option.modify){
+                this.$el.find(".modal-title").css({"color":"red","text-align":"center"})
+                this.$el.find(".modal-footer").css({"text-align":"center"})
+            }
+
             if (typeof this.options.body === "string"){
                 this.$el.find(".modal-body").html(this.options.body);
             } else {
@@ -100,6 +107,5 @@ define("modal.view", ['require','exports', 'template', 'utility'],
         }
 
     });
-
     return ModalView;
 });

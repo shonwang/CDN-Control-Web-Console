@@ -2,7 +2,9 @@ body {
   font-family: "Microsoft Yahei";
   background-color: #eee;
 }
-
+.floatRight{
+  float: right;
+}
 .total-items {
   text-align: center;/*    margin: 26px 0;*/
 }
@@ -1377,15 +1379,61 @@ ul, li {
 .dropdown-reason-list .select-container {left:0;}
 
 .back-to-top {
-    height: 40px;
-    position: fixed;
-    width: 40px;
-    bottom: 20px;
-    right: 10px;
-    background: #292929;
-    padding: 13px;
-    text-align: center;
-    cursor: pointer;
-    color: #fff;
-    display: none;
+          height: 40px;
+          position: fixed;
+          width: 40px;
+          bottom: 20px;
+          right: 10px;
+          background: #292929;
+          padding: 13px;
+          text-align: center;
+          cursor: pointer;
+          color: #fff;
+          display: none;
+        }
+/*alert-model 新增计费组*/
+/*.modal-backdrop{*/
+  /*top: 100%;*/
+/*}*/
+/*.modal-content{*/
+  /*left: 100px;*/
+/*}*/
+/*.modal-footer{*/
+  /*text-align: center;*/
+/*}*/
+/*.modal-title{*/
+  /*color: red;*/
+  /*text-align: center;*/
+/*}*/
+#mergeNode{
+  width: 80%;
+  height: 90px;
+  overflow: auto;
+  text-align: center;
+  margin: 0 auto;
+}
+#mergeNode .nodeNameMerge{
+  margin-top: 2px;
+}
+.mergeTitle{
+  width: 100%;
+  margin: 50px auto 0;
+}
+.mergeTitle h4{
+  padding: 20px 0 20px 0;
+  text-align: center;
+}
+#inputNodeName{
+  width: 90%;
+  height: 60px;
+  overflow: auto;
+  margin-left: 35px;
+}
+#inputNodeName2{
+  width: 300px;
+  height: 60px;
+  overflow: auto;
+}
+.floatLeft{
+    float: left;
 }

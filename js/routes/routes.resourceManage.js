@@ -162,7 +162,25 @@ define("routes.resourceManage", ['require', 'exports'],
                     this.curView = this.ipManageView;
                 }.bind(this));
             },
-
+            //计费管理对应路由方法
+            chargeManage:function(){
+                require(['chargeManage.view','chargeManage.model'],function (ChargeManageView,ChargeManageModel) {
+                    this.curPage = 'chargeManage';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.chargeManageModel)
+                        this.chargeManageModel = new ChargeManageModel();
+                    if (!this.chargeManageView) {
+                        var options = {
+                            collection: this.chargeManageModel
+                        };
+                        this.chargeManageView = new ChargeManageView(options);
+                        this.chargeManageView.render($('.ksc-content'));
+                    } else {
+                        this.chargeManageView.update($('.ksc-content'));
+                    }
+                    this.curView = this.chargeManageView;
+                }.bind(this));
+            },
             nodeManage: function() {
                 if (!AUTH_OBJ.ManageNodes) return;
                 require(['nodeManage.view', 'nodeManage.model'], function(NodeManageView, NodeManageModel) {
@@ -204,7 +222,6 @@ define("routes.resourceManage", ['require', 'exports'],
                 }.bind(this));
             }
         }
-
         return RouterResourceManage
     }
 );

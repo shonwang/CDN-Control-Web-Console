@@ -42,6 +42,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "specialLayerManage": "specialLayerManage",
                 "playbackTask" : "playbackTask",
                 "deviceHistoryTask" : "deviceHistoryTask",
+                "chargeManage":"chargeManage",//计费管理
 
                 //常用工具
                 "speedMeasure" : "speedMeasure",

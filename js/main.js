@@ -14,6 +14,8 @@
   "businessManage.view": "businessManage/businessManage.view",
   "channelManage.model": "channelManage/channelManage.model",
   "channelManage.view": "channelManage/channelManage.view",
+  "chargeManage.model": "chargeManage/chargeManage.model",
+  "chargeManage.view": "chargeManage/chargeManage.view",
   "clientStatistics.model": "clientStatistics/clientStatistics.model",
   "clientStatistics.view": "clientStatistics/clientStatistics.view",
   "commonCache.model": "commonCache/commonCache.model",

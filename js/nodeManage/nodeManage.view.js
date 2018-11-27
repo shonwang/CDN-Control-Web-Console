@@ -159,6 +159,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     }, {
                     name:"免费带宽",
                     isChecked:true,
+                    isMultiRows: true,
                     key:"freeBandwidth"
                     }, {
                     name:"免费带宽开始时间",

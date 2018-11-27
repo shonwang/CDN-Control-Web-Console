@@ -162,6 +162,12 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     isMultiRows: true,
                     key:"freeBandwidth"
                     }, {
+                        name:"建设带宽",
+                        isChecked:false,
+                        isMultiRows:true,
+                        key:"buildBandwidth"
+                    },
+                    {
                     name:"免费带宽开始时间",
                         isChecked:false,
                         isMultiRows: true,

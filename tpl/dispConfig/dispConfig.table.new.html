@@ -2,7 +2,7 @@
     <thead> 
       <tr>
         <!-- <th><input type="checkbox" id="inlineCheckbox7"></th> -->
-        <th>调度组名称</th>
+        <!--<th>调度组名称</th>-->
         <th>区域</th>
         <th>节点</th>
         <th>操作</th>   
@@ -12,7 +12,7 @@
         <% for(var i = 0; i < data.length; i++) { %>
           <%if(data[i].get("isDisplay")){%>
             <tr data-id="<%=data[i].attributes.id%>">
-              <td><%=data[i].get("dispGroupDomain")%></td>
+              <!--<td><%=data[i].get("dispGroupDomain")%></td>-->
               <td><%=data[i].get("region").name%></td>
               <td class="nodes">
                   <table class="table table-condensed table-striped">

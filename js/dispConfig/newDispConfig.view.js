@@ -231,10 +231,12 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                     model.set("isDisplay", false);
                     _.each(model.get("list"), function(modelL2, indexL2, listL2) {
                         if (modelL2.nodeName && modelL2.nodeName.indexOf(keyWord) > -1){
-                            modelL2.isDisplay = true;
-                            this.regionName = modelL2.regionName;
-                            that.nodeNameList.push(model)
-                            model.set("isDisplay", true);
+                            if(modelL2.regionName != this.regionName){
+                                modelL2.isDisplay = true;
+                                this.regionName = modelL2.regionName;
+                                that.nodeNameList.push(model)
+                                model.set("isDisplay", true);
+                            }
                         } else {
                             modelL2.isDisplay = false;
                         }
@@ -243,7 +245,6 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         if(model4.regionName){
                             if(model4.regionName == this.regionName){
                                 model4.isDisplay = true;
-
                             }else {
                                 model4.isDisplay = false;
                             }

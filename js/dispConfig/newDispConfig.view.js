@@ -127,7 +127,9 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection = options.collection;
             this.dispGroupCollection = options.dispGroupCollection;
             this.diffCollection = options.diffCollection;
-
+            this.count = 49;
+            this.regionList = [];
+            this.nodeNameList = [];
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.html'])({permission: AUTH_OBJ}));
 
             this.collection.on("get.dispGroup.success", $.proxy(this.onDispGroupListSuccess, this));
@@ -155,6 +157,8 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.disablePopup.$el.modal('hide');
                 this.onGetError(res)
             }.bind(this));
+
+            this.listenScroll();
 
             this.initDispConfigDropMenu();
             
@@ -201,9 +205,11 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
 
         onKeyupDispConfigListFilter: function() {
             if (!this.collection.models || this.collection.models.length === 0) return;
-            var keyWord = this.$el.find("#disp-config-filter").val();
-                        
+            var keyWord = this.$el.find("#disp-config-filter").val().trim();
+            this.regionList = [];
+            this.nodeNameList = [];
             _.each(this.collection.models, function(model, index, list) {
+                var that = this;
                 if (keyWord === ""){
                     model.set("isDisplay", true);
                     _.each(model.list, function(modelL3, indexL3, listL3) {
@@ -211,7 +217,9 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                     })
                 } else if (this.curSearchType == "1"){
                     if (model.get("region").name.indexOf(keyWord) > -1){
+                        this.regionList.push(model) ;
                         model.set("isDisplay", true);
+
                     } else {
                         model.set("isDisplay", false);
                     }
@@ -223,10 +231,23 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                     model.set("isDisplay", false);
                     _.each(model.get("list"), function(modelL2, indexL2, listL2) {
                         if (modelL2.nodeName && modelL2.nodeName.indexOf(keyWord) > -1){
-                            modelL2.isDisplay = true;
-                            model.set("isDisplay", true);
+                            if(modelL2.regionName != this.regionName){
+                                modelL2.isDisplay = true;
+                                this.regionName = modelL2.regionName;
+                                that.nodeNameList.push(model)
+                                model.set("isDisplay", true);
+                            }
                         } else {
                             modelL2.isDisplay = false;
+                        }
+                    })
+                    _.each(model.get("list"),function (model4) {
+                        if(model4.regionName){
+                            if(model4.regionName == this.regionName){
+                                model4.isDisplay = true;
+                            }else {
+                                model4.isDisplay = false;
+                            }
                         }
                     })
                 }
@@ -308,13 +329,64 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             this.disablePopup = new Modal(options);
             this.disablePopup.$el.find(".close").remove();
         },
+        listenScroll:function(){
+            $(window).on('scroll',function(){
+                if(this.scrollTop() + this.windowHeight() >= (this.documentHeight()/*滚动响应区域高度取50px*/)){
+                    this.count += 10;
+                    this.initTable()
+                }
+            }.bind(this));
+        },
+        //获取页面被卷曲的高度
+        scrollTop: function(){
+            return Math.max(
+                //chrome
+                document.body.scrollTop,
+                //firefox/IE
+                document.documentElement.scrollTop);
 
+        },
+        //获取页面文档高度
+        documentHeight: function(){
+            //现代浏览器（IE9+和其他浏览器）和IE8的document.body.scrollHeight和document.documentElement.scrollHeight都可以
+            return Math.max(document.body.scrollHeight,document.documentElement.scrollHeight);
+        },
+        //获取页面浏览器的可视高度
+        windowHeight: function(){
+            return (document.compatMode == "CSS1Compat")?
+                document.documentElement.clientHeight:
+                document.body.clientHeight;
+        },
         initTable: function(isHistory, isDiff){
-            this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
-                data: this.collection.models, 
-                permission: AUTH_OBJ
-            }));
-
+            var keyWord = this.$el.find("#disp-config-filter").val().trim();
+            var data = this.collection.models;
+            var dataList;
+            if(this.regionList && this.regionList.length > 0 && keyWord != ""){
+                this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
+                    data: this.regionList,
+                    permission: AUTH_OBJ
+                }));
+            }else if(this.nodeNameList && this.nodeNameList.length > 0 && keyWord != ""){
+                this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
+                    data: this.nodeNameList,
+                    permission: AUTH_OBJ
+                }));
+            }
+            else{
+                if(data.length > 0){
+                    if(data.length > 50){
+                        dataList = data.slice(0,this.count);
+                        this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
+                            data: dataList,
+                            permission: AUTH_OBJ
+                        }));
+                    }
+                }
+            }
+            // this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
+            //     data: this.collection.models,
+            //     permission: AUTH_OBJ
+            // }));
             if (this.collection.models.length === 0){
                 if (!isDiff){
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
@@ -435,9 +507,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         var options = selectNodeView.getArgs();
                         if (!options) return;
                         options = options.selectedList;
-                        console.log(options);
                         for (var k = 0; k < options.length; k++){
-                            
                             if (oldList[options[k]["nodeId"]]){
                                 var hasCurrentIpV6 = this.checkIpV6(list,options[k]["nodeId"],isIpV6);
                                 if(hasCurrentIpV6){

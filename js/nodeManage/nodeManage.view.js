@@ -1,13 +1,27 @@
 define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'utility'],
     function(require, exports, template, Modal, Utility) {
 
+        var NodeDeleteTips = Backbone.View.extend({
+            initialize:function(options){
+                this.collection = options.collection;
+                this.model = options.model;
+                this.initTable();
+            },
+            initTable:function () {
+                this.table = $(_.template(template['tpl/nodeManage/nodeManage.nodeDeleteTips.html'])({data:this.collection}));
+            },
+            render:function(target){
+                this.table.appendTo(target);
+
+            }
+        })
         var NodeManageView = Backbone.View.extend({
             events: {},
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
                 this.$el = $(_.template(template['tpl/nodeManage/nodeManage.html'])());
-        
+
                 this.initNodeDropMenu();
                 // this.initNodeTypeDropMenu();
 
@@ -54,6 +68,9 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 //查询共享出口的相关信息
                 this.collection.on("get.getAssociationNodeInfo.success", $.proxy(this.onGetNodeIdInfoSuccess, this));
                 this.collection.on("get.getAssociationNodeInfo.error", $.proxy(this.onGetError, this));
+                //删除节点获取modal信息
+                this.collection.on("get.NodeDeleteModalInfo.success",$.proxy(this.onGetNodeDeleteModalInfoSuccess,this));
+                this.collection.on("get.NodeDeleteModalInfo.error",$.proxy(this.onGetError,this));
 
                 this.collection.on("operate.node.success", $.proxy(this.onOperateNodeSuccess, this));
                 this.collection.on("operate.node.error", function(res) {
@@ -128,39 +145,39 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     key: "minBandwidthThreshold"
                 },
                     {
-                    name: "计费类型",
-                    isChecked: true,
-                    isMultiRows: true,
-                    key: "chargingTypeName"
-                }, {
-                    name: "状态",
-                    isChecked: true,
-                    key: "statusName"
-                }, {
-                    name: "开始计费时间",
-                    isChecked: true,
-                    key: "startChargingTimeFormated"
-                }, {
-                    name: "创建时间",
-                    isChecked: true,
-                    key: "createTimeFormated"
-                }, {
-                    name: "省份",
-                    isChecked: true,
-                    key: "provName"
-                }, {
-                    name: "大区",
-                    isChecked: false,
-                    key: "areaName"
-                }, {
-                    name:"交换机名称",
-                    isChecked:true,
-                    key:"sharePortTag"
+                        name: "计费类型",
+                        isChecked: true,
+                        isMultiRows: true,
+                        key: "chargingTypeName"
                     }, {
-                    name:"免费带宽",
-                    isChecked:true,
-                    isMultiRows: true,
-                    key:"freeBandwidth"
+                        name: "状态",
+                        isChecked: true,
+                        key: "statusName"
+                    }, {
+                        name: "开始计费时间",
+                        isChecked: true,
+                        key: "startChargingTimeFormated"
+                    }, {
+                        name: "创建时间",
+                        isChecked: true,
+                        key: "createTimeFormated"
+                    }, {
+                        name: "省份",
+                        isChecked: true,
+                        key: "provName"
+                    }, {
+                        name: "大区",
+                        isChecked: false,
+                        key: "areaName"
+                    }, {
+                        name:"交换机名称",
+                        isChecked:true,
+                        key:"sharePortTag"
+                    }, {
+                        name:"免费带宽",
+                        isChecked:true,
+                        isMultiRows: true,
+                        key:"freeBandwidth"
                     }, {
                         name:"建设带宽",
                         isChecked:false,
@@ -168,12 +185,12 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         key:"buildBandwidth"
                     },
                     {
-                    name:"免费带宽开始时间",
+                        name:"免费带宽开始时间",
                         isChecked:false,
                         isMultiRows: true,
                         key:"freeStartTimeFormated"
                     }, {
-                    name:"免费带宽结束时间",
+                        name:"免费带宽结束时间",
                         isChecked:false,
                         isMultiRows: true,
                         key:"freeEndTimeFormated"
@@ -188,7 +205,60 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             onGetNodeIdInfoSuccess:function(res){
                 this.mergeArgs = res;
             },
+            //删除节点时判断modal
+            onGetNodeDeleteModalInfoSuccess:function(res){
+                var nodeDeleteModalInfo = res;
+                if(nodeDeleteModalInfo.noUseFlag){
+                    var model = this.collection.get(this.nodeDeleteId);
 
+                    if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
+
+                    require(["nodeManage.operateDetail.view"], function(NodeTips) {
+                        var deleteNodeTips = new NodeTips({
+                            type: 1,
+                            model: model,
+                            whoCallMe: 'node',
+                            operateTypeList: this.operateTypeList,
+                            collection: this.collection,
+                            placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
+                        });
+                        var options = {
+                            title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
+                            body: deleteNodeTips,
+                            backdrop: 'static',
+                            type: 2,
+                            onOKCallback: function() {
+                                var options = deleteNodeTips.getArgs();
+                                if (!options) return;
+                                this.collection.deleteNode({
+                                    id: parseInt(this.nodeDeleteId),
+                                    opRemark: options.opRemark,
+                                    opType: options.opType
+                                })
+                                this.deleteNodeTipsPopup.$el.modal("hide");
+                            }.bind(this)
+                        }
+                        this.deleteNodeTipsPopup = new Modal(options);
+                    }.bind(this));
+                }else if(!nodeDeleteModalInfo.noUseFlag){
+
+                    var model = this.collection.get(this.nodeDeleteId);
+
+                    if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
+
+                        var deleteNodeTips = new NodeDeleteTips({
+                            model: model,
+                            collection: nodeDeleteModalInfo,
+                        });
+                        var options = {
+                            title: "该节点所关联的信息",
+                            body: deleteNodeTips,
+                            backdrop: 'static',
+                            type: 0,
+                        }
+                        this.deleteNodeTipsPopup = new Modal(options);
+                }
+            },
             onUpdateRemarkSuccess:function(){
                 Utility.alerts("更新成功", "success", 5000);
                 this.onClickQueryButton();
@@ -214,10 +284,10 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     }else{
                         this.queryArgs.liveLevel = null;
                     }
-                    
+
                 }.bind(this));
             },
-    
+
             initCacheLevelDropMenu: function() {
                 var cacheLevelArray = [{
                     name:"全部",
@@ -240,7 +310,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     }
                 }.bind(this));
             },
-            
+
             initTableHeader: function() {
                 var isCheckedStr = '<div class="checkbox">' +
                     '<label>' +
@@ -465,7 +535,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         model: model,
                         isEdit: true
                     });
-                   
+
                     var options = {
                         title: model.get("chName") + "关联调度组信息",
                         body: dispGroupInfoView,
@@ -1082,41 +1152,11 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     id;
                 if (eventTarget.tagName == "SPAN") {
                     eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
+                    this.nodeDeleteId = eventTarget.attr("id");
                 } else {
-                    id = $(eventTarget).attr("id");
+                    this.nodeDeleteId = $(eventTarget).attr("id");
                 }
-                var model = this.collection.get(id);
-
-                if (this.deleteNodeTipsPopup) $("#" + this.deleteNodeTipsPopup.modalId).remove();
-
-                require(["nodeManage.operateDetail.view"], function(NodeTips) {
-                    var deleteNodeTips = new NodeTips({
-                        type: 1,
-                        model: model,
-                        whoCallMe: 'node',
-                        operateTypeList: this.operateTypeList,
-                        collection: this.collection,
-                        placeHolder: "请输入删除的原因,并请您谨慎操作，一旦删除，不可恢复"
-                    });
-                    var options = {
-                        title: "你确定要删除节点<span class='text-danger'>" + model.attributes.name + "</span>吗？删除后将不可恢复, 请谨慎操作！",
-                        body: deleteNodeTips,
-                        backdrop: 'static',
-                        type: 2,
-                        onOKCallback: function() {
-                            var options = deleteNodeTips.getArgs();
-                            if (!options) return;
-                            this.collection.deleteNode({
-                                id: parseInt(id),
-                                opRemark: options.opRemark,
-                                opType: options.opType
-                            })
-                            this.deleteNodeTipsPopup.$el.modal("hide");
-                        }.bind(this)
-                    }
-                    this.deleteNodeTipsPopup = new Modal(options);
-                }.bind(this));
+                this.collection.getNodeDeleteModalInfo({id:this.nodeDeleteId});
             },
 
             onClickItemStop: function(event) {

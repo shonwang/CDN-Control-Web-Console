@@ -493,6 +493,20 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
+        //删除节点时判断modal
+        getNodeDeleteModalInfo: function(args) {
+            var url = BASE_URL + "/rs/node/getNodeAssociateResource",
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("get.NodeDeleteModalInfo.success", res);
+                    else
+                        this.trigger("get.NodeDeleteModalInfo.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("get.NodeDeleteModalInfo.error", response);
+                }.bind(this);
+            Utility.getAjax(url, args, successCallback, errorCallback);
+        },
 
         getNodeProgress:function(args){
             var url = BASE_URL + "/cd/node/initcfg/getprogress",

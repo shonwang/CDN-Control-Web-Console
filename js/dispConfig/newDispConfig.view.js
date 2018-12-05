@@ -127,7 +127,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection = options.collection;
             this.dispGroupCollection = options.dispGroupCollection;
             this.diffCollection = options.diffCollection;
-            this.count = 49;
+            this.count = 39;
             this.regionList = [];
             this.nodeNameList = [];
             this.$el = $(_.template(template['tpl/dispConfig/dispConfig.html'])({permission: AUTH_OBJ}));
@@ -208,6 +208,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             var keyWord = this.$el.find("#disp-config-filter").val().trim();
             this.regionList = [];
             this.nodeNameList = [];
+            this.preRegionName = ''
             _.each(this.collection.models, function(model, index, list) {
                 var that = this;
                 if (keyWord === ""){
@@ -216,6 +217,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         modelL3.isDisplay = true;
                     })
                 } else if (this.curSearchType == "1"){
+                    // model.set("isDisplay", false);
                     if (model.get("region").name.indexOf(keyWord) > -1){
                         this.regionList.push(model) ;
                         model.set("isDisplay", true);
@@ -229,21 +231,26 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                     })
                 } else if (this.curSearchType == "2"){
                     model.set("isDisplay", false);
-                    _.each(model.get("list"), function(modelL2, indexL2, listL2) {
-                        if (modelL2.nodeName && modelL2.nodeName.indexOf(keyWord) > -1){
-                            if(modelL2.regionName != this.regionName){
-                                modelL2.isDisplay = true;
-                                this.regionName = modelL2.regionName;
-                                that.nodeNameList.push(model)
+                    for(var i = 0;i < model.get("list").length;i++){
+                        if(model.get("list")[i].nodeName && model.get("list")[i].nodeName.indexOf(keyWord) > -1){
+
+                            this.regionName = model.get("list")[i].regionName;
+                            if(this.preRegionName == this.regionName){
+                                continue;
+                            } else {
+                                model.get("list")[i].isDisplay = true;
                                 model.set("isDisplay", true);
+                                that.nodeNameList.push(model)
+                                this.preRegionName = this.regionName
                             }
-                        } else {
-                            modelL2.isDisplay = false;
+                        }else {
+                            // this.preRegionName = '';
+                            model.get("list")[i].isDisplay = false;
                         }
-                    })
+                    }
                     _.each(model.get("list"),function (model4) {
                         if(model4.regionName){
-                            if(model4.regionName == this.regionName){
+                            if(model4.regionName == that.regionName){
                                 model4.isDisplay = true;
                             }else {
                                 model4.isDisplay = false;
@@ -374,7 +381,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             }
             else{
                 if(data.length > 0){
-                    if(data.length > 50){
+                    if(data.length > 40){
                         dataList = data.slice(0,this.count);
                         this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
                             data: dataList,
@@ -675,7 +682,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                 this.curSearchType = value;
                 this.onKeyupDispConfigListFilter();
             }.bind(this));
-            this.curSearchType = "1";
+            this.curSearchType = "2";
 
             this.collection.getDispGroupList();
         },

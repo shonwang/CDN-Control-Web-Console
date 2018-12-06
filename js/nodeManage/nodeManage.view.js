@@ -140,6 +140,11 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     isMultiRows: true,
                     key: "chargingTypeName"
                 }, {
+                    name: "线路状态",
+                    isChecked: true,
+                    isMultiRows: true,
+                    key: "statusName"
+                }, {
                     name: "状态",
                     isChecked: true,
                     key: "statusName"
@@ -356,6 +361,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             },
 
             initTable: function() {
+                console.log(this.collection.models)
                 var nameList = this.nameList;
                 this.$el.find(".opt-ctn .multi-delete").attr("disabled", "disabled");
                 this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
@@ -388,6 +394,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
                     this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
                     this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
+                    this.table.find("tbody .modify-status").on("click", $.proxy(this.onClickItemModifyStatus, this));
 
                     this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                     this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
@@ -508,7 +515,19 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
 
                 var model = this.collection.get(id);
+                this.openNodePrompt(model, id, 1);
+            },
 
+            openNodePrompt: function(model, id, operator, operatorIds){
+                var param = {
+                    opRemark: '',
+                    nodeId: id,
+                    operator: operator,
+                    t: new Date().valueOf()
+                }
+                if (operatorIds) {
+                    param.operatorIds = operatorIds
+                }
                 if (this.promptPopup) $("#" + this.promptPopup.modalId).remove();
 
                 require(["nodeManage.prompt.view"], function(PromptView) {
@@ -524,12 +543,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         onOKCallback: function() {
                             var options = myPromptView.onSure();
                             if (!options) return;
-                            this.collection.operateNode({
-                                opRemark: '',
-                                nodeId: id,
-                                operator: 1,
-                                t: new Date().valueOf()
-                            })
+                            this.collection.operateNode(param)
                             this.promptPopup.$el.modal("hide");
                         }.bind(this),
                         onHiddenCallback: function() {
@@ -891,7 +905,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             },
 
             onClickItemStart: function(event) {
-                //  this.onClickItemPlay()
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -901,36 +914,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     id = $(eventTarget).attr("id");
                 }
                 var model = this.collection.get(id);
-
-                if (this.promptPopup) $("#" + this.promptPopup.modalId).remove();
-
-                require(["nodeManage.prompt.view"], function(PromptView) {
-                    var myPromptView = new PromptView({
-                        collection: this.collection,
-                        model: model
-                    });
-                    var options = {
-                        title: "开启节点",
-                        body: myPromptView,
-                        backdrop: 'static',
-                        type: 2,
-                        onOKCallback: function() {
-                            var options = myPromptView.onSure();
-                            if (!options) return;
-                            this.collection.operateNode({
-                                opRemark: '',
-                                nodeId: id,
-                                operator: -1,
-                                t: new Date().valueOf()
-                            })
-                            this.promptPopup.$el.modal("hide");
-                        }.bind(this),
-                        onHiddenCallback: function() {
-                            this.enterKeyBindQuery();
-                        }.bind(this)
-                    }
-                    this.promptPopup = new Modal(options);
-                }.bind(this));
+                this.openOperateDetail(model, id, -1)
             },
 
             onClickItemInit: function(evnet) {
@@ -1072,6 +1056,56 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }.bind(this));
             },
 
+            onClickItemModifyStatus: function(event) {
+                if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                    Utility.alerts("没有获取到操作说明列表!")
+                    return false;
+                }
+
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                var model = this.collection.get(id);
+
+                if (this.nodeModifyStatusPopup) $("#" + this.nodeModifyStatusPopup.modalId).remove();
+
+                require(["nodeManage.pauseNode.view"], function(PauseNodeView) {
+                    var modifyNodeStatusView = new PauseNodeView({
+                        model: model,
+                        collection: this.collection
+                    });
+                    var options = {
+                        title: "修改节点状态",
+                        body: modifyNodeStatusView,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            var statusObj = modifyNodeStatusView.getStatus();
+                            if (!statusObj) return;
+                            if (statusObj.operator == -1) {
+                                this.nodeModifyStatusPopup.$el.modal("hide");
+                                setTimeout(function(){
+                                    this.openOperateDetail(model, id, statusObj.operator, statusObj.operatorIds)
+                                }.bind(this), 500)
+                            } else if (statusObj.operator == 1) {
+                                this.nodeModifyStatusPopup.$el.modal("hide");
+                                setTimeout(function(){
+                                    this.openNodePrompt(model, id, statusObj.operator, statusObj.operatorIds);
+                                }.bind(this), 500)
+                            }
+                        }.bind(this),
+                        onHiddenCallback: function() {}.bind(this)
+                    }
+                    this.nodeModifyStatusPopup = new Modal(options);
+                }.bind(this));
+            },
+
             onClickItemStop: function(event) {
                 if (!this.operateTypeList || this.operateTypeList.length == 0) {
                     Utility.alerts("没有获取到操作说明列表!")
@@ -1088,6 +1122,20 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
 
                 var model = this.collection.get(id);
+                this.openOperateDetail(model, id, -1)
+            },
+
+            openOperateDetail: function(model, id, operator, operatorIds) {
+                var param = {
+                    opRemark: null,
+                    opType: null,
+                    nodeId: id,
+                    operator: -1,
+                    t: new Date().valueOf()
+                }
+                if (operatorIds) {
+                    param.operatorIds = operatorIds
+                }
                 if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
 
                 require(["nodeManage.operateDetail.view"], function(NodeTips) {
@@ -1107,23 +1155,19 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                             var options = stopNodeView.getArgs();
                             if (!options) return;
                             this.currentPauseNodeId = id;
-                            this.collection.operateNode({
-                                opRemark: options.opRemark,
-                                opType: options.opType,
-                                nodeId: id,
-                                operator: -1,
-                                t: new Date().valueOf()
-                            })
+                            param.opRemark = options.opRemark;
+                            param.opType = options.opType;
+                            this.collection.operateNode(param)
                             this.nodeTipsPopup.$el.modal("hide");
                             this.showDisablePopup("服务端正在努力暂停中...")
                         }.bind(this),
                         onHiddenCallback: function() {
-
+                            this.enterKeyBindQuery();
                         }.bind(this)
                     }
                     this.nodeTipsPopup = new Modal(options);
                 }.bind(this));
-            },
+            }
         });
         return NodeManageView;
     });

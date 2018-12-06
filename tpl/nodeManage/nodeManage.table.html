@@ -36,7 +36,7 @@
               <%}else{%>
                 <% for(var j = 0; j < titleList.length; j++) { %>
                    <% if (titleList[j].isChecked && titleList[j].isMultiRows) { %>
-                      <td>
+                      <td style="padding:0">
                         <%if(data[i].attributes['rsNodeCorpDtos'].length !== 0){%>
                         <table class="table">
                           <%for(k = 0;k < data[i].attributes['rsNodeCorpDtos'].length;k++){%>
@@ -56,40 +56,45 @@
               <%}%>
               <td>
 				         <%if(data[i].attributes['status']!=3){%>
-                  <% if (permission.EditNode) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit" title="编辑">
-                      <span class="glyphicon glyphicon-edit"></span>
-                  </a>
-                  <% } %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="disp-info" title="调度组信息">
-                      <span class="glyphicon glyphicon-list-alt"></span>
-                  </a>
-                  <% if (data[i].attributes.status !== 1 && permission.EnableorPauseNode) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="play" title="开启">
-                      <span class="glyphicon glyphicon-play-circle"></span>
-                  </a>
-                  <% } %>
-<!--                   <% if (data[i].attributes.status === 1) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="hangup" title="挂起">
-                      <span class="glyphicon glyphicon-time"></span>
-                  </a>
-                  <% } %> -->
-                  <% if (data[i].attributes.status === 1 && permission.EnableorPauseNode) { %>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="stop" title="暂停">
-                      <span class="glyphicon glyphicon-pause"></span>
-                  </a>
-                  <%}else if(data[i].attributes.status === 4 && permission.EnableorPauseNode){%>
-                   <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="init" title="配置初始化">
-                      <span class="glyphicon glyphicon-repeat"></span>
-                  </a>
-                  <%}else if(data[i].attributes.status === 2 && permission.EnableorPauseNode){%>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="start" title="启用">
-                      <span class="glyphicon glyphicon-off"></span>
-                  </a>
-                  <%}%>
-                  <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete" title="删除">
-                      <span class="glyphicon glyphicon-trash"></span>
-                  </a>
+                    <% if (permission.EditNode) { %>
+                        <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="edit">
+                            编辑
+                        </a>
+                    <% } %>
+                    <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="disp-info">
+                        调度组
+                    </a>
+                    <% if (data[i].attributes.operatorId == 9) { %>
+                        <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="modify-status">
+                            修改状态
+                        </a>
+                    <% } %>
+                    <% if (data[i].attributes.status !== 1 && permission.EnableorPauseNode && data[i].attributes.operatorId != 9) { %>
+                        <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="play">
+                            开启
+                        </a>
+                    <% } %>
+                     <!--<% if (data[i].attributes.status === 1) { %>
+                          <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="hangup" title="挂起">
+                              <span class="glyphicon glyphicon-time"></span>
+                          </a>
+                    <% } %> -->
+                    <% if (data[i].attributes.status === 1 && permission.EnableorPauseNode && data[i].attributes.operatorId != 9) { %>
+                        <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="stop">
+                            暂停
+                        </a>
+                    <%}else if(data[i].attributes.status === 4 && permission.EnableorPauseNode){%>
+                         <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="init">
+                            配置初始化
+                        </a>
+                    <%}else if(data[i].attributes.status === 2 && permission.EnableorPauseNode && data[i].attributes.operatorId != 9){%>
+                        <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="start">
+                            启用
+                        </a>
+                    <%}%>
+                    <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="delete">
+                        删除
+                    </a>
 				         <%}%>
               </td>
       			  <td>

@@ -82,7 +82,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             }.bind(this));
 
             this.collection.on("set.status.success", $.proxy(this.onSetStatusSuccess, this));
-            this.collection.on("set.status.error", $.proxy(this.onGetError, this));
+            this.collection.on("set.status.error", $.proxy(this.onSetStatusError, this));
 
             require(["nodeManage.model"], function(NodeManageModel) {
                 var myNodeManageModel = new NodeManageModel();
@@ -580,6 +580,8 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
             alert(message);
             this.onClickQueryButton();
         },
+
+        onSetStatusError: function(data){},
 
         onClickItemEdit: function(event){
             var eventTarget = event.srcElement || event.target, id;

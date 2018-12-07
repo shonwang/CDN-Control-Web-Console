@@ -555,33 +555,52 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                     "status": this.clickStatus,
                     "reason": this.reason.opRemark,
                     "opType": this.reason.opType,
-                    "relayStatus": this.reason.relayStatus
-                 }
+                    "relayStatus": this.reason.relayStatus,
+                    "confirm":0
+                }
+                this.curPauseParam = options;
                 this.collection.modifyStatus(options);
                 this.nodeTipsPopup.$el.modal("hide");
             }
         },
 
         onSetStatusSuccess: function(data){
-            var successList = [], errorList = []
-            _.each(data, function(el){
-                if (el.result) {
-                    successList.push(el.name)
-                } else {
-                    errorList.push(el.name)
-                }
-            }.bind(this))
+            var message = "";
+            if (data.status == 201) {
+                message = "操作的设备为 [" + data.message + "] 的<span class='text-danger'>最后一台或者全部设备</span>，暂停后此节点将无法继续服务，请慎重操作！你确定要继续暂停吗？"
+                Utility.confirm(message, function(){
+                    this.curPauseParam.confirm = 1;
+                    this.collection.modifyStatus(this.curPauseParam);
+                }.bind(this))
+            } else {
+                var successList = [], errorList = []
+                _.each(data, function(el){
+                    if (el.result) {
+                        successList.push(el.name)
+                    } else {
+                        errorList.push(el.name)
+                    }
+                }.bind(this))
 
-            var message = '';
-            if (successList.length > 0)
-                message = "<span class='text-success'>以下设备操作成功：</span><br>" + successList.join("<br>") + "<br>";
-            if (errorList.length > 0)
-                message = message +  "<span class='text-danger'>以下设备为不可用状态暂时无法操作：</span><br>" + errorList.join("<br>");
-            alert(message);
-            this.onClickQueryButton();
+                var message = '';
+                if (successList.length > 0)
+                    message = "<span class='text-success'>以下设备操作成功：</span><br>" + successList.join("<br>") + "<br>";
+                if (errorList.length > 0)
+                    message = message +  "<span class='text-danger'>以下设备为不可用状态暂时无法操作：</span><br>" + errorList.join("<br>");
+                alert(message);
+                this.onClickQueryButton();
+            }
         },
 
-        onSetStatusError: function(data){},
+        onSetStatusError: function(data){
+            var message = "";
+            if (data.status == 401) {
+                message = "操作的设备为" + data.message + "最后一台设备，不允许直接暂停，请联系中控处理"
+                Utility.alerts(message)
+            } else {
+                this.onGetError(data)
+            }
+        },
 
         onClickItemEdit: function(event){
             var eventTarget = event.srcElement || event.target, id;

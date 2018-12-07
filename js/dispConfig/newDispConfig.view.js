@@ -365,6 +365,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                 document.body.clientHeight;
         },
         initTable: function(isHistory, isDiff){
+           
             var keyWord = this.$el.find("#disp-config-filter").val().trim();
             var data = this.collection.models;
             var dataList;

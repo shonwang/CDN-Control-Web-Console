@@ -279,6 +279,8 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             this.collection.getDispConfigList(this.queryArgs,function(data){
                 this.oldData = JSON.stringify(data);
             }.bind(this));
+            this.nodeNameList = [];
+            this.regionList = [];
             //this.showDisablePopup("数据加载中，请耐心等待!");
         },
 
@@ -365,16 +367,15 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                 document.body.clientHeight;
         },
         initTable: function(isHistory, isDiff){
-           
             var keyWord = this.$el.find("#disp-config-filter").val().trim();
             var data = this.collection.models;
             var dataList;
-            if(this.regionList && this.regionList.length > 0 && keyWord != ""){
+            if(this.regionList && this.regionList.length > 0){
                 this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
                     data: this.regionList,
                     permission: AUTH_OBJ
                 }));
-            }else if(this.nodeNameList && this.nodeNameList.length > 0 && keyWord != ""){
+            }else if(this.nodeNameList && this.nodeNameList.length > 0){
                 this.table = $(_.template(template['tpl/dispConfig/dispConfig.table.new.html'])({
                     data: this.nodeNameList,
                     permission: AUTH_OBJ

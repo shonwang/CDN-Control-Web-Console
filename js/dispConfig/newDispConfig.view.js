@@ -212,8 +212,9 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
             _.each(this.collection.models, function(model, index, list) {
                 var that = this;
                 if (keyWord === ""){
+
                     model.set("isDisplay", true);
-                    _.each(model.list, function(modelL3, indexL3, listL3) {
+                    _.each(model.get("list"), function(modelL3, indexL3, listL3) {
                         modelL3.isDisplay = true;
                     })
                 } else if (this.curSearchType == "1"){
@@ -226,7 +227,7 @@ define("newDispConfig.view", ['require','exports', 'template', 'modal.view', 'ut
                         model.set("isDisplay", false);
                     }
 
-                    _.each(model.list, function(modelL4, indexL4, listL4) {
+                    _.each(model.get("list"), function(modelL4, indexL4, listL4) {
                         modelL4.isDisplay = true;
                     })
                 } else if (this.curSearchType == "2"){

@@ -12,7 +12,7 @@ define("nodeManage.operateDetail.view", ['require', 'exports', 'template', 'moda
                 opRemark: ''
             };
             if(this.whoCallMe == 'device' && this.isLive){
-                this.args.relayStatus = 1;//默认否，此项是设备管理的字段，其它管理管理不需要
+                this.args.relayStatus = 2;//默认是，此项是设备管理的字段，其它管理管理不需要
             }
             var obj = {
                 type: options.type,

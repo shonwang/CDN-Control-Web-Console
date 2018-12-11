@@ -144,7 +144,20 @@ define("hashOrigin.model", ['require','exports', 'utility'], function(require, e
             }.bind(this);
             Utility.getAjax(url, {}, successCallback, errorCallback);  
         },
-
+        //获取topu name
+        getToPuNameByHashId:function(args){
+            var url = BASE_URL + "/resource/topo/selectTopoByHashId?hashId="+args,
+                successCallback = function(res) {
+                    if (res)
+                        this.trigger("check.hashOriginToPu.success", res);
+                    else
+                        this.trigger("check.hashOriginToPu.error", res);
+                }.bind(this),
+                errorCallback = function(response) {
+                    this.trigger("check.hashOriginToPu.error", response);
+                }.bind(this);
+            Utility.getAjax(url, {}, successCallback, errorCallback);
+        },
         sendBatchStratefyTask:function(args){
             var url = BASE_URL + "/resource/special/sendBatchStratefyTask",
             successCallback = function(res) {

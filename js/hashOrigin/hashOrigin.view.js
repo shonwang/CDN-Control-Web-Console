@@ -7,23 +7,43 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             this.id = this.model.get("id");
             this.collection.off("check.hashOrigin.success");
             this.collection.off("check.hashOrigin.error");
+            this.collection.on("check.hashOriginToPu.success",$.proxy(this.onCheckToPuSuccess,this));
+            this.collection.on("check.hashOriginToPu.error",$.proxy(this.onGetError,this));
             this.collection.on("check.hashOrigin.success",$.proxy(this.onCheckSuccess,this));
-            this.collection.on("check.hashOrigin.errir",$.proxy(this.onGetError,this));
-            this.$el = $("<div class='checkCtn'></div>");
-            this.showLoading();
-            this.collection.selectStrategyByHashId(this.id);
-        },
+            this.collection.on("check.hashOrigin.error",$.proxy(this.onGetError,this));
 
+            this.$el = $("<div class='checkCtn'></div>");
+            this.collection.selectStrategyByHashId(this.id);
+            this.collection.getToPuNameByHashId(this.id);
+            // this.showLoading();
+        },
+        onCheckToPuSuccess:function(res){
+            this.toPuArgs = res;
+            if(res.length > 0){
+                this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check1.html'])({data:res}));
+            }else {
+                this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check1.html'])({data:[{name:'暂无数据'}]}));
+            }
+            this.$el.append(this.table);
+        },
         onCheckSuccess:function(res){
             this.dataList = res;
-            if(res.length>0){
-               this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res}));
+            // if(res.length>0 && this.toPuArgs.length > 0){
+            //    this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res,data1:this.toPuArgs}));
+            // }else if(res.length == 0 && this.toPuArgs.length > 0){
+            //     this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:[{name:'暂无数据'}],data1:this.toPuArgs}));
+            // }else if(res.length > 0 && this.toPuArgs.length == 0){
+            //     this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res,data1:[{name:'暂无数据'}]}));
+            // }
+            // else{
+            //     this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:[{name:'暂无数据'}],data1:[{name:'暂无数据'}]}))
+            // }
+            if(res.length > 0){
+                this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check2.html'])({data:res}));
+            }else {
+                this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check2.html'])({data:[{name:'暂无数据'}]}));
             }
-            else{
-                this.table = $(_.template(template['tpl/empty.html'])({}));
-            }
-            //this.table = $(_.template(template['tpl/hashOrigin/hashOrigin.check.html'])({data:res}));
-            this.$el.html(this.table);
+            this.$el.append(this.table);
         },
 
         onGetError: function(error){
@@ -33,9 +53,9 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
                 alert("网络阻塞，请刷新重试！")
         },        
 
-        showLoading:function(){
-            this.$el.html(_.template(template['tpl/loading.html'])({}));
-        },
+        // showLoading:function(){
+        //         this.$el.html(_.template(template['tpl/loading.html'])({}));
+        // },
 
         getArgs:function(){
             var arr=[];
@@ -302,14 +322,13 @@ define("hashOrigin.view", ['require','exports', 'template', 'modal.view', 'utili
             var model = this.collection.get(id);
 
             if (this.checkHashPopup) $("#" + this.checkHashPopup.modalId).remove();
-
             var myCheckView = new CheckView({
                 collection: this.collection,
                 model: model
             });
 
             var options = {
-                title: "hash关联特殊分层策略列表",
+                title: "hash环关联策略列表",
                 body: myCheckView,
                 backdrop: 'static',
                 type: 2,

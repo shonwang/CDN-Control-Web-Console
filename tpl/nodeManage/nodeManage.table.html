@@ -50,7 +50,7 @@
                         <%}%>
                       </td>
                    <% } else if (titleList[j].isChecked){ %>
-                      <td><%=data[i].attributes[titleList[j].key]%></td>
+                      <td><%=data[i].attributes[titleList[j].key] || "---"%></td>
                    <% } %>
                 <% } %>
               <%}%>

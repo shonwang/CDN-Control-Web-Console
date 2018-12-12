@@ -18,12 +18,12 @@ define("nodeManage.model", ['require','exports', 'utility'], function(require, e
             if (status === 4) this.set("statusName", tips + '暂停</a>');
             if (status === 2) this.set("statusName",'<span class="label label-warning">挂起</span>');
             if (status === 1) this.set("statusName", '<span class="label label-success" >运行中</span>');
-
+            this.set("lineStatusName", '---');
             _.each(this.get("rsNodeCorpDtos"), function(el){
                 if (el.status == 1) {
-                    el.statusName = '<span class="label label-success">运行中</span>'
+                    el.lineStatusName = '<span class="label label-success">运行中</span>'
                 } else if (el.status == 2) {
-                    el.statusName = '<span class="label label-danger">暂停</span>'
+                    el.lineStatusName = '<span class="label label-danger">暂停</span>'
                 }
             }.bind(this))
 

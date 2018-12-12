@@ -143,7 +143,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     name: "线路状态",
                     isChecked: true,
                     isMultiRows: true,
-                    key: "statusName"
+                    key: "lineStatusName"
                 }, {
                     name: "状态",
                     isChecked: true,

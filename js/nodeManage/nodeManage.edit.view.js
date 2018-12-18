@@ -253,7 +253,6 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 letterRe = /[A-Za-z]+/,
                 reLocation = /^\d+(\.\d+)?----\d+(\.\d+)?$/;
 
-
             if(freeStartTime > freeEndTime){
                 Utility.warning("免费带宽开始时间小于等于免费带宽结束时间!");
                 return false;
@@ -262,9 +261,11 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 Utility.warning("建设带宽只能填入数字！");
                 return false;
             }
-            if(!re.test(freeBandwidth)){
-                Utility.warning("免费带宽只能填入数字！");
-                return false;
+            if(freeBandwidth != ''){
+                if(!re.test(freeBandwidth)){
+                    Utility.warning("免费带宽只能填入数字！");
+                    return false;
+                }
             }
             if(parseInt(freeBandwidth) > parseInt(buildBandwidth)){
                 Utility.warning("免费带宽小于等于建设带宽");
@@ -440,6 +441,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
         },
 
         toModify: function(event) {
+
             var rsNodeCorpDtosList = this.formatRsNodeCorpDtosList();
             var eventTarget = event.srcElement || event.target;
             var id = parseInt($(eventTarget).attr("data-id"));

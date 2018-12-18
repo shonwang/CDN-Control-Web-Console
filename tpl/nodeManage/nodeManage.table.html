@@ -69,7 +69,7 @@
                             修改状态
                         </a>
                     <% } %>
-                    <% if (data[i].attributes.status !== 1 && permission.EnableorPauseNode && data[i].attributes.operatorId != 9) { %>
+                    <% if (data[i].attributes.status !== 1 && data[i].attributes.status !== 2&& permission.EnableorPauseNode && data[i].attributes.operatorId != 9) { %>
                         <a href="javascript:void(0)" id="<%=data[i].attributes['id']%>" class="play">
                             开启
                         </a>

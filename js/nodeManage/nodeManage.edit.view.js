@@ -258,7 +258,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 return false;
             }
             if(!re.test(buildBandwidth)){
-                Utility.warning("建设带宽只能填入数字！");
+                Utility.warning("不能为空，且建设带宽只能填入数字！");
                 return false;
             }
             if(freeBandwidth != ''){
@@ -267,8 +267,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                     return false;
                 }
             }
+            if(parseInt(freeBandwidth) > 100000000 || parseInt(freeBandwidth) < 0 ){
+                Utility.warning("免费带宽：0-100000000（0-100T，单位转换按1000算）");
+                return false;
+            }
             if(parseInt(freeBandwidth) > parseInt(buildBandwidth)){
-                Utility.warning("免费带宽小于等于建设带宽");
+                Utility.warning("免费带宽不能大于建设带宽");
                 return false;
             }
             if(parseInt(buildBandwidth) > 100000000 || parseInt(buildBandwidth) < 0 ){
@@ -276,11 +280,11 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 return false;
             }
             if (parseInt(maxBandwidth) > parseInt(buildBandwidth)) {
-                Utility.warning("上联带宽小于等于建设带宽！");
+                Utility.warning("上联带宽不能大于建设带宽！");
                 return false;
             }
             if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
-                Utility.warning("上联带宽和保底带宽只能填入数字！");
+                Utility.warning("不能为空，且上联带宽和保底带宽只能填入数字！");
                 return false;
             }
             if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0) {
@@ -296,7 +300,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 return false;
             }
             if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)) {
-                Utility.warning("上联带宽阈值和保底带宽阈值只能填入数字！");
+                Utility.warning("不能为空，且上联带宽阈值和保底带宽阈值只能填入数字！");
                 return false;
             }
             if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)) {
@@ -312,7 +316,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 return false;
             }
             if (!re.test(unitPrice)) {
-                Utility.warning("成本权值只能填入数字！");
+                Utility.warning("不能为空，且成本权值只能填入数字！");
                 return false;
             }
             if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0) {

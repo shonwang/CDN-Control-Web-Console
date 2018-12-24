@@ -802,6 +802,7 @@ define("deviceManage.view", ['require','exports', 'template', 'modal.view', 'uti
                             "reason": options.opRemark,
                             "opType": options.opType  
                          }
+                        this.curPauseParam = args;
                         this.collection.modifyStatus(args);
                         this.nodeTipsPopup.$el.modal("hide");
                     }.bind(this),

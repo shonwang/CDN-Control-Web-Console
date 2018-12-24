@@ -258,7 +258,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 return false;
             }
             if(!re.test(buildBandwidth)){
-                Utility.warning("不能为空，且建设带宽只能填入数字！");
+                Utility.warning("建设带宽不能为空，且建设带宽只能填入数字！");
                 return false;
             }
             if(freeBandwidth != ''){
@@ -283,8 +283,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 Utility.warning("上联带宽不能大于建设带宽！");
                 return false;
             }
-            if (!re.test(maxBandwidth) || !re.test(minBandwidth)) {
-                Utility.warning("不能为空，且上联带宽和保底带宽只能填入数字！");
+            if (!re.test(maxBandwidth)) {
+                Utility.warning("上联带宽不能为空，且上联带宽只能填入数字！");
+                return false;
+            }
+            if (!re.test(minBandwidth)) {
+                Utility.warning("保底带宽不能为空，且保底带宽只能填入数字！");
                 return false;
             }
             if (parseInt(maxBandwidth) > 100000000 || parseInt(maxBandwidth) < 0) {
@@ -299,8 +303,12 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 Utility.warning("上联带宽不能小于保底带宽！");
                 return false;
             }
-            if (!re.test(maxBandwidthThreshold) || !re.test(minBandwidthThreshold)) {
-                Utility.warning("不能为空，且上联带宽阈值和保底带宽阈值只能填入数字！");
+            if (!re.test(maxBandwidthThreshold)) {
+                Utility.warning("上联带宽阈值不能为空，且上联带宽阈值只能填入数字！");
+                return false;
+            }
+            if (!re.test(minBandwidthThreshold)) {
+                Utility.warning("保底带宽阈值不能为空，且保底带宽阈值只能填入数字！");
                 return false;
             }
             if (parseInt(maxBandwidthThreshold) < 0 || parseInt(maxBandwidthThreshold) > parseInt(maxBandwidth)) {
@@ -316,7 +324,7 @@ define("nodeManage.edit.view", ['require', 'exports', 'template', 'modal.view', 
                 return false;
             }
             if (!re.test(unitPrice)) {
-                Utility.warning("不能为空，且成本权值只能填入数字！");
+                Utility.warning("成本权值不能为空，且成本权值只能填入数字！");
                 return false;
             }
             if (parseInt(unitPrice) > 2147483647 || parseInt(unitPrice) < 0) {

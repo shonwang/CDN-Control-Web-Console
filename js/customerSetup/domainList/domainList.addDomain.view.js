@@ -112,8 +112,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     }
 
                     var ipArray = originAddress.split(",");
-                    if (ipArray.length > 10) {
-                        this.$el.find("#cdn-originIP-error").html("你的IP数是否超过了10个。").show();
+                    if (ipArray.length > 20) {
+                        this.$el.find("#cdn-originIP-error").html("你的IP数是否超过了20个。").show();
                         return false;
                     }
                     for (var i = 0; i < ipArray.length; i++) {
@@ -426,8 +426,8 @@ define("domainList.addDomain.view", ['require', 'exports', 'template', 'utility'
                     }
 
                     var ipArray = originAddress.split(",");
-                    if (ipArray.length > 10) {
-                        this.$el.find("#cdn-originIP-error").html("你的IP数是否超过了10个。").show();
+                    if (ipArray.length > 20) {
+                        this.$el.find("#cdn-originIP-error").html("你的IP数是否超过了20个。").show();
                         return false;
                     }
                     for (var i = 0; i < ipArray.length; i++) {

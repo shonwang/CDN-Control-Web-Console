@@ -244,6 +244,7 @@
   "netRateLimiting.edit.view": "react/netRateLimiting/netRateLimiting.edit.view",
   "netRateLimiting.model": "react/netRateLimiting/netRateLimiting.model",
   "netRateLimiting.view": "react/netRateLimiting/netRateLimiting.view",
+  "nodeManage.pauseNode.view": "react/nodeManage/nodeManage.pauseNode.view",
   "preheatManage.edit.view": "react/preheatManage/preheatManage.edit.view",
   "preheatManage.model": "react/preheatManage/preheatManage.model",
   "preheatManage.view": "react/preheatManage/preheatManage.view",

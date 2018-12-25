@@ -143,59 +143,61 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     isChecked: false,
                     isMultiRows: true,
                     key: "minBandwidthThreshold"
-                },
-                    {
-                        name: "计费类型",
-                        isChecked: true,
-                        isMultiRows: true,
-                        key: "chargingTypeName"
-                    }, {
-                        name: "状态",
-                        isChecked: true,
-                        key: "statusName"
-                    }, {
-                        name: "开始计费时间",
-                        isChecked: true,
-                        key: "startChargingTimeFormated"
-                    }, {
-                        name: "创建时间",
-                        isChecked: true,
-                        key: "createTimeFormated"
-                    }, {
-                        name: "省份",
-                        isChecked: true,
-                        key: "provName"
-                    }, {
-                        name: "大区",
-                        isChecked: false,
-                        key: "areaName"
-                    }, {
-                        name:"交换机名称",
-                        isChecked:true,
-                        key:"sharePortTag"
-                    }, {
-                        name:"免费带宽",
-                        isChecked:true,
-                        isMultiRows: true,
-                        key:"freeBandwidth"
-                    }, {
-                        name:"建设带宽",
-                        isChecked:false,
-                        isMultiRows:true,
-                        key:"buildBandwidth"
-                    },
-                    {
-                        name:"免费带宽开始时间",
-                        isChecked:false,
-                        isMultiRows: true,
-                        key:"freeStartTimeFormated"
-                    }, {
-                        name:"免费带宽结束时间",
-                        isChecked:false,
-                        isMultiRows: true,
-                        key:"freeEndTimeFormated"
-                    }
-                ];
+                }, {
+                    name: "计费类型",
+                    isChecked: true,
+                    isMultiRows: true,
+                    key: "chargingTypeName"
+                }, {
+                    name: "线路状态",
+                    isChecked: true,
+                    isMultiRows: true,
+                    key: "lineStatusName"
+                }, {
+                    name: "状态",
+                    isChecked: true,
+                    key: "statusName"
+                }, {
+                    name: "开始计费时间",
+                    isChecked: true,
+                    key: "startChargingTimeFormated"
+                }, {
+                    name: "创建时间",
+                    isChecked: true,
+                    key: "createTimeFormated"
+                }, {
+                    name: "省份",
+                    isChecked: true,
+                    key: "provName"
+                }, {
+                    name: "大区",
+                    isChecked: false,
+                    key: "areaName"
+                }, {
+                    name: "交换机名称",
+                    isChecked: true,
+                    key: "sharePortTag"
+                }, {
+                    name: "免费带宽",
+                    isChecked: true,
+                    isMultiRows: true,
+                    key: "freeBandwidth"
+                }, {
+                    name: "建设带宽",
+                    isChecked: false,
+                    isMultiRows: true,
+                    key: "buildBandwidth"
+                }, {
+                    name: "免费带宽开始时间",
+                    isChecked: false,
+                    isMultiRows: true,
+                    key: "freeStartTimeFormated"
+                }, {
+                    name: "免费带宽结束时间",
+                    isChecked: false,
+                    isMultiRows: true,
+                    key: "freeEndTimeFormated"
+                }];
                 this.initLiveLevelDropMenu();
                 this.initCacheLevelDropMenu();
                 this.initTableHeader();
@@ -451,6 +453,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             },
 
             initTable: function() {
+                console.log(this.collection.models)
                 var nameList = this.nameList;
                 this.$el.find(".opt-ctn .m").attr("disabled", "disabled");
                 this.$el.find(".opt-ctn .multi-play").attr("disabled", "disabled");
@@ -472,6 +475,25 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }));
                 if (this.collection.models.length !== 0) {
                     this.$el.find(".table-ctn").html(this.table[0]);
+                    this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
+                    this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
+                    if (AUTH_OBJ.DeleteNode)
+                        this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
+                    else
+                        this.table.find("tbody .delete").remove();
+                    this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
+                    this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
+                    this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
+                    this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
+                    this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
+                    this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
+                    this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
+                    this.table.find("tbody .modify-status").on("click", $.proxy(this.onClickItemModifyStatus, this));
+
+                    this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
+                    this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
+
+                    this.table.find("[data-toggle='popover']").popover();
                 } else {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
                 }
@@ -624,7 +646,19 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
 
                 var model = this.collection.get(id);
+                this.openNodePrompt(model, id, 1);
+            },
 
+            openNodePrompt: function(model, id, operator, operatorIds){
+                var param = {
+                    opRemark: '',
+                    nodeId: id,
+                    operator: operator,
+                    t: new Date().valueOf()
+                }
+                if (operatorIds) {
+                    param.operatorIds = operatorIds
+                }
                 if (this.promptPopup) $("#" + this.promptPopup.modalId).remove();
 
                 require(["nodeManage.prompt.view"], function(PromptView) {
@@ -640,12 +674,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                         onOKCallback: function() {
                             var options = myPromptView.onSure();
                             if (!options) return;
-                            this.collection.operateNode({
-                                opRemark: '',
-                                nodeId: id,
-                                operator: 1,
-                                t: new Date().valueOf()
-                            })
+                            this.collection.operateNode(param)
                             this.promptPopup.$el.modal("hide");
                         }.bind(this),
                         onHiddenCallback: function() {
@@ -1007,7 +1036,6 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
             },
 
             onClickItemStart: function(event) {
-                //  this.onClickItemPlay()
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "SPAN") {
@@ -1017,36 +1045,7 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     id = $(eventTarget).attr("id");
                 }
                 var model = this.collection.get(id);
-
-                if (this.promptPopup) $("#" + this.promptPopup.modalId).remove();
-
-                require(["nodeManage.prompt.view"], function(PromptView) {
-                    var myPromptView = new PromptView({
-                        collection: this.collection,
-                        model: model
-                    });
-                    var options = {
-                        title: "开启节点",
-                        body: myPromptView,
-                        backdrop: 'static',
-                        type: 2,
-                        onOKCallback: function() {
-                            var options = myPromptView.onSure();
-                            if (!options) return;
-                            this.collection.operateNode({
-                                opRemark: '',
-                                nodeId: id,
-                                operator: -1,
-                                t: new Date().valueOf()
-                            })
-                            this.promptPopup.$el.modal("hide");
-                        }.bind(this),
-                        onHiddenCallback: function() {
-                            this.enterKeyBindQuery();
-                        }.bind(this)
-                    }
-                    this.promptPopup = new Modal(options);
-                }.bind(this));
+                this.openOperateDetail(model, id, -1)
             },
 
             onClickItemInit: function(evnet) {
@@ -1158,6 +1157,56 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 this.collection.getNodeDeleteModalInfo({id:this.nodeDeleteId});
             },
 
+            onClickItemModifyStatus: function(event) {
+                if (!this.operateTypeList || this.operateTypeList.length == 0) {
+                    Utility.alerts("没有获取到操作说明列表!")
+                    return false;
+                }
+
+                var eventTarget = event.srcElement || event.target,
+                    id;
+                if (eventTarget.tagName == "SPAN") {
+                    eventTarget = $(eventTarget).parent();
+                    id = eventTarget.attr("id");
+                } else {
+                    id = $(eventTarget).attr("id");
+                }
+
+                var model = this.collection.get(id);
+
+                if (this.nodeModifyStatusPopup) $("#" + this.nodeModifyStatusPopup.modalId).remove();
+
+                require(["nodeManage.pauseNode.view"], function(PauseNodeView) {
+                    var modifyNodeStatusView = new PauseNodeView({
+                        model: model,
+                        collection: this.collection
+                    });
+                    var options = {
+                        title: "修改节点状态",
+                        body: modifyNodeStatusView,
+                        backdrop: 'static',
+                        type: 2,
+                        onOKCallback: function() {
+                            var statusObj = modifyNodeStatusView.getStatus();
+                            if (!statusObj) return;
+                            if (statusObj.operator == -1) {
+                                this.nodeModifyStatusPopup.$el.modal("hide");
+                                setTimeout(function(){
+                                    this.openOperateDetail(model, id, statusObj.operator, statusObj.operatorIds)
+                                }.bind(this), 500)
+                            } else if (statusObj.operator == 1) {
+                                this.nodeModifyStatusPopup.$el.modal("hide");
+                                setTimeout(function(){
+                                    this.openNodePrompt(model, id, statusObj.operator, statusObj.operatorIds);
+                                }.bind(this), 500)
+                            }
+                        }.bind(this),
+                        onHiddenCallback: function() {}.bind(this)
+                    }
+                    this.nodeModifyStatusPopup = new Modal(options);
+                }.bind(this));
+            },
+
             onClickItemStop: function(event) {
                 if (!this.operateTypeList || this.operateTypeList.length == 0) {
                     Utility.alerts("没有获取到操作说明列表!")
@@ -1174,6 +1223,20 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                 }
 
                 var model = this.collection.get(id);
+                this.openOperateDetail(model, id, -1)
+            },
+
+            openOperateDetail: function(model, id, operator, operatorIds) {
+                var param = {
+                    opRemark: null,
+                    opType: null,
+                    nodeId: id,
+                    operator: -1,
+                    t: new Date().valueOf()
+                }
+                if (operatorIds) {
+                    param.operatorIds = operatorIds
+                }
                 if (this.nodeTipsPopup) $("#" + this.nodeTipsPopup.modalId).remove();
 
                 require(["nodeManage.operateDetail.view"], function(NodeTips) {
@@ -1193,23 +1256,19 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                             var options = stopNodeView.getArgs();
                             if (!options) return;
                             this.currentPauseNodeId = id;
-                            this.collection.operateNode({
-                                opRemark: options.opRemark,
-                                opType: options.opType,
-                                nodeId: id,
-                                operator: -1,
-                                t: new Date().valueOf()
-                            })
+                            param.opRemark = options.opRemark;
+                            param.opType = options.opType;
+                            this.collection.operateNode(param)
                             this.nodeTipsPopup.$el.modal("hide");
                             this.showDisablePopup("服务端正在努力暂停中...")
                         }.bind(this),
                         onHiddenCallback: function() {
-
+                            this.enterKeyBindQuery();
                         }.bind(this)
                     }
                     this.nodeTipsPopup = new Modal(options);
                 }.bind(this));
-            },
+            }
         });
         return NodeManageView;
     });

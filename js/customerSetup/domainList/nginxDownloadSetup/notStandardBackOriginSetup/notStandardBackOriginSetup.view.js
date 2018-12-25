@@ -803,8 +803,8 @@ define("notStandardBackOriginSetup.view", ['require','exports', 'template', 'mod
             }
             if (originType == 1) {
                 var ipArray = originAddress.split(",");
-                if (ipArray.length > 10) {
-                    Utility.warning("你的IP数是否超过了10个。");
+                if (ipArray.length > 20) {
+                    Utility.warning("你的IP数是否超过了20个。");
                     return false;
                 }
                 for (var i = 0; i < ipArray.length; i++) {

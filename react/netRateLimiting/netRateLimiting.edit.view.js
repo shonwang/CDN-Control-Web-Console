@@ -93,7 +93,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     totalQuota: res.group.totalQuota,               
                     advanceStrategy: advanceStrategy,
                     defaultStrategy: defaultStrategy,
-                    isAdvance:  advanceStrategy.length > 0 ? true : false
+                    isAdvance:  res.group.advancedConf == 1 ? true : false//advanceStrategy.length > 0 ? true : false
                 });
 
                 var collection = this.props.limitProps.collection;
@@ -140,6 +140,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                 const { resetFields } = this.props.form;
                 var defaultStrategy = this.state.defaultStrategy;
                 defaultStrategy.currentMode = value;
+                defaultStrategy.currentValue = null;
                 this.setState({
                     defaultStrategy: defaultStrategy
                 });
@@ -152,6 +153,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                 const { resetFields } = this.props.form;
                 var curEditField = this.state.curEditField;
                 curEditField.currentMode = value;
+                curEditField.currentValue = null;
                 this.setState({
                     curEditField: curEditField
                 });
@@ -192,6 +194,21 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     callback();
                 } else if (currentMode == 1 && value && Utility.isIP(value)) {
                     callback();
+                } else if (currentMode == 1 && value && value.indexOf(",") > -1) {
+                    var ipArray = value.split(","), correctCount = 0;
+
+                    for (var i = 0; i < ipArray.length; i++) {
+                        if (Utility.isIP(ipArray[i])) {
+                            correctCount = correctCount + 1;
+                        } 
+                    }
+                    if (ipArray.length > 10) {
+                        callback('支持多个ip的填写，用逗号分隔，最多为10个')
+                    } else if (correctCount == ipArray.length) {
+                        callback();
+                    } else {
+                        callback('请输入正确的自定义回源！')
+                    }
                 } else if (currentMode == 1) {
                     callback('请输入正确的自定义回源！')
                 } else {
@@ -231,6 +248,20 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                     callback();
                 } else if (currentMode == 1 && value && Utility.isIP(value)) {
                     callback();
+                } else if (currentMode == 1 && value && value.indexOf(",") > -1) {
+                    var ipArray = value.split(","), correctCount = 0;
+                    for (var i = 0; i < ipArray.length; i++) {
+                        if (Utility.isIP(ipArray[i])) {
+                            correctCount = correctCount + 1;
+                        } 
+                    }
+                    if (ipArray.length > 10) {
+                        callback('支持多个ip的填写，用逗号分隔，最多为10个')
+                    } else if (correctCount == ipArray.length) {
+                        callback();
+                    } else {
+                        callback('请输入正确的自定义回源！')
+                    }
                 } else if (currentMode == 1) {
                     callback('请输入正确的自定义回源！')
                 } else {
@@ -246,7 +277,14 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
 
             renderBaseInfoView(formItemLayout) {
                 const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
-                var baseInfoView = null; 
+                var baseInfoView = null, initialValueLimit = 2000, initialValueCode = 404, initialValueOrigin = "";
+                if (this.state.defaultStrategy.currentMode == 1) {
+                    initialValueOrigin = this.state.defaultStrategy.currentValue || ""
+                } else if (this.state.defaultStrategy.currentMode == 2) {
+                    initialValueCode = this.state.defaultStrategy.currentValue || 404
+                } else if (this.state.defaultStrategy.currentMode == 3) {
+                    initialValueLimit = this.state.defaultStrategy.currentValue || 2000
+                }
 
                 baseInfoView = (
                     <div>
@@ -280,7 +318,8 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                                 placeholder={'请选择'}
                                                 maxTagCount={1}
                                                 notFoundContent={<Spin size="small" />} 
-                                                filterOption={false} >
+                                                optionFilterProp="children"
+                                                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0} >
                                                 {this.state.dataSourceDomains}       
                                         </Select>
                                     )}
@@ -299,7 +338,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                             initialValue: this.state.totalQuota,
                                             rules: [{ required: true, message: '请输入限速阈值!' }],
                                         })(
-                                        <InputNumber style={{ width: 150 }}/>
+                                        <InputNumber style={{ width: 150 }} min={1}/>
                                     )}
                                 </FormItem>
                             </Col>
@@ -339,18 +378,18 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             <Col span={12} >
                                 <FormItem style={{display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none"}}>
                                     {getFieldDecorator('strategyLimit', {
-                                            initialValue: parseInt(this.state.defaultStrategy.currentValue) || 2000,
+                                            initialValue: initialValueLimit,
                                             rules: [
                                                 { validator: $.proxy(this.validateStrategyLimit, this) },
                                             ],
                                         })(
                                         <InputNumber style={{ width: 150 }} min={2000}/>
                                     )}
-                                    <span style={{marginLeft: "10px"}}>kbps</span>
+                                    <span style={{marginLeft: "10px"}}>Kbps</span>
                                 </FormItem>
                                 <FormItem style={{display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none"}}>
                                     {getFieldDecorator('strategyCode', {
-                                            initialValue: parseInt(this.state.defaultStrategy.currentValue) || 404,
+                                            initialValue: initialValueCode,
                                             rules: [
                                                 { validator: $.proxy(this.validateStrategyCode, this) },
                                             ],
@@ -360,12 +399,12 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </FormItem>
                                 <FormItem style={{display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none"}}>
                                     {getFieldDecorator('strategyOrigin', {
-                                            initialValue: this.state.defaultStrategy.currentValue,
+                                            initialValue: initialValueOrigin,
                                             rules: [
                                                 { validator: $.proxy(this.validateStrategyOrigin, this) },
                                             ],
                                         })(
-                                        <Input />
+                                        <Input.TextArea />
                                     )}
                                 </FormItem>
                             </Col>
@@ -399,7 +438,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                         else if (record.currentMode == 2)
                             tag = "自定义状态码: " + text
                         else if (record.currentMode == 3)
-                            tag = "自定义限速: " + text + "kbps"
+                            tag = "自定义限速: " + text + "Kbps"
                         return tag
                     }
                 },{
@@ -584,7 +623,15 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
             renderAddEditFieldView(formItemLayout) {
                 const { getFieldDecorator } = this.props.form;
                 const { curEditField, isEditField} = this.state;
-                var addEditNodesView = "";
+                var addEditNodesView = "", initialValueLimit = 2000, initialValueCode = 404, initialValueOrigin = "";
+                if (this.state.curEditField.currentMode == 1) {
+                    initialValueOrigin = this.state.curEditField.currentValue || ""
+                } else if (this.state.curEditField.currentMode == 2) {
+                    initialValueCode = this.state.curEditField.currentValue || 404
+                } else if (this.state.curEditField.currentMode == 3) {
+                    initialValueLimit = this.state.curEditField.currentValue || 2000
+                }
+
                 addEditNodesView = (
                     <Form>
                         <FormItem {...formItemLayout} label="文件类型">
@@ -618,7 +665,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             <Col span={12} >
                                 <FormItem style={{display: this.state.curEditField.currentMode == 3 ? "list-item" : "none"}}>
                                     {getFieldDecorator('advanceStrategyLimit', {
-                                            initialValue: parseInt(this.state.curEditField.currentValue) || 2000,
+                                            initialValue: initialValueLimit,
                                             rules: [
                                                 { validator: $.proxy(this.validateAdvanceStrategyLimit, this) },
                                             ],
@@ -628,7 +675,7 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </FormItem>
                                 <FormItem style={{display: this.state.curEditField.currentMode == 2 ? "list-item" : "none"}}>
                                     {getFieldDecorator('advanceStrategyCode', {
-                                            initialValue: parseInt(this.state.curEditField.currentValue) || 404,
+                                            initialValue: initialValueCode,
                                             rules: [
                                                 { validator: $.proxy(this.validateAdvanceStrategyCode, this) },
                                             ],
@@ -638,18 +685,18 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                                 </FormItem>
                                 <FormItem style={{display: this.state.curEditField.currentMode == 1 ? "list-item" : "none"}}>
                                     {getFieldDecorator('advanceStrategyOrigin', {
-                                            initialValue: this.state.curEditField.currentValue,
+                                            initialValue: initialValueOrigin,
                                             rules: [
                                                 { validator: $.proxy(this.validateAdvanceStrategyOrigin, this) },
                                             ],
                                         })(
-                                        <Input style= {{ width: 200 }} />
+                                        <Input.TextArea />
                                     )}
                                 </FormItem>
                             </Col>
                             <Col span={4} >
                                 <FormItem style={{display: this.state.curEditField.currentMode == 3 ? "list-item" : "none"}}>
-                                    <span style={{marginLeft: "10px"}}>kbps</span>
+                                    <span style={{marginLeft: "10px"}}>Kbps</span>
                                 </FormItem>
                             </Col>
                         </FormItem>
@@ -703,7 +750,8 @@ define("netRateLimiting.edit.view", ['require','exports', 'template', 'base.view
                             "group": {
                                 "quotaUnits": vals.quotaUnits,
                                 "totalQuota": vals.totalQuota,
-                                "userId": this.props.limitProps.userInfo.uid
+                                "userId": this.props.limitProps.userInfo.uid,
+                                "advancedConf": this.state.isAdvance ? 1 : 0
                             },
                             "origins": origins,
                             "strategys": strategys

@@ -116,7 +116,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     totalQuota: res.group.totalQuota,
                     advanceStrategy: advanceStrategy,
                     defaultStrategy: defaultStrategy,
-                    isAdvance: advanceStrategy.length > 0 ? true : false
+                    isAdvance: res.group.advancedConf == 1 ? true : false //advanceStrategy.length > 0 ? true : false
                 });
 
                 var collection = this.props.limitProps.collection;
@@ -174,6 +174,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
 
                 var defaultStrategy = this.state.defaultStrategy;
                 defaultStrategy.currentMode = value;
+                defaultStrategy.currentValue = null;
                 this.setState({
                     defaultStrategy: defaultStrategy
                 });
@@ -188,6 +189,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
 
                 var curEditField = this.state.curEditField;
                 curEditField.currentMode = value;
+                curEditField.currentValue = null;
                 this.setState({
                     curEditField: curEditField
                 });
@@ -231,6 +233,22 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     callback();
                 } else if (currentMode == 1 && value && Utility.isIP(value)) {
                     callback();
+                } else if (currentMode == 1 && value && value.indexOf(",") > -1) {
+                    var ipArray = value.split(","),
+                        correctCount = 0;
+
+                    for (var i = 0; i < ipArray.length; i++) {
+                        if (Utility.isIP(ipArray[i])) {
+                            correctCount = correctCount + 1;
+                        }
+                    }
+                    if (ipArray.length > 10) {
+                        callback('支持多个ip的填写，用逗号分隔，最多为10个');
+                    } else if (correctCount == ipArray.length) {
+                        callback();
+                    } else {
+                        callback('请输入正确的自定义回源！');
+                    }
                 } else if (currentMode == 1) {
                     callback('请输入正确的自定义回源！');
                 } else {
@@ -273,6 +291,21 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     callback();
                 } else if (currentMode == 1 && value && Utility.isIP(value)) {
                     callback();
+                } else if (currentMode == 1 && value && value.indexOf(",") > -1) {
+                    var ipArray = value.split(","),
+                        correctCount = 0;
+                    for (var i = 0; i < ipArray.length; i++) {
+                        if (Utility.isIP(ipArray[i])) {
+                            correctCount = correctCount + 1;
+                        }
+                    }
+                    if (ipArray.length > 10) {
+                        callback('支持多个ip的填写，用逗号分隔，最多为10个');
+                    } else if (correctCount == ipArray.length) {
+                        callback();
+                    } else {
+                        callback('请输入正确的自定义回源！');
+                    }
                 } else if (currentMode == 1) {
                     callback('请输入正确的自定义回源！');
                 } else {
@@ -294,7 +327,17 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     setFieldsValue = _props$form2.setFieldsValue,
                     getFieldValue = _props$form2.getFieldValue;
 
-                var baseInfoView = null;
+                var baseInfoView = null,
+                    initialValueLimit = 2000,
+                    initialValueCode = 404,
+                    initialValueOrigin = "";
+                if (this.state.defaultStrategy.currentMode == 1) {
+                    initialValueOrigin = this.state.defaultStrategy.currentValue || "";
+                } else if (this.state.defaultStrategy.currentMode == 2) {
+                    initialValueCode = this.state.defaultStrategy.currentValue || 404;
+                } else if (this.state.defaultStrategy.currentMode == 3) {
+                    initialValueLimit = this.state.defaultStrategy.currentValue || 2000;
+                }
 
                 baseInfoView = React.createElement(
                     'div',
@@ -362,7 +405,10 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                         placeholder: '请选择',
                                         maxTagCount: 1,
                                         notFoundContent: React.createElement(Spin, { size: 'small' }),
-                                        filterOption: false },
+                                        optionFilterProp: 'children',
+                                        filterOption: function filterOption(input, option) {
+                                            return option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+                                        } },
                                     this.state.dataSourceDomains
                                 ))
                             )
@@ -395,7 +441,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 getFieldDecorator('totalQuota', {
                                     initialValue: this.state.totalQuota,
                                     rules: [{ required: true, message: '请输入限速阈值!' }]
-                                })(React.createElement(InputNumber, { style: { width: 150 } }))
+                                })(React.createElement(InputNumber, { style: { width: 150 }, min: 1 }))
                             )
                         ),
                         React.createElement(
@@ -474,20 +520,20 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyLimit', {
-                                    initialValue: parseInt(this.state.defaultStrategy.currentValue) || 2000,
+                                    initialValue: initialValueLimit,
                                     rules: [{ validator: $.proxy(this.validateStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 }, min: 2000 })),
                                 React.createElement(
                                     'span',
                                     { style: { marginLeft: "10px" } },
-                                    'kbps'
+                                    'Kbps'
                                 )
                             ),
                             React.createElement(
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyCode', {
-                                    initialValue: parseInt(this.state.defaultStrategy.currentValue) || 404,
+                                    initialValue: initialValueCode,
                                     rules: [{ validator: $.proxy(this.validateStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 150 } }))
                             ),
@@ -495,9 +541,9 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.defaultStrategy.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('strategyOrigin', {
-                                    initialValue: this.state.defaultStrategy.currentValue,
+                                    initialValue: initialValueOrigin,
                                     rules: [{ validator: $.proxy(this.validateStrategyOrigin, this) }]
-                                })(React.createElement(Input, null))
+                                })(React.createElement(Input.TextArea, null))
                             )
                         )
                     ),
@@ -536,7 +582,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     key: 'currentValue',
                     render: function render(text, record) {
                         var tag = null;
-                        if (record.currentMode == 1) tag = "自定义回源: " + text;else if (record.currentMode == 2) tag = "自定义状态码: " + text;else if (record.currentMode == 3) tag = "自定义限速: " + text + "kbps";
+                        if (record.currentMode == 1) tag = "自定义回源: " + text;else if (record.currentMode == 2) tag = "自定义状态码: " + text;else if (record.currentMode == 3) tag = "自定义限速: " + text + "Kbps";
                         return tag;
                     }
                 }, {
@@ -756,7 +802,18 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                     curEditField = _state3.curEditField,
                     isEditField = _state3.isEditField;
 
-                var addEditNodesView = "";
+                var addEditNodesView = "",
+                    initialValueLimit = 2000,
+                    initialValueCode = 404,
+                    initialValueOrigin = "";
+                if (this.state.curEditField.currentMode == 1) {
+                    initialValueOrigin = this.state.curEditField.currentValue || "";
+                } else if (this.state.curEditField.currentMode == 2) {
+                    initialValueCode = this.state.curEditField.currentValue || 404;
+                } else if (this.state.curEditField.currentMode == 3) {
+                    initialValueLimit = this.state.curEditField.currentValue || 2000;
+                }
+
                 addEditNodesView = React.createElement(
                     Form,
                     null,
@@ -810,7 +867,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 3 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyLimit', {
-                                    initialValue: parseInt(this.state.curEditField.currentValue) || 2000,
+                                    initialValue: initialValueLimit,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyLimit, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 }, min: 2000 }))
                             ),
@@ -818,7 +875,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 2 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyCode', {
-                                    initialValue: parseInt(this.state.curEditField.currentValue) || 404,
+                                    initialValue: initialValueCode,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyCode, this) }]
                                 })(React.createElement(InputNumber, { style: { width: 200 } }))
                             ),
@@ -826,9 +883,9 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 FormItem,
                                 { style: { display: this.state.curEditField.currentMode == 1 ? "list-item" : "none" } },
                                 getFieldDecorator('advanceStrategyOrigin', {
-                                    initialValue: this.state.curEditField.currentValue,
+                                    initialValue: initialValueOrigin,
                                     rules: [{ validator: $.proxy(this.validateAdvanceStrategyOrigin, this) }]
-                                })(React.createElement(Input, { style: { width: 200 } }))
+                                })(React.createElement(Input.TextArea, null))
                             )
                         ),
                         React.createElement(
@@ -840,7 +897,7 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                                 React.createElement(
                                     'span',
                                     { style: { marginLeft: "10px" } },
-                                    'kbps'
+                                    'Kbps'
                                 )
                             )
                         )
@@ -901,7 +958,8 @@ define("netRateLimiting.edit.view", ['require', 'exports', 'template', 'base.vie
                             "group": {
                                 "quotaUnits": vals.quotaUnits,
                                 "totalQuota": vals.totalQuota,
-                                "userId": this.props.limitProps.userInfo.uid
+                                "userId": this.props.limitProps.userInfo.uid,
+                                "advancedConf": this.state.isAdvance ? 1 : 0
                             },
                             "origins": origins,
                             "strategys": strategys

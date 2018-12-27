@@ -493,38 +493,20 @@ define("nodeManage.view", ['require', 'exports', 'template', 'modal.view', 'util
                     this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
                     this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
 
-                    this.table.find("[data-toggle='popover']").popover();
+                    this.table.find("[data-toggle='popover1']").popover({
+                        html:true
+                    });
+                    var sharePortTagList = [];
+                    _.each(this.collection.models,function (model) {
+                        if(model.get("sharePortTag")) {
+                            sharePortTagList.push(model.get("sharePortTag"));
+                        }
+                    });
+                    this.collection.getAssociationNodeByTags(sharePortTagList);
                 } else {
                     this.$el.find(".table-ctn").html(_.template(template['tpl/empty.html'])());
                 }
-                this.table.find("tbody .edit").on("click", $.proxy(this.onClickItemEdit, this));
-                this.table.find("tbody .node-name").on("click", $.proxy(this.onClickItemNodeName, this));
-                if (AUTH_OBJ.DeleteNode)
-                    this.table.find("tbody .delete").on("click", $.proxy(this.onClickItemDelete, this));
-                else
-                    this.table.find("tbody .delete").remove();
-                this.table.find("tbody .play").on("click", $.proxy(this.onClickItemPlay, this));
-                this.table.find("tbody .hangup").on("click", $.proxy(this.onClickItemHangup, this));
-                this.table.find("tbody .operateDetail").on("click", $.proxy(this.onClickDetail, this));
-                this.table.find("tbody .stop").on("click", $.proxy(this.onClickItemStop, this));
-                this.table.find("tbody .disp-info").on("click", $.proxy(this.onClickDispGroupInfo, this));
-                this.table.find("tbody .start").on("click", $.proxy(this.onClickItemStart, this));
-                this.table.find("tbody .init").on("click", $.proxy(this.onClickItemInit, this));
 
-                this.table.find("tbody tr").find("input").on("click", $.proxy(this.onItemCheckedUpdated, this));
-                this.table.find("thead input").on("click", $.proxy(this.onAllCheckedUpdated, this));
-                this.table.find("tbody .hoverTag").on("mouseover",$.proxy(this.onHoverNodeString,this))
-                this.table.find("[data-toggle='popover1']").popover({
-                    html:true
-                });
-                // this.table.find("tbody .KSCCDN-HeFeiCT01").attr('data-content','111111111')
-                var sharePortTagList = [];
-                _.each(this.collection.models,function (model) {
-                    if(model.get("sharePortTag")) {
-                        sharePortTagList.push(model.get("sharePortTag"));
-                    }
-                });
-                this.collection.getAssociationNodeByTags(sharePortTagList);
             },
             onHoverNodeString:function(event){
                 var eventTarget = event.srcElement || event.target;

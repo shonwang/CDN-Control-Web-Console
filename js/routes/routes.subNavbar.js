@@ -493,15 +493,13 @@ define("routes.subNavbar", ['require', 'exports', 'subNavbar.view'],
                             hash: 'index.html#/codeRate/' + query,
                             active: false,
                             children: []
-                        },
-                        // {
-                        //     id: 'customerSetup-netRateLimiting',
-                        //     name: '全网限速',
-                        //     hash: 'index.html#/netRateLimiting/' + query,
-                        //     active: false,
-                        //     children: []
-                        // }
-                        ]
+                        }, {
+                            id: 'customerSetup-netRateLimiting',
+                            name: '全网限速',
+                            hash: 'index.html#/netRateLimiting/' + query,
+                            active: false,
+                            children: []
+                        }]
                     }],
                     menuOptions = {
                         backHash: "index.html#/customerSetup",

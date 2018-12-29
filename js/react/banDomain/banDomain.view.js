@@ -646,18 +646,18 @@ define("banDomain.view", ['require', 'exports', 'template', 'base.view', 'utilit
         return LogTaskListManageList;
     }(React.Component);
 
-    var LogTaskListManageView = BaseView.extend({
+    var BanDomainManageView = BaseView.extend({
         initialize: function initialize(options) {
             this.options = options;
             this.collection = options.collection;
             this.$el = $(_.template('<div class="log-manage"></div>')());
 
-            var logTaskListFactory = React.createFactory(LogTaskListManageList);
-            var logTaskList = logTaskListFactory({
+            var banDomainListFactory = React.createFactory(BanDomainManageList);
+            var banDomainList = banDomainListFactory({
                 collection: this.collection
             });
-            ReactDOM.render(logTaskList, this.$el.get(0));
+            ReactDOM.render(banDomainList, this.$el.get(0));
         }
     });
-    return LogTaskListManageView;
+    return BanDomainManageView;
 });

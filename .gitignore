@@ -1,7 +1,7 @@
 dest/*
 temp/*
 js/data/*
-js/react/*.js
+js/react/
 node_modules/*
 js/template.js
 .DS_Store

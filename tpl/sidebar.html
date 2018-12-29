@@ -194,10 +194,13 @@
             <li id="applicationChange"><a href="javascript:void(0)" path="index.html#/applicationChange"><i class="glyphicon glyphicon-retweet"></i>平台切换</a></li>
 			<% } %>
 			<% if (permission.DomainBlock) { %>
-            <li id="blockedDomain">
+            <li id="blockedDomain" style="display:none">
                 <a href="javascript:void(0)" path="index.html#/blockedDomain"><i class="glyphicon glyphicon-ban-circle"></i>域名封禁</a>
             </li>
 			<%}%>
+            <li id="banDomain">
+                <a href="javascript:void(0)" path="index.html#/banDomain"><i class="glyphicon glyphicon-ban-circle"></i>域名封禁</a>
+            </li>
         </ul>
     </li>
 	<%}%>

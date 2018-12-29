@@ -206,6 +206,25 @@ define("routes.setupSend", ['require', 'exports'],
                 }.bind(this));
             },
 
+            banDomain:function(){
+                require(['banDomain.view', 'banDomain.model'], function(BanDomainView, BanDomainModel) {
+                    this.curPage = 'banDomain';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.banDomainModel)
+                        this.banDomainModel = new BanDomainModel();
+                    if (!this.banDomainView) {
+                        var options = {
+                            collection: this.banDomainModel
+                        };
+                        this.banDomainView = new BanDomainView(options);
+                        this.banDomainView.render($('.ksc-content'));
+                    } else {
+                        this.banDomainView.update();
+                    }
+                    this.curView = this.banDomainView;
+                }.bind(this));
+            },
+
             //配置模型
             setupTemplateManage:function(){
                 require(['setupTemplateManage.view', 'setupTemplateManage.model'], function(SetupTemplateManageView, SetupTemplateManageModel) {

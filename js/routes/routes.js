@@ -178,6 +178,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 //平台切换
                 "applicationChange": "applicationChange",
                 "blockedDomain": "blockedDomain",
+                "banDomain": "banDomain",
 
                 //日志管理
                 "logTaskList": "logTaskList",

@@ -431,56 +431,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
         }
 
-        class LogTaskListManageList extends React.Component {
+        class BanDomainManageList extends React.Component {
             constructor(props, context) {
                 super(props);
-                this.state = {
-                    curViewsMark: "list",// list: 列表界面，add: 新建，edit: 编辑
-                    breadcrumbTxt: ["日志管理", "任务管理"]
-                }
-            }
-
-            componentDidMount(){}
-
-            onClickAddCallback(){
-                require(['logTaskList.edit.view'], function(LogTaskListManageView){
-                    this.curView = (<LogTaskListManageView ltProps={this.ltProps} isEdit={false} />);
-                    this.setState({
-                        curViewsMark: "add",
-                        breadcrumbTxt: ["任务管理", "新建"]
-                    })
-                }.bind(this));
-            }
-
-            onClickEditCallback(model){
-                require(['logTaskList.edit.view'], function(LogTaskListManageView){
-                    this.curView = (<LogTaskListManageView ltProps={this.ltProps} model={model} isEdit={true} />);
-                    this.setState({
-                        curViewsMark: "edit",
-                        breadcrumbTxt: ["任务管理", "编辑"]
-                    })
-                }.bind(this));
-            }
-
-            onClickViewCallback(model, backTarget){
-                require(['logTaskList.edit.view'], function(LogTaskListManageView){
-                    this.curView = (<LogTaskListManageView ltProps={this.ltProps} model={model} isEdit={true} isView={true}/>);
-                    this.setState({
-                        curViewsMark: "view",
-                        breadcrumbTxt: ["任务管理", "查看"]
-                    })
-                }.bind(this));
-            }
-
-            onClickCancelCallback(){
-                this.setState({
-                    curViewsMark: "list",
-                    breadcrumbTxt: ["日志管理", "任务管理"]
-                })
-            }
-
-            render(){
-                var WrappedSearchForm = Form.create()(SearchForm);
+                this.onClickAddButton = this.onClickAddButton.bind(this);
+                this.handleSubmit = this.handleSubmit.bind(this);
+                this.state = {}
 
                 this.queryCondition = {
                     "name": null,
@@ -491,6 +447,48 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     "page": 1,
                     "size": 10,
                 }
+            }
+
+            componentDidMount(){}
+
+            handleSubmit(e){
+                e&&e.preventDefault();
+                const { validateFields } = this.props.form;
+
+                validateFields(["accountId"], function(err, vals) {
+                    if (!err) {
+                        var fieldsValue = this.props.form.getFieldsValue(),
+                            ltProps = this.props.ltProps;
+                        var collection = ltProps.collection,
+                            queryCondition = ltProps.queryCondition;
+                        queryCondition.name = fieldsValue.name || null;
+                        //queryCondition.domain = fieldsValue.domain || null;
+                        queryCondition.templateName = fieldsValue.templateName || null;
+                        queryCondition.accountId = fieldsValue.accountId || null;
+                        queryCondition.backUrl = fieldsValue.backUrl || null;
+                        console.log(queryCondition)
+                        collection.trigger("fetching", queryCondition)
+                    }
+                }.bind(this))
+            }
+
+            onClickAddButton(){
+                var onClickAddCallback = this.props.ltProps.onClickAddCallback;
+                onClickAddCallback&&onClickAddCallback()
+            }
+
+            onClickResetButton() {
+                const { setFieldsValue } = this.props.form;
+                setFieldsValue({"name": null})
+                setFieldsValue({"domain": null})
+                setFieldsValue({"templateName": null})
+                setFieldsValue({"accountId": null})
+                setFieldsValue({"backUrl": null})
+                this.handleSubmit();
+            }s
+
+            render(){
+
 
                 this.ltProps = {
                     collection: this.props.collection,

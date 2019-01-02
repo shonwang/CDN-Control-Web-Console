@@ -219,7 +219,7 @@ define("routes.setupSend", ['require', 'exports'],
                         this.banDomainView = new BanDomainView(options);
                         this.banDomainView.render($('.ksc-content'));
                     } else {
-                        this.banDomainView.update();
+                        this.banDomainView.update($('.ksc-content'));
                     }
                     this.curView = this.banDomainView;
                 }.bind(this));

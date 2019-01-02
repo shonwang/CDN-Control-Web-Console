@@ -6,7 +6,6 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             Breadcrumb = Antd.Breadcrumb,
             Button = Antd.Button,
             Input = Antd.Input,
-            InputNumber = Antd.InputNumber,
             Form = Antd.Form,
             FormItem = Form.Item,
             Table = Antd.Table,
@@ -19,9 +18,13 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             message = Antd.message,
             Modal = Antd.Modal,
             Tag = Antd.Tag,
-            confirm = Modal.confirm;
+            DatePicker = Antd.DatePicker,
+            RangePicker = DatePicker.RangePicker,
+            confirm = Modal.confirm,
+            Select = Antd.Select, 
+            Option = Select.Option;
 
-        class LogTaskListTable extends React.Component {
+        class BanDomainManageTable extends React.Component {
             constructor(props, context) {
                 super(props);
                 this.onChangePage = this.onChangePage.bind(this);
@@ -318,125 +321,13 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
         }    
 
-        class SearchForm extends React.Component {
-
-            constructor(props, context) {
-                super(props);
-                this.onClickAddButton = this.onClickAddButton.bind(this);
-                this.handleSubmit = this.handleSubmit.bind(this);
-                this.state = {}
-            }
-
-            handleSubmit(e){
-                e&&e.preventDefault();
-                const { validateFields } = this.props.form;
-
-                validateFields(["accountId"], function(err, vals) {
-                    if (!err) {
-                        var fieldsValue = this.props.form.getFieldsValue(),
-                            ltProps = this.props.ltProps;
-                        var collection = ltProps.collection,
-                            queryCondition = ltProps.queryCondition;
-                        queryCondition.name = fieldsValue.name || null;
-                        //queryCondition.domain = fieldsValue.domain || null;
-                        queryCondition.templateName = fieldsValue.templateName || null;
-                        queryCondition.accountId = fieldsValue.accountId || null;
-                        queryCondition.backUrl = fieldsValue.backUrl || null;
-                        console.log(queryCondition)
-                        collection.trigger("fetching", queryCondition)
-                    }
-                }.bind(this))
-            }
-
-            onClickAddButton(){
-                var onClickAddCallback = this.props.ltProps.onClickAddCallback;
-                onClickAddCallback&&onClickAddCallback()
-            }
-
-            onClickResetButton() {
-                const { setFieldsValue } = this.props.form;
-                setFieldsValue({"name": null})
-                setFieldsValue({"domain": null})
-                setFieldsValue({"templateName": null})
-                setFieldsValue({"accountId": null})
-                setFieldsValue({"backUrl": null})
-                this.handleSubmit();
-            }
-
-            render(){
-                const { getFieldDecorator } = this.props.form;
-                const { dataSource } = this.state;
-                const ltProps = this.props.ltProps;
-                const formItemLayout = {
-                  labelCol: { span: 6 },
-                  wrapperCol: { span: 12 },
-                };
-
-                var HorizontalForm = (
-                    <Form onSubmit={this.handleSubmit}>
-                        <Row>
-                            <Col span={8}>
-                                <FormItem {...formItemLayout} label={"任务名称"}>
-                                    {getFieldDecorator('name')(
-                                        <Input />
-                                    )}
-                                </FormItem>
-                            </Col>
-                            <Col span={8} style={{display:"none"}}>
-                                <FormItem {...formItemLayout} label={"域名"}>
-                                    {getFieldDecorator('domain')(
-                                        <Input />
-                                    )}
-                                </FormItem>
-                            </Col>
-                            <Col span={8}>
-                                <FormItem {...formItemLayout} label={"模版名称"}>
-                                    {getFieldDecorator('templateName')(
-                                        <Input />
-                                    )}
-                                </FormItem>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={8}>
-                                <FormItem {...formItemLayout} label={"客户ID"}>
-                                    {getFieldDecorator('accountId',{
-                                            rules: [
-                                                { pattern: /^[0-9]+$/, message: '客户ID只能输入数字!' },
-                                            ],
-                                        })(
-                                        <Input />
-                                    )}
-                                </FormItem>
-                            </Col>
-                            <Col span={8}>
-                                <FormItem {...formItemLayout} label={"回传地址"}>
-                                    {getFieldDecorator('backUrl')(
-                                        <Input />
-                                    )}
-                                </FormItem>
-                            </Col>
-                            <Col span={8}>
-                                <FormItem>
-                                    <Button type="primary" htmlType="submit" icon="search">查询</Button>
-                                    <Button style={{ marginLeft: 8 }} icon="plus" onClick={this.onClickAddButton}>新建</Button>
-                                    <Button style={{ marginLeft: 8 }} icon="reload" onClick={$.proxy(this.onClickResetButton, this)}>重置</Button>
-                                </FormItem>
-                            </Col>
-                        </Row>
-                    </Form>
-                );
-
-                return HorizontalForm
-            }
-        }
-
         class BanDomainManageList extends React.Component {
             constructor(props, context) {
                 super(props);
-                this.onClickAddButton = this.onClickAddButton.bind(this);
                 this.handleSubmit = this.handleSubmit.bind(this);
-                this.state = {}
+                this.state = {
+                    modalVisible: false
+                }
 
                 this.queryCondition = {
                     "name": null,
@@ -446,6 +337,11 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     "backUrl": null,
                     "page": 1,
                     "size": 10,
+                }
+
+                this.ltProps = {
+                    collection: this.props.collection,
+                    queryCondition: this.queryCondition
                 }
             }
 
@@ -457,10 +353,9 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
                 validateFields(["accountId"], function(err, vals) {
                     if (!err) {
-                        var fieldsValue = this.props.form.getFieldsValue(),
-                            ltProps = this.props.ltProps;
-                        var collection = ltProps.collection,
-                            queryCondition = ltProps.queryCondition;
+                        var fieldsValue = this.props.form.getFieldsValue();
+                        var collection = this.props.collection,
+                            queryCondition = this.queryCondition;
                         queryCondition.name = fieldsValue.name || null;
                         //queryCondition.domain = fieldsValue.domain || null;
                         queryCondition.templateName = fieldsValue.templateName || null;
@@ -473,8 +368,9 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
 
             onClickAddButton(){
-                var onClickAddCallback = this.props.ltProps.onClickAddCallback;
-                onClickAddCallback&&onClickAddCallback()
+                this.setState({
+                    modalVisible: true
+                })
             }
 
             onClickResetButton() {
@@ -485,44 +381,168 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 setFieldsValue({"accountId": null})
                 setFieldsValue({"backUrl": null})
                 this.handleSubmit();
-            }s
+            }
+
+            renderAddDomainView() {
+                const { getFieldDecorator } = this.props.form;
+                const formItemLayout = {
+                  labelCol: { span: 6 },
+                  wrapperCol: { span: 12 },
+                };
+                var HorizontalForm = (
+                    <Form>
+                        <FormItem label={"域名"} require={true}>
+                            {getFieldDecorator('domain',{
+                                    rules: [
+                                        { validator: $.proxy(this.validateDomainList, this) },
+                                    ],
+                                })(
+                                <Input.TextArea rows={4} />
+                            )}
+                        </FormItem>
+                        <FormItem label={"备注"}>
+                            {getFieldDecorator('remark',{
+                                    rules: [
+                                        { max: 300, message: '备注文本域用于录入备注信息，长度不大于300个字符' },
+                                    ],
+                                })(
+                                <Input.TextArea rows={4} />
+                            )}
+                        </FormItem>
+                    </Form>
+                );
+                return HorizontalForm
+            }
+
+            validateDomainList(rule, value, callback) {
+                var domainArray = null, count = 0;
+                if (value.indexOf("\n") > -1) {
+                    domainArray = value.split("\n");
+                    if (domainArray.length > 50) {
+                        callback("每次最多录入50条");
+                        return;
+                    }
+                    for(var i = 0; i < domainArray.length; i++) {
+                        if (!Utility.isDomain(domainArray[i])){
+                            if (domainArray[i] != "")
+                                callback("第" + (i + 1) + "行域名输入有误");
+                            else
+                                callback("第" + (i + 1) + "行没有输入任何字符，请输入正确的域名否则不要换行");
+                            break;
+                        }  else {
+                            count = count + 1
+                        }
+                    }
+                    if (count == domainArray.length) {
+                        callback();
+                    }
+                } else if (Utility.isDomain(value)){
+                    callback();
+                } else {
+                    callback("请输入正确的域名");
+                }
+            }
+
+            handleModalOk() {
+                this.setState({
+                    modalVisible: false
+                })
+            }
+
+            handleModalCancel() {
+                this.setState({
+                    modalVisible: false
+                })
+            }
 
             render(){
+                const { getFieldDecorator } = this.props.form;
+                const formItemLayout = {
+                  labelCol: { span: 6 },
+                  wrapperCol: { span: 12 },
+                };
 
+                var AddForm = this.renderAddDomainView();
 
-                this.ltProps = {
-                    collection: this.props.collection,
-                    queryCondition: this.queryCondition,
-                    onClickAddCallback: $.proxy(this.onClickAddCallback, this),
-                    onClickEditCallback: $.proxy(this.onClickEditCallback, this),
-                    onClickCancelCallback: $.proxy(this.onClickCancelCallback, this),
-                    onClickViewCallback: $.proxy(this.onClickViewCallback, this)
-                }
-
-                var curView = null;
-                if (this.state.curViewsMark == "list") {
-                    curView = (
-                        <div>
-                            <WrappedSearchForm ltProps={this.ltProps} />
-                            <hr/>
-                            <LogTaskListTable ltProps={this.ltProps} />
-                        </div>
-                    )
-                } else if (this.state.curViewsMark == "add" ||
-                           this.state.curViewsMark == "edit" ||
-                           this.state.curViewsMark == "view") {
-                    curView = this.curView;
-                }
+                var SearchForm = (
+                    <Form layout="inline" onSubmit={this.handleSubmit}>
+                        <FormItem label={"域名"}>
+                            {getFieldDecorator('name')(
+                                <Input />
+                            )}
+                        </FormItem>
+                        <FormItem label={"客户ID"}>
+                            {getFieldDecorator('accountId',{
+                                    rules: [
+                                        { pattern: /^[0-9]+$/, message: '客户ID只能输入数字!' },
+                                    ],
+                                })(
+                                <Input />
+                            )}
+                        </FormItem>
+                        <FormItem label={"客户名称"}>
+                            {getFieldDecorator('templateName')(
+                                <Input />
+                            )}
+                        </FormItem>
+                        <FormItem label={"时间"}>
+                            {getFieldDecorator('rangeTimePicker')(
+                                <RangePicker showTime={{ format: 'HH:mm', minuteStep: 30 }} 
+                                            format="YYYY/MM/DD HH:mm" 
+                                            disabledDate={this.disabledDate}
+                                            disabledTime={this.disabledTime} />
+                            )}
+                        </FormItem>
+                        <FormItem label={"业务类型"}>
+                            {getFieldDecorator('backUrl',{
+                                initialValue: 0,
+                            })(
+                                <Select style={{ width: 120 }}>
+                                    <Option value={0}>全部</Option>
+                                    <Option value={1}>点播</Option>
+                                    <Option value={2}>下载</Option>
+                                    <Option value={3}>流媒体直播</Option>
+                                    <Option value={4}>页面小文件</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                        <FormItem label={"状态"}>
+                            {getFieldDecorator('backUrl1',{
+                                initialValue: 0,
+                            })(
+                                <Select style={{ width: 120 }}>
+                                    <Option value={0}>全部</Option>
+                                    <Option value={1}>等待封禁</Option>
+                                    <Option value={2}>已封禁</Option>
+                                </Select>
+                            )}
+                        </FormItem>
+                        <FormItem>
+                            <Button type="primary" htmlType="submit" icon="search">查询</Button>
+                            <Button style={{ marginLeft: 8 }} icon="plus" onClick={$.proxy(this.onClickAddButton, this)}>新增域名封禁</Button>
+                            <Button style={{ marginLeft: 8,display:"none" }} icon="reload" onClick={$.proxy(this.onClickResetButton, this)}>重置</Button>
+                            <Modal title={'新增域名封禁'}
+                                   destroyOnClose={true}
+                                   visible={this.state.modalVisible}
+                                   onOk={$.proxy(this.handleModalOk, this)}
+                                   onCancel={$.proxy(this.handleModalCancel, this)}>
+                                   {AddForm}
+                            </Modal>
+                        </FormItem>
+                    </Form>
+                );
 
                 return (     
                     <Layout>
                         <Content>
                             <Breadcrumb style={{ margin: '16px 0' }}>
-                                <Breadcrumb.Item>{this.state.breadcrumbTxt[0]}</Breadcrumb.Item>
-                                <Breadcrumb.Item>{this.state.breadcrumbTxt[1]}</Breadcrumb.Item>
+                                <Breadcrumb.Item>{"域名设置"}</Breadcrumb.Item>
+                                <Breadcrumb.Item>{"域名封禁"}</Breadcrumb.Item>
                             </Breadcrumb>
                             <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
-                                {curView}
+                                {SearchForm}
+                                <hr />
+                                <BanDomainManageTable ltProps={this.ltProps} />
                             </div>
                         </Content>
                     </Layout>
@@ -530,13 +550,15 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
         }
 
+        var WrappedSearchForm = Form.create()(BanDomainManageList);
+
         var BanDomainManageView = BaseView.extend({
             initialize: function(options) {
                 this.options = options;
                 this.collection = options.collection;
                 this.$el = $(_.template('<div class="log-manage"></div>')());
 
-                var banDomainListFactory = React.createFactory(BanDomainManageList);
+                var banDomainListFactory = React.createFactory(WrappedSearchForm);
                 var banDomainList = banDomainListFactory({
                     collection: this.collection
                 });

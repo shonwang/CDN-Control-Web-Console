@@ -42,6 +42,13 @@ define("playback.view", ['require','exports', 'template', 'modal.view', 'utility
             } else {
                 $(".back-to-top").hide(200)
             }
+
+            var hh = $('html,body').height(),
+            scrollTop1 = $('html,body').get(0).scrollTop,
+            scrollHHeight = $('html,body').get(0).scrollHeight;
+            console.log("hh:", hh)
+            console.log("scrollTop1:", scrollTop1)
+            console.log("scrollHHeight:", scrollHHeight)
         },
 
         onClickFilterTaskButton: function(status){

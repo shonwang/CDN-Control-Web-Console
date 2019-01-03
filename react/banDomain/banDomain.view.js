@@ -385,10 +385,10 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
             renderAddDomainView() {
                 const { getFieldDecorator } = this.props.form;
-                const formItemLayout = {
-                  labelCol: { span: 6 },
-                  wrapperCol: { span: 12 },
-                };
+                // const formItemLayout = {
+                //     labelCol: { span: 6 },
+                //     wrapperCol: { span: 12 }
+                // };
                 var HorizontalForm = (
                     <Form>
                         <FormItem label={"域名"} require={true}>
@@ -457,11 +457,6 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
             render(){
                 const { getFieldDecorator } = this.props.form;
-                const formItemLayout = {
-                  labelCol: { span: 6 },
-                  wrapperCol: { span: 12 },
-                };
-
                 var AddForm = this.renderAddDomainView();
 
                 var SearchForm = (

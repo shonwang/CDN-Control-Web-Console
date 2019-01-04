@@ -34,7 +34,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 this.state = {
                     data: [],
                     isError: false,
-                    isFetching: true
+                    isFetching: true,
+                    modalVisible: false
                 };
             }
 
@@ -178,8 +179,9 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
                     }.bind(this))
-                var onClickViewCallback = this.props.ltProps.onClickViewCallback;
-                onClickViewCallback&&onClickViewCallback(model)
+                this.setState({
+                    modalVisible: true
+                })
             }
 
             onGetError(error) {
@@ -313,11 +315,19 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     onShowSizeChange: this.onChangePage
                 }
 
-                return ( <Table rowKey="id" 
-                                dataSource={this.state.data} 
-                                loading={this.state.isFetching} 
-                                columns={columns}
-                                pagination = {pagination} /> )
+                return (<div> 
+                            <Table rowKey="id" 
+                                    dataSource={this.state.data} 
+                                    loading={this.state.isFetching} 
+                                    columns={columns}
+                                    pagination = {pagination} />
+                            <Modal title={'新增域名封禁'}
+                                   destroyOnClose={true}
+                                   visible={this.state.modalVisible}
+                                   onOk={$.proxy(this.handleModalOk, this)}
+                                   onCancel={$.proxy(this.handleModalCancel, this)}>
+                            </Modal>
+                        </div> )
             }
         }    
 

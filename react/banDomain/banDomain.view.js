@@ -184,6 +184,18 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 })
             }
 
+            handleModalOk() {
+                this.setState({
+                    modalVisible: false
+                })
+            }
+
+            handleModalCancel() {
+                this.setState({
+                    modalVisible: false
+                })
+            }
+
             onGetError(error) {
                 var msgDes = "服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！"
                 if (error && error.message)

@@ -167,7 +167,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                   });
             }
 
-            handleViewClick(event) {
+            handleNoAlertViewClick(event) {
                 var eventTarget = event.srcElement || event.target,
                     id;
                 if (eventTarget.tagName == "I") {
@@ -270,47 +270,37 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     dataIndex: '',
                     key: 'action',
                     render: (text, record) => {
-                        var detailButton = (
-                            <Tooltip placement="bottom" title={"查看详情"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleViewClick(e)}>
-                                    <Icon type="profile" />
-                                </a>
-                            </Tooltip>
+                        let noAlertButton = (
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleNoAlertViewClick(e)}>不再提醒</a>
                         );
-                        var deleteButton = (
-                            <Tooltip placement="bottom" title={"删除"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleDeleteClick(e)}>
-                                    <Icon type="delete" />
-                                </a>
-                            </Tooltip>
+                        let opRecordButton = (
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleDeleteClick(e)}>操作记录</a>
                         )
-                        var stopButton = (
-                            <Tooltip placement="bottom" title={"停止"}>
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleStopClick(e)}>
-                                    <Icon type="poweroff" />
-                                </a>
-                            </Tooltip>
+                        let relieveButton = (
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleStopClick(e)}>解封</a>
                         );
-                        var buttonGroup = "";
-                        if (record.taskStatus == "RUNNING"){
+                        let banButton = (
+                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleStopClick(e)}>封禁</a>
+                        );
+                        let buttonGroup = "";
+                        // if (record.taskStatus == "RUNNING"){
                             buttonGroup = (
                                 <div>
-                                    {detailButton}
-                                    <span className="ant-divider" />
-                                    {stopButton}
-                                    <span className="ant-divider" />
-                                    {deleteButton}
+                                    {banButton}
+                                    {relieveButton}
+                                    {noAlertButton}
+                                    {opRecordButton}
                                 </div>
                             )
-                        } else {
-                            buttonGroup = (
-                                <div>
-                                    {detailButton}
-                                    <span className="ant-divider" />
-                                    {deleteButton}
-                                </div>
-                            )
-                        }
+                        // } else {
+                        //     buttonGroup = (
+                        //         <div>
+                        //             {noAlertButton}
+                        //             <span className="ant-divider" />
+                        //             {opRecordButton}
+                        //         </div>
+                        //     )
+                        // }
                         return buttonGroup
                     },
                 }];

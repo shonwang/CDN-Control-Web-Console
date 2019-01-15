@@ -12,9 +12,6 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             Alert = Antd.Alert,
             Icon = Antd.Icon,
             Spin = Antd.Spin,
-            Tooltip = Antd.Tooltip,
-            Col = Antd.Col,
-            Row = Antd.Row,
             message = Antd.message,
             Modal = Antd.Modal,
             Tag = Antd.Tag,
@@ -22,20 +19,24 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             RangePicker = DatePicker.RangePicker,
             confirm = Modal.confirm,
             Select = Antd.Select, 
-            Option = Select.Option;
+            Option = Select.Option,
+            Menu = Antd.Menu,
+            Dropdown = Antd.Dropdown,
+            Timeline = Antd.Timeline;
 
         class BanDomainManageTable extends React.Component {
             constructor(props, context) {
                 super(props);
                 this.onChangePage = this.onChangePage.bind(this);
                 this.handleStopClick = this.handleStopClick.bind(this);
-                this.handleDeleteClick = this.handleDeleteClick.bind(this);
+                this.handleOpRecordClick = this.handleOpRecordClick.bind(this);
                 
                 this.state = {
                     data: [],
                     isError: false,
                     isFetching: true,
-                    modalVisible: false
+                    recordModalVisible: false,
+                    recordModalVisible: false
                 };
             }
 
@@ -115,45 +116,21 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 collection.trigger("fetching", queryCondition);
             }
 
-            handleDeleteClick(event) {
+            handleOpRecordClick(event) {
                 var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
                     id = $(eventTarget).attr("id");
-                }
 
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
                 }.bind(this))
-                if (model.taskStatus == "RUNNING") {
-                    message.warning('请先停掉任务，再删除！', 5);
-                    return;
-                }
-                confirm({
-                    title: '你确定要删除吗？',
-                    okText: '确定',
-                    okType: 'danger',
-                    cancelText: '算了，不删了',
-                    onOk: function(){
-                        var ltProps = this.props.ltProps;
-                        var collection = ltProps.collection;
-                        collection.deleteTask({id: id});
-                    }.bind(this)
-                  });
+                this.setState({
+                    recordModalVisible: true
+                })
             }
 
             handleStopClick(event) {
                 var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
                     id = $(eventTarget).attr("id");
-                }
                 confirm({
                     title: '你确定要停止吗？',
                     okText: '确定',
@@ -167,15 +144,17 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                   });
             }
 
+            handleMenuClick(obj) {
+                if (obj.key == 1) {
+                    this.handleNoAlertViewClick(obj.domEvent)
+                } else if (obj.key == 2) {
+                    this.handleOpRecordClick(obj.domEvent)
+                }
+            }
+
             handleNoAlertViewClick(event) {
                 var eventTarget = event.srcElement || event.target,
-                    id;
-                if (eventTarget.tagName == "I") {
-                    eventTarget = $(eventTarget).parent();
-                    id = eventTarget.attr("id");
-                } else {
                     id = $(eventTarget).attr("id");
-                }
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
                     }.bind(this))
@@ -184,9 +163,51 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 })
             }
 
+            renderNoAlertView() {
+                const { getFieldDecorator } = this.props.form;
+                const formItemLayout = {
+                  labelCol: { span: 6 },
+                  wrapperCol: { span: 14 },
+                };
+                let view = (
+                        <Form>
+                            <FormItem {...formItemLayout} label="快速选择">
+                                <Button.Group>
+                                    <Button>近三天</Button>
+                                    <Button>近七天</Button>
+                                    <Button>近三十天</Button>
+                                </Button.Group>
+                            </FormItem>
+                            <FormItem {...formItemLayout} label={"自定义"}>
+                                {getFieldDecorator('beginTime', {
+                                    initialValue: this.state.beginTime
+                                })(
+                                    <DatePicker showTime={{ format: 'HH:mm:ss', minuteStep: 1 }} 
+                                                format="YYYY/MM/DD HH:mm:ss" 
+                                                style={{width:"200px"}} />
+                                )}
+                            </FormItem>
+                        </Form>  
+                    )
+
+                return view
+            }
+
             handleModalOk() {
                 this.setState({
                     modalVisible: false
+                })
+            }
+
+            handleModalRecordOk() {
+                this.setState({
+                    modalVisible: false
+                })
+            }
+
+            handleModalRecordCancel() {
+                this.setState({
+                    recordModalVisible: false
                 })
             }
 
@@ -269,27 +290,37 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     title: '操作',
                     dataIndex: '',
                     key: 'action',
+                    fixed: 'right',
+                    width: 200,
                     render: (text, record) => {
                         let noAlertButton = (
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleNoAlertViewClick(e)}>不再提醒</a>
+                                <Button size={"small"} id={record.id} onClick={(e) => this.handleNoAlertViewClick(e)}>不再提醒</Button>
                         );
                         let opRecordButton = (
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleDeleteClick(e)}>操作记录</a>
+                                <Button size={"small"} id={record.id} onClick={(e) => this.handleOpRecordClick(e)}>操作记录</Button>
                         )
                         let relieveButton = (
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleStopClick(e)}>解封</a>
+                                <Button type="primary" size={"small"} id={record.id} onClick={(e) => this.handleStopClick(e)}>解封</Button>
                         );
                         let banButton = (
-                                <a href="javascript:void(0)" id={record.id} onClick={(e) => this.handleStopClick(e)}>封禁</a>
+                                <Button type="danger" size={"small"} id={record.id} onClick={(e) => this.handleStopClick(e)}>封禁</Button>
                         );
+                        const menu = (
+                            <Menu onClick={$.proxy(this.handleMenuClick, this)}>
+                                <Menu.Item key="1">不再提醒</Menu.Item>
+                                <Menu.Item key="2">操作记录</Menu.Item>
+                            </Menu>
+                        );
+
                         let buttonGroup = "";
                         // if (record.taskStatus == "RUNNING"){
                             buttonGroup = (
                                 <div>
                                     {banButton}
-                                    {relieveButton}
-                                    {noAlertButton}
-                                    {opRecordButton}
+                                    <span className="ant-divider" />
+                                    <Dropdown overlay={menu}>
+                                        <Button size={"small"}>更多操作<Icon type="down"/></Button>
+                                    </Dropdown>
                                 </div>
                             )
                         // } else {
@@ -317,21 +348,39 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     onShowSizeChange: this.onChangePage
                 }
 
+                let noAlertView = this.renderNoAlertView()
+
                 return (<div> 
                             <Table rowKey="id" 
                                     dataSource={this.state.data} 
                                     loading={this.state.isFetching} 
                                     columns={columns}
+                                    scroll={{ x: 1500 }} 
                                     pagination = {pagination} />
-                            <Modal title={'新增域名封禁'}
+                            <Modal title={'选择近期不再提醒封禁'}
                                    destroyOnClose={true}
                                    visible={this.state.modalVisible}
                                    onOk={$.proxy(this.handleModalOk, this)}
                                    onCancel={$.proxy(this.handleModalCancel, this)}>
+                                   {noAlertView}
+                            </Modal>
+                            <Modal title={'操作记录'}
+                                   destroyOnClose={true}
+                                   visible={this.state.recordModalVisible}
+                                   onOk={$.proxy(this.handleModalRecordOk, this)}
+                                   onCancel={$.proxy(this.handleModalRecordCancel, this)}>
+                                  <Timeline>
+                                    <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
+                                    <Timeline.Item>Solve initial network problems 2015-09-01</Timeline.Item>
+                                    <Timeline.Item>Technical testing 2015-09-01</Timeline.Item>
+                                    <Timeline.Item>Network problems being solved 2015-09-01</Timeline.Item>
+                                  </Timeline>
                             </Modal>
                         </div> )
             }
-        }    
+        }
+
+        var WrappedBanDomainManageTable = Form.create()(BanDomainManageTable);    
 
         class BanDomainManageList extends React.Component {
             constructor(props, context) {
@@ -549,7 +598,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                             <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
                                 {SearchForm}
                                 <hr />
-                                <BanDomainManageTable ltProps={this.ltProps} />
+                                <WrappedBanDomainManageTable ltProps={this.ltProps} />
                             </div>
                         </Content>
                     </Layout>

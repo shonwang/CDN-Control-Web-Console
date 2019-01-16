@@ -1,5 +1,5 @@
-define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom"], 
-    function(require, exports, template, BaseView, Utility, Antd, React, ReactDOM) {
+define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility', "antd", 'react.backbone', "react-dom", "moment"], 
+    function(require, exports, template, BaseView, Utility, Antd, React, ReactDOM, moment) {
 
         var Layout = Antd.Layout,
             Content = Layout.Content,
@@ -38,6 +38,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     modalVisible: false,
                     recordModalVisible: false,
                     isOpRecordFetching: true,
+                    warnTime: moment()
                 };
 
                 this.opRecordView = (<Spin />);
@@ -199,8 +200,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                                 </Button.Group>
                             </FormItem>
                             <FormItem {...formItemLayout} label={"自定义"}>
-                                {getFieldDecorator('beginTime', {
-                                    initialValue: this.state.beginTime
+                                {getFieldDecorator('warnTime', {
+                                    initialValue: this.state.warnTime
                                 })(
                                     <DatePicker showTime={{ format: 'HH:mm:ss', minuteStep: 1 }} 
                                                 format="YYYY/MM/DD HH:mm:ss" 

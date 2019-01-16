@@ -15,7 +15,7 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
         initialize: function(){},
 
         getTaskList: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/page",
+            var url = BASE_URL + "/mock/68/channelManager/domain/block/get",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {
@@ -31,22 +31,11 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
                 errorCallback = function(response) {
                     this.trigger('get.taskList.error', response);
                 }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        },
-
-        getTemplateByProductType: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/template/select",
-                successCallback = function(res) {
-                    this.trigger("template.selectList.success", res);
-                }.bind(this),
-                errorCallback = function(response) {
-                    this.trigger('template.selectList.error', response);
-                }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
 
         addTask: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/add",
+            var url = BASE_URL + "/mock/68/channelManager/domain/block/add",
                 successCallback = function(res) {
                     this.trigger("add.task.success", res);
                 }.bind(this),
@@ -57,7 +46,7 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
         },
 
         getTaskDetail: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/detail",
+            var url = BASE_URL + "/mock/68/channelManager/domain/block/log",
                 successCallback = function(res) {
                     this.trigger("task.detail.success", res);
                 }.bind(this),

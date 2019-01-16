@@ -35,9 +35,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     data: [],
                     isError: false,
                     isFetching: true,
+                    modalVisible: false,
                     recordModalVisible: false,
-                    recordModalVisible: false
+                    isOpRecordFetching: true,
                 };
+
+                this.opRecordView = (<Spin />);
             }
 
             componentDidMount() {
@@ -48,10 +51,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 collection.on("get.taskList.error", $.proxy(this.onGetError, this));
                 collection.on("fetching", $.proxy(this.onFetchingTaskList, this));   
                 collection.trigger("fetching", queryCondition);
-                collection.on("delete.task.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
-                collection.on("delete.task.error", $.proxy(this.onOperateError, this));
-                collection.on("stop.task.success", $.proxy(this.onGetOperateSuccess, this, "停止"));
-                collection.on("stop.task.error", $.proxy(this.onOperateError, this));
+                collection.on("task.detail.success", $.proxy(this.onGetOpDetailSuccess, this));
+                collection.on("task.detail.error", $.proxy(this.onOperateError, this));
+                // collection.on("delete.task.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
+                // collection.on("delete.task.error", $.proxy(this.onOperateError, this));
+                // collection.on("stop.task.success", $.proxy(this.onGetOperateSuccess, this, "停止"));
+                // collection.on("stop.task.error", $.proxy(this.onOperateError, this));
             }
 
             componentWillUnmount() {
@@ -59,15 +64,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 collection.off("get.taskList.success");
                 collection.off("get.taskList.error");
                 collection.off("fetching");
-                collection.off("delete.task.success");
-                collection.off("delete.task.error");
-                collection.off("stop.task.success");
-                collection.off("stop.task.error");    
-            }
-
-            onCheckTplIsUsedSuccess (res) {
-                if (res.used)
-                    message.warning('有' + res.taskCount + '个任务正在使用此模板，请先停掉任务，再删除！', 5);
+                collection.off("task.detail.success");
+                collection.off("task.detail.error");
+                // collection.off("delete.task.success");
+                // collection.off("delete.task.error");
+                // collection.off("stop.task.success");
+                // collection.off("stop.task.error");    
             }
 
             onGetOperateSuccess(msg){
@@ -123,9 +125,27 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 var model = _.find(this.state.data, function(obj){
                         return obj.id == id
                 }.bind(this))
+                var ltProps = this.props.ltProps;
+                var collection = ltProps.collection;
+                collection.getTaskDetail({
+                    originId: id
+                });
                 this.setState({
-                    recordModalVisible: true
+                    recordModalVisible: true,
+                    isOpRecordFetching: true
                 })
+            }
+
+            onGetOpDetailSuccess(res){
+                if (res&&res.log){
+                    let items = res.log.split("\n").map(function(el, index){
+                        return ( <Timeline.Item key={index}>{el}</Timeline.Item> )
+                    })
+                    this.opRecordView = (<Timeline>{items}</Timeline>)
+                    this.setState({
+                        isOpRecordFetching: false
+                    })
+                }
             }
 
             handleStopClick(event) {
@@ -251,41 +271,56 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 }
 
                 const columns = [{
-                    title: '任务名称',
-                    dataIndex: 'name',
-                    key: 'name'
+                    title: '域名',
+                    dataIndex: 'domian',
+                    key: 'domian',
+                    fixed: 'left',
+                    width: 200,
                 },{
-                    title: '客户ID',
-                    dataIndex: 'accountId',
-                    key: 'accountId'
+                    title: '客户名称',
+                    dataIndex: 'companyName',
+                    key: 'companyName'
                 },{
-                    title: '模板名称',
-                    dataIndex: 'templateName',
-                    key: 'templateName'
-                },{
-                    title: '回传地址',
-                    dataIndex: 'backUrl',
-                    key: 'backUrl'
-                },{
-                    title: '任务启动时间',
-                    dataIndex: 'createTimeFormated',
-                    key: 'createTimeFormated'
+                    title: '封禁来源',
+                    dataIndex: 'comeFrom',
+                    key: 'comeFrom',
+                    render: (text, record) => {
+                        let val = "-";
+                        if (text == 1) {
+                            val = "中控"
+                        } else if (text == 2) {
+                            val = "API"
+                        } else if (text == 3) {
+                            val = "系统扫描"
+                        }
+                        return val
+                    }
                 },{
                     title: '任务状态',
-                    dataIndex: 'taskStatus',
-                    key: 'taskStatus',
+                    dataIndex: 'blockStatus',
+                    key: 'blockStatus',
                     render: (text, record) => {
                         var tag = null;
-                        if (record.taskStatus == "STOPPED")
-                            tag = (<Tag color={"red"}>已停止</Tag>)
-                        else if (record.taskStatus == "RUNNING")
-                            tag = <Tag color={"green"}>运行中</Tag>
+                        if (record.blockStatus == 2)
+                            tag = (<Tag color={"red"}>已封禁</Tag>)
+                        else if (record.blockStatus == 1)
+                            tag = <Tag color={"green"}>未封禁</Tag>
                         return tag
                     }
                 },{
-                    title: '创建者',
-                    dataIndex: 'creator',
-                    key: 'creator'
+                    title: '操作人',
+                    dataIndex: 'operator',
+                    key: 'operator'
+                },{
+                    title: '提醒时间',
+                    dataIndex: 'warnTime',
+                    key: 'warnTime',
+                    render: (text, record) => (new Date(text).format("yyyy/MM/dd hh:mm:ss"))
+                },{
+                    title: '最后修改时间',
+                    dataIndex: 'modifyTime',
+                    key: 'modifyTime',
+                    render: (text, record) => (new Date(text).format("yyyy/MM/dd hh:mm:ss"))
                 },{
                     title: '操作',
                     dataIndex: '',
@@ -305,7 +340,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         let banButton = (
                                 <Button type="danger" size={"small"} id={record.id} onClick={(e) => this.handleStopClick(e)}>封禁</Button>
                         );
-                        const menu = (
+                        let menu = (
                             <Menu onClick={$.proxy(this.handleMenuClick, this)}>
                                 <Menu.Item key="1">不再提醒</Menu.Item>
                                 <Menu.Item key="2">操作记录</Menu.Item>
@@ -313,7 +348,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         );
 
                         let buttonGroup = "";
-                        // if (record.taskStatus == "RUNNING"){
+                        if (record.blockStatus == 1){
                             buttonGroup = (
                                 <div>
                                     {banButton}
@@ -323,15 +358,22 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                                     </Dropdown>
                                 </div>
                             )
-                        // } else {
-                        //     buttonGroup = (
-                        //         <div>
-                        //             {noAlertButton}
-                        //             <span className="ant-divider" />
-                        //             {opRecordButton}
-                        //         </div>
-                        //     )
-                        // }
+                        } else if (record.blockStatus == 2) {
+                            menu = (
+                                <Menu onClick={$.proxy(this.handleMenuClick, this)}>
+                                    <Menu.Item key="2">操作记录</Menu.Item>
+                                </Menu>
+                            );
+                            buttonGroup = (
+                                <div>
+                                    {relieveButton}
+                                    <span className="ant-divider" />
+                                    <Dropdown overlay={menu}>
+                                        <Button size={"small"}>更多操作<Icon type="down"/></Button>
+                                    </Dropdown>
+                                </div>
+                            )
+                        }
                         return buttonGroup
                     },
                 }];
@@ -367,14 +409,9 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                             <Modal title={'操作记录'}
                                    destroyOnClose={true}
                                    visible={this.state.recordModalVisible}
-                                   onOk={$.proxy(this.handleModalRecordOk, this)}
+                                   footer={null}
                                    onCancel={$.proxy(this.handleModalRecordCancel, this)}>
-                                  <Timeline>
-                                    <Timeline.Item>Create a services site 2015-09-01</Timeline.Item>
-                                    <Timeline.Item>Solve initial network problems 2015-09-01</Timeline.Item>
-                                    <Timeline.Item>Technical testing 2015-09-01</Timeline.Item>
-                                    <Timeline.Item>Network problems being solved 2015-09-01</Timeline.Item>
-                                  </Timeline>
+                                   {this.opRecordView}
                             </Modal>
                         </div> )
             }
@@ -391,13 +428,15 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 }
 
                 this.queryCondition = {
-                    "name": null,
-                    //"domain": null,
-                    "templateName": null,
-                    "accountId": null,
-                    "backUrl": null,
+                    "domain": null,
+                    "userId": null,
+                    "companyName": null,
+                    "subType": null,
+                    "blockStatus": null,
+                    "startTime": null,
+                    "endTime": null,
                     "page": 1,
-                    "size": 10,
+                    "size": 10
                 }
 
                 this.ltProps = {
@@ -406,22 +445,59 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 }
             }
 
-            componentDidMount(){}
+            componentDidMount() {
+                const collection = this.props.collection;
+                collection.on("add.task.success", $.proxy(this.onSaveSuccess, this))
+                collection.on("add.task.error", $.proxy(this.onSaveError, this))
+            }
+
+            componentWillUnmount() {
+                const collection = this.props.collection;
+                collection.off("add.task.success")
+                collection.off("add.task.error")
+            }
+
+            onSaveSuccess(){
+                Utility.alerts("添加成功！", "success", 2000);
+                this.setState({
+                    modalVisible: false,
+                    loading: false
+                })
+            }
+
+            onSaveError(error) {
+                if (error && error.message)
+                    Utility.alerts(error.message);
+                else if (error && error.Error && error.Error.Message)
+                    Utility.alerts(error.Error.Message);
+                else
+                    Utility.alerts("服务器返回了没有包含明确信息的错误，请刷新重试或者联系开发测试人员！");
+                this.setState({
+                    loading: false
+                })
+            }
 
             handleSubmit(e){
                 e&&e.preventDefault();
                 const { validateFields } = this.props.form;
 
-                validateFields(["accountId"], function(err, vals) {
+                validateFields([], function(err, vals) {
                     if (!err) {
                         var fieldsValue = this.props.form.getFieldsValue();
                         var collection = this.props.collection,
                             queryCondition = this.queryCondition;
-                        queryCondition.name = fieldsValue.name || null;
-                        //queryCondition.domain = fieldsValue.domain || null;
-                        queryCondition.templateName = fieldsValue.templateName || null;
-                        queryCondition.accountId = fieldsValue.accountId || null;
-                        queryCondition.backUrl = fieldsValue.backUrl || null;
+                        queryCondition.domain = fieldsValue.domainName || null;
+                        queryCondition.userId = fieldsValue.userId || null;
+                        queryCondition.companyName = fieldsValue.companyName || null;
+                        queryCondition.subType = fieldsValue.subType || null;
+                        queryCondition.blockStatus = fieldsValue.blockStatus || null;
+                        if (fieldsValue.rangeTimePicker && fieldsValue.rangeTimePicker.length > 1) {
+                            queryCondition.startTime = fieldsValue.rangeTimePicker[0].valueOf();
+                            queryCondition.endTime = fieldsValue.rangeTimePicker[1].valueOf();
+                        } else {
+                            queryCondition.startTime = null;
+                            queryCondition.endTime = null;
+                        }
                         console.log(queryCondition)
                         collection.trigger("fetching", queryCondition)
                     }
@@ -436,11 +512,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
             onClickResetButton() {
                 const { setFieldsValue } = this.props.form;
-                setFieldsValue({"name": null})
-                setFieldsValue({"domain": null})
-                setFieldsValue({"templateName": null})
-                setFieldsValue({"accountId": null})
-                setFieldsValue({"backUrl": null})
+                setFieldsValue({"domainName": null})
+                setFieldsValue({"userId": null})
+                setFieldsValue({"companyName": null})
+                setFieldsValue({"subType": null})
+                setFieldsValue({"blockStatus": null})
+                setFieldsValue({"rangeTimePicker": null})
                 this.handleSubmit();
             }
 
@@ -477,7 +554,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
             validateDomainList(rule, value, callback) {
                 var domainArray = null, count = 0;
-                if (value.indexOf("\n") > -1) {
+                if (value&&value.indexOf("\n") > -1) {
                     domainArray = value.split("\n");
                     if (domainArray.length > 50) {
                         callback("每次最多录入50条");
@@ -497,7 +574,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     if (count == domainArray.length) {
                         callback();
                     }
-                } else if (Utility.isDomain(value)){
+                } else if (value&&Utility.isDomain(value)){
                     callback();
                 } else {
                     callback("请输入正确的域名");
@@ -505,9 +582,18 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
 
             handleModalOk() {
-                this.setState({
-                    modalVisible: false
-                })
+                const { validateFields } = this.props.form;
+
+                validateFields(["domain", "remark"], function(err, vals) {
+                    if (!err) {
+                        var fieldsValue = this.props.form.getFieldsValue();
+                        var collection = this.props.collection;
+                        collection.addTask({
+                            "domains": vals.domain,
+                            "remark": vals.remark
+                        })
+                    }
+                }.bind(this))
             }
 
             handleModalCancel() {
@@ -523,64 +609,60 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 var SearchForm = (
                     <Form layout="inline" onSubmit={this.handleSubmit}>
                         <FormItem label={"域名"}>
-                            {getFieldDecorator('name')(
+                            {getFieldDecorator('domainName')(
                                 <Input />
                             )}
                         </FormItem>
                         <FormItem label={"客户ID"}>
-                            {getFieldDecorator('accountId',{
-                                    rules: [
-                                        { pattern: /^[0-9]+$/, message: '客户ID只能输入数字!' },
-                                    ],
-                                })(
+                            {getFieldDecorator('userId')(
                                 <Input />
                             )}
                         </FormItem>
                         <FormItem label={"客户名称"}>
-                            {getFieldDecorator('templateName')(
+                            {getFieldDecorator('subType')(
                                 <Input />
                             )}
                         </FormItem>
                         <FormItem label={"时间"}>
                             {getFieldDecorator('rangeTimePicker')(
                                 <RangePicker showTime={{ format: 'HH:mm', minuteStep: 30 }} 
-                                            format="YYYY/MM/DD HH:mm" 
-                                            disabledDate={this.disabledDate}
-                                            disabledTime={this.disabledTime} />
+                                            format="YYYY/MM/DD HH:mm" />
                             )}
                         </FormItem>
                         <FormItem label={"业务类型"}>
-                            {getFieldDecorator('backUrl',{
-                                initialValue: 0,
+                            {getFieldDecorator('companyName',{
+                                initialValue: null,
                             })(
                                 <Select style={{ width: 120 }}>
-                                    <Option value={0}>全部</Option>
-                                    <Option value={1}>点播</Option>
-                                    <Option value={2}>下载</Option>
-                                    <Option value={3}>流媒体直播</Option>
-                                    <Option value={4}>页面小文件</Option>
+                                    <Option value={null}>全部</Option>
+                                    <Option value={1}>视音频点播</Option>
+                                    <Option value={2}>直播拉流</Option>
+                                    <Option value={3}>直播上行</Option>
+                                    <Option value={4}>大文件下载</Option>
+                                    <Option value={5}>页面小文件</Option>
                                 </Select>
                             )}
                         </FormItem>
                         <FormItem label={"状态"}>
-                            {getFieldDecorator('backUrl1',{
-                                initialValue: 0,
+                            {getFieldDecorator('blockStatus',{
+                                initialValue: null,
                             })(
                                 <Select style={{ width: 120 }}>
-                                    <Option value={0}>全部</Option>
-                                    <Option value={1}>等待封禁</Option>
+                                    <Option value={null}>全部</Option>
+                                    <Option value={1}>未封禁</Option>
                                     <Option value={2}>已封禁</Option>
                                 </Select>
                             )}
                         </FormItem>
                         <FormItem>
                             <Button type="primary" htmlType="submit" icon="search">查询</Button>
+                            <Button style={{ marginLeft: 8 }} icon="reload" onClick={$.proxy(this.onClickResetButton, this)}>重置</Button>
                             <Button style={{ marginLeft: 8 }} icon="plus" onClick={$.proxy(this.onClickAddButton, this)}>新增域名封禁</Button>
-                            <Button style={{ marginLeft: 8,display:"none" }} icon="reload" onClick={$.proxy(this.onClickResetButton, this)}>重置</Button>
                             <Modal title={'新增域名封禁'}
                                    destroyOnClose={true}
                                    visible={this.state.modalVisible}
                                    onOk={$.proxy(this.handleModalOk, this)}
+                                   confirmLoading={this.state.loading}
                                    onCancel={$.proxy(this.handleModalCancel, this)}>
                                    {AddForm}
                             </Modal>

@@ -184,6 +184,16 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 })
             }
 
+            onClickDays(days) {
+                const { setFieldsValue } = this.props.form;
+                let warnTime = moment().add(days, 'days');
+                setFieldsValue({"warnTime": warnTime})
+            }
+
+            disabledDate(current) {
+                return current && (current < moment().add(-1,'day') || current > moment().add(31,'day'))
+            }
+
             renderNoAlertView() {
                 const { getFieldDecorator } = this.props.form;
                 const formItemLayout = {
@@ -194,9 +204,9 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         <Form>
                             <FormItem {...formItemLayout} label="快速选择">
                                 <Button.Group>
-                                    <Button>近三天</Button>
-                                    <Button>近七天</Button>
-                                    <Button>近三十天</Button>
+                                    <Button onClick={$.proxy(this.onClickDays, this, 3)}>近三天</Button>
+                                    <Button onClick={$.proxy(this.onClickDays, this, 7)}>近七天</Button>
+                                    <Button onClick={$.proxy(this.onClickDays, this, 30)}>近三十天</Button>
                                 </Button.Group>
                             </FormItem>
                             <FormItem {...formItemLayout} label={"自定义"}>
@@ -204,7 +214,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                                     initialValue: this.state.warnTime
                                 })(
                                     <DatePicker showTime={{ format: 'HH:mm:ss', minuteStep: 1 }} 
-                                                format="YYYY/MM/DD HH:mm:ss" 
+                                                format="YYYY/MM/DD HH:mm:ss"
+                                                disabledDate={this.disabledDate} 
                                                 style={{width:"200px"}} />
                                 )}
                             </FormItem>
@@ -215,12 +226,6 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
 
             handleModalOk() {
-                this.setState({
-                    modalVisible: false
-                })
-            }
-
-            handleModalRecordOk() {
                 this.setState({
                     modalVisible: false
                 })

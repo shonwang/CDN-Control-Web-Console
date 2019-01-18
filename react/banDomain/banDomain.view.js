@@ -345,7 +345,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         var tag = null;
                         if (record.blockStatus == 2)
                             tag = (<Tag color={"red"}>已封禁</Tag>)
-                        else if (record.blockStatus == 1)
+                        else if (record.blockStatus == 5)
                             tag = <Tag color={"green"}>未封禁</Tag>
                         return tag
                     }
@@ -699,7 +699,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                             })(
                                 <Select style={{ width: 120 }}>
                                     <Option value={null}>全部</Option>
-                                    <Option value={1}>未封禁</Option>
+                                    <Option value={5}>未封禁</Option>
                                     <Option value={2}>已封禁</Option>
                                 </Select>
                             )}

@@ -67,11 +67,15 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                     $(".ctrl-main-container").removeClass("large");
                     $("#jquery-accordion-menu").removeClass("packup-sidebar");
                     $(".sidebar-btn").removeClass("sidebar-open-btn");
+                    $("#jquery-accordion-menu").find(".submenu i").css("display", "none");
+                    $("#jquery-accordion-menu").find(".submenu a").css("padding-left", "60px");
                 } else {
                     $(".ksyun-logo").addClass("shrink");
                     $(".ctrl-main-container").addClass("large");
                     $("#jquery-accordion-menu").addClass("packup-sidebar");
                     $(".sidebar-btn").addClass("sidebar-open-btn");
+                    $("#jquery-accordion-menu").find(".submenu i").css("display", "inline-block");
+                    $("#jquery-accordion-menu").find(".submenu a").css("padding-left", "12px");
                 }
             })
         },
@@ -86,7 +90,7 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
                         this.redirect();
                     }.bind(this),
                     errorCallBack  : function(){
-                        Utility.warning("权限系统岂是你说来就来，说走就走的！！！")
+                        Utility.warning("登出失败！")
                     }
                 }
                 this.sendRequest(data)
@@ -189,6 +193,8 @@ define("navbar.view", ['require','exports', 'template'], function(require, expor
         render: function() {
             this.$el = $(_.template(template['tpl/sidebar.html'])({permission:AUTH_OBJ}));
             this.$el.appendTo($('.jquery-accordion-menu'));
+            $("#jquery-accordion-menu").find(".submenu i").css("display", "none");
+            $("#jquery-accordion-menu").find(".submenu a").css("padding-left", "60px");
             this.$el.find("li a").on("click", $.proxy(this.onClickItem, this))
             $("#jquery-accordion-menu").jqueryAccordionMenu();
             this.isRender = true;

@@ -67,7 +67,7 @@
     </li>
     <% } %>
     <% if (permission.ManageServiceConfigs) { %>
-    <li><a href="javascript:void(0)"><i class="fa fa-home"></i><i class="glyphicon glyphicon-cloud-upload"></i>配置拉取</a>
+    <li style="display:none"><a href="javascript:void(0)"><i class="fa fa-home"></i><i class="glyphicon glyphicon-cloud-upload"></i>配置拉取</a>
         <ul class="submenu">
             <% if (permission.ManageNodeGroups) { %> 
             <li id="businessManage"><a href="javascript:void(0)" path="index.html#/businessManage"><i class="icon icon-rds-16"></i>业务管理</a></li>
@@ -116,7 +116,7 @@
     </li>
     <% } %>
     <% if (permission.ManageCustomerDomain) { %>
-    <li><a href="javascript:void(0)"><i class="anticon anticon-idcard"></i>客户频道管理</a>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-credit-card"></i>客户频道管理</a>
         <ul class="submenu">
             <% if (permission.CustomerConfig) { %>
             <li id="customerSetup"><a href="javascript:void(0)" path="index.html#/customerSetup"><i class="glyphicon glyphicon-user"></i>客户配置</a></li>
@@ -172,7 +172,7 @@
         <ul class="submenu">
             <li id="preheatManage">
                 <a href="javascript:void(0)" path="index.html#/preheatManage">
-                    <i class="anticon anticon-cloud-download"></i>预热管理
+                    <i class="glyphicon glyphicon-compressed"></i>预热管理
                 </a>
             </li>
             <li id="refreshManual" style="display:none">
@@ -220,16 +220,16 @@
         </ul>
     </li>
     <%}%>
-    <li><a href="javascript:void(0)"><i class="anticon anticon-profile"></i>日志管理</a>
+    <li><a href="javascript:void(0)"><i class="glyphicon glyphicon-list-alt"></i>日志管理</a>
         <ul class="submenu">
             <li id="logTemplateManage">
-                <a href="javascript:void(0)" path="index.html#/logTemplateManage"><i class="anticon anticon-book"></i>模版管理</a>
+                <a href="javascript:void(0)" path="index.html#/logTemplateManage"><i class="glyphicon glyphicon-book"></i>模版管理</a>
             </li>
             <li id="logTaskList">
-                <a href="javascript:void(0)" path="index.html#/logTaskList"><i class="anticon anticon-bars"></i>任务列表</a>
+                <a href="javascript:void(0)" path="index.html#/logTaskList"><i class="glyphicon glyphicon-list"></i>任务列表</a>
             </li>
             <li id="logTaskStatistics">
-                <a href="javascript:void(0)" path="index.html#/logTaskStatistics"><i class="anticon anticon-area-chart"></i>任务统计</a>
+                <a href="javascript:void(0)" path="index.html#/logTaskStatistics"><i class="glyphicon glyphicon-stats"></i>任务统计</a>
             </li>
         </ul>
     </li>

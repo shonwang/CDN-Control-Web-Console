@@ -46,7 +46,7 @@
 
 .jquery-accordion-menu ul li a {
 	width: 100%;
-	padding: 14px 22px;
+	padding: 12px 22px;
 	float: left;
 	text-decoration: none;
 	color: #f0f0f0;
@@ -81,7 +81,7 @@
 }
 
 .jquery-accordion-menu .submenu-indicator {
-	top: 15px;
+	top: 12px;
 	float: right;
 	right: 22px;
 	position: absolute;

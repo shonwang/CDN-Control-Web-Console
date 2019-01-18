@@ -22,7 +22,10 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             Option = Select.Option,
             Menu = Antd.Menu,
             Dropdown = Antd.Dropdown,
-            Timeline = Antd.Timeline;
+            Timeline = Antd.Timeline,
+            LocaleProvider = Antd.LocaleProvider,
+            locales = Antd.locales;
+            moment.locale('zh-cn');
 
         class BanDomainManageTable extends React.Component {
             constructor(props, context) {
@@ -114,20 +117,15 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 var ltProps = this.props.ltProps;
                 var collection = ltProps.collection,
                     queryCondition = ltProps.queryCondition;
-                queryCondition.page = page;
-                queryCondition.size = pageSize;
+                queryCondition.currentPage = page;
+                queryCondition.pageSize = pageSize;
                 collection.trigger("fetching", queryCondition);
             }
 
-            handleOpRecordClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id = $(eventTarget).attr("id");
-
-                var model = _.find(this.state.data, function(obj){
-                        return obj.id == id
-                }.bind(this))
+            handleOpRecordClick(id) {
                 var ltProps = this.props.ltProps;
                 var collection = ltProps.collection;
+
                 collection.getTaskDetail({
                     originId: id
                 });
@@ -167,18 +165,13 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
             handleMenuClick(obj) {
                 if (obj.key == 1) {
-                    this.handleNoAlertViewClick(obj.domEvent)
+                    this.handleNoAlertViewClick(obj.item.props.id)
                 } else if (obj.key == 2) {
-                    this.handleOpRecordClick(obj.domEvent)
+                    this.handleOpRecordClick(obj.item.props.id)
                 }
             }
 
-            handleNoAlertViewClick(event) {
-                var eventTarget = event.srcElement || event.target,
-                    id = $(eventTarget).attr("id");
-                var model = _.find(this.state.data, function(obj){
-                        return obj.id == id
-                    }.bind(this))
+            handleNoAlertViewClick(id) {
                 this.setState({
                     modalVisible: true
                 })
@@ -278,8 +271,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
                 const columns = [{
                     title: '域名',
-                    dataIndex: 'domian',
-                    key: 'domian',
+                    dataIndex: 'domain',
+                    key: 'domain',
                     fixed: 'left',
                     width: 200,
                 },{
@@ -324,8 +317,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     render: (text, record) => (new Date(text).format("yyyy/MM/dd hh:mm:ss"))
                 },{
                     title: '最后修改时间',
-                    dataIndex: 'modifyTime',
-                    key: 'modifyTime',
+                    dataIndex: 'operateTime',
+                    key: 'operateTime',
                     render: (text, record) => (new Date(text).format("yyyy/MM/dd hh:mm:ss"))
                 },{
                     title: '操作',
@@ -348,8 +341,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         );
                         let menu = (
                             <Menu onClick={$.proxy(this.handleMenuClick, this)}>
-                                <Menu.Item key="1">不再提醒</Menu.Item>
-                                <Menu.Item key="2">操作记录</Menu.Item>
+                                <Menu.Item key="1" id={record.id}>不再提醒</Menu.Item>
+                                <Menu.Item key="2" id={record.id}>操作记录</Menu.Item>
                             </Menu>
                         );
 
@@ -367,7 +360,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         } else if (record.blockStatus == 2) {
                             menu = (
                                 <Menu onClick={$.proxy(this.handleMenuClick, this)}>
-                                    <Menu.Item key="2">操作记录</Menu.Item>
+                                    <Menu.Item key="2" id={record.id}>操作记录</Menu.Item>
                                 </Menu>
                             );
                             buttonGroup = (
@@ -390,7 +383,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         showTotal: function showTotal(total) {
                         return 'Total '+ total + ' items';
                     },
-                    current: ltProps.queryCondition.page,
+                    current: ltProps.queryCondition.currentPage,
                     total: ltProps.collection.total,
                     onChange: this.onChangePage,
                     onShowSizeChange: this.onChangePage
@@ -434,21 +427,23 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 }
 
                 this.queryCondition = {
-                    "domain": null,
+                    "domains": null,
                     "userId": null,
                     "companyName": null,
                     "subType": null,
                     "blockStatus": null,
                     "startTime": null,
                     "endTime": null,
-                    "page": 1,
-                    "size": 10
+                    "currentPage": 1,
+                    "pageSize": 10
                 }
 
                 this.ltProps = {
                     collection: this.props.collection,
                     queryCondition: this.queryCondition
                 }
+
+                console.log(Antd)
             }
 
             componentDidMount() {
@@ -492,7 +487,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         var fieldsValue = this.props.form.getFieldsValue();
                         var collection = this.props.collection,
                             queryCondition = this.queryCondition;
-                        queryCondition.domain = fieldsValue.domainName || null;
+                        queryCondition.domains = fieldsValue.domainName || null;
                         queryCondition.userId = fieldsValue.userId || null;
                         queryCondition.companyName = fieldsValue.companyName || null;
                         queryCondition.subType = fieldsValue.subType || null;
@@ -676,20 +671,22 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     </Form>
                 );
 
-                return (     
-                    <Layout>
-                        <Content>
-                            <Breadcrumb style={{ margin: '16px 0' }}>
-                                <Breadcrumb.Item>{"域名设置"}</Breadcrumb.Item>
-                                <Breadcrumb.Item>{"域名封禁"}</Breadcrumb.Item>
-                            </Breadcrumb>
-                            <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
-                                {SearchForm}
-                                <hr />
-                                <WrappedBanDomainManageTable ltProps={this.ltProps} />
-                            </div>
-                        </Content>
-                    </Layout>
+                return (  
+                    <LocaleProvider locale={locales.zh_CN}>
+                        <Layout>
+                            <Content>
+                                <Breadcrumb style={{ margin: '16px 0' }}>
+                                    <Breadcrumb.Item>{"域名设置"}</Breadcrumb.Item>
+                                    <Breadcrumb.Item>{"域名封禁"}</Breadcrumb.Item>
+                                </Breadcrumb>
+                                <div style={{ background: '#fff', padding: 24, minHeight: 280 }}>
+                                    {SearchForm}
+                                    <hr />
+                                    <WrappedBanDomainManageTable ltProps={this.ltProps} />
+                                </div>
+                            </Content>
+                        </Layout>
+                    </LocaleProvider>
                 )
             }
         }

@@ -404,7 +404,7 @@ td .table {
 }
 
 .sub-sidebar .jquery-accordion-menu {
-  max-width: 200px;
+  max-width: 180px;
   background-color: #fff;
 }
 
@@ -431,7 +431,7 @@ td .table {
 }
 
 .packup-sidebar.jquery-accordion-menu ul li a {
-  padding: 14px 12px;
+  padding: 12px 12px;
 }
 
 .packup-sidebar.jquery-accordion-menu ul ul.submenu>li>a {
@@ -1177,7 +1177,7 @@ vertical-align: middle;
 
 .sub-sidebar .pin-container {
   position: fixed;
-  width: 200px;
+  width: 180px;
   bottom: 0;
   top: 0;
 }

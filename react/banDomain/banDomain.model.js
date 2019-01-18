@@ -1,10 +1,8 @@
 define("banDomain.model", ['require','exports', 'utility'], function(require, exports, Utility) {
     var Model = Backbone.Model.extend({
         initialize: function(){
-            var updateTime = parseInt(this.get("updateTime")),
-                createTime = parseInt(this.get("createTime"));
-            if (updateTime) this.set("updateTimeFormated", new Date(updateTime).format("yyyy/MM/dd hh:mm"));
-            if (createTime) this.set("createTimeFormated", new Date(createTime).format("yyyy/MM/dd hh:mm"));
+            var originId = this.get("originId");
+            this.set("id",  originId);
         }
     });
 
@@ -15,15 +13,15 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
         initialize: function(){},
 
         getTaskList: function(args) {
-            var url = BASE_URL + "/mock/68/channelManager/domain/block/get",
+            var url = BASE_URL + "/channelManager/domain/block/get",
                 successCallback = function(res) {
                     this.reset();
                     if (res) {
-                        _.each(res.list, function(element, index, list) {
+                        _.each(res.data, function(element, index, list) {
                             this.push(new Model(element));
                         }.bind(this))
                         this.total = res.totalCount;
-                        this.trigger("get.taskList.success", res.list);
+                        this.trigger("get.taskList.success", res.data);
                     } else {
                         this.trigger("get.taskList.error");
                     }
@@ -31,11 +29,11 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
                 errorCallback = function(response) {
                     this.trigger('get.taskList.error', response);
                 }.bind(this);
-            Utility.getAjax(url, args, successCallback, errorCallback);
+            Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
         addTask: function(args) {
-            var url = BASE_URL + "/mock/68/channelManager/domain/block/add",
+            var url = BASE_URL + "/channelManager/domain/block/add",
                 successCallback = function(res) {
                     this.trigger("add.task.success", res);
                 }.bind(this),
@@ -46,7 +44,7 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
         },
 
         getTaskDetail: function(args) {
-            var url = BASE_URL + "/mock/68/channelManager/domain/block/log",
+            var url = BASE_URL + "/channelManager/domain/block/log",
                 successCallback = function(res) {
                     this.trigger("task.detail.success", res);
                 }.bind(this),

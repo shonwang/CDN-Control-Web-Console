@@ -31,7 +31,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             constructor(props, context) {
                 super(props);
                 this.onChangePage = this.onChangePage.bind(this);
-                this.handleStopClick = this.handleStopClick.bind(this);
+                this.handleBanClick = this.handleBanClick.bind(this);
+                this.handleRelieveClick = this.handleRelieveClick.bind(this);
                 this.handleOpRecordClick = this.handleOpRecordClick.bind(this);
                 
                 this.state = {
@@ -41,7 +42,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     modalVisible: false,
                     recordModalVisible: false,
                     isOpRecordFetching: true,
-                    warnTime: moment()
+                    warnTime: moment().add(1,'day')
                 };
 
                 this.opRecordView = (<Spin />);
@@ -57,10 +58,10 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 collection.trigger("fetching", queryCondition);
                 collection.on("task.detail.success", $.proxy(this.onGetOpDetailSuccess, this));
                 collection.on("task.detail.error", $.proxy(this.onOperateError, this));
-                // collection.on("delete.task.success", $.proxy(this.onGetOperateSuccess, this, "删除"));
-                // collection.on("delete.task.error", $.proxy(this.onOperateError, this));
-                // collection.on("stop.task.success", $.proxy(this.onGetOperateSuccess, this, "停止"));
-                // collection.on("stop.task.error", $.proxy(this.onOperateError, this));
+                collection.on("delete.task.success", $.proxy(this.onGetOperateSuccess, this, "解封"));
+                collection.on("delete.task.error", $.proxy(this.onOperateError, this));
+                collection.on("reminder.domain.success", $.proxy(this.onGetOperateSuccess, this, "不再提醒设置成功"));
+                collection.on("reminder.domain.error", $.proxy(this.onOperateError, this));
             }
 
             componentWillUnmount() {
@@ -70,10 +71,11 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 collection.off("fetching");
                 collection.off("task.detail.success");
                 collection.off("task.detail.error");
-                // collection.off("delete.task.success");
-                // collection.off("delete.task.error");
-                // collection.off("stop.task.success");
-                // collection.off("stop.task.error");    
+                collection.off("add.task.success");
+                collection.off("delete.task.success");
+                collection.off("delete.task.error");
+                collection.off("reminder.domain.success");
+                collection.off("reminder.domain.error");    
             }
 
             onGetOperateSuccess(msg){
@@ -117,8 +119,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 var ltProps = this.props.ltProps;
                 var collection = ltProps.collection,
                     queryCondition = ltProps.queryCondition;
-                queryCondition.currentPage = page;
-                queryCondition.pageSize = pageSize;
+                queryCondition.page = page;
+                queryCondition.size = pageSize;
                 collection.trigger("fetching", queryCondition);
             }
 
@@ -137,7 +139,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
 
             onGetOpDetailSuccess(res){
                 if (res&&res.log){
-                    let items = res.log.split("\n").map(function(el, index){
+                    let items = res.log.map(function(el, index){
                         return ( <Timeline.Item key={index}>{el}</Timeline.Item> )
                     })
                     this.opRecordView = (<Timeline>{items}</Timeline>)
@@ -147,18 +149,41 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 }
             }
 
-            handleStopClick(event) {
+            handleRelieveClick(event) {
                 var eventTarget = event.srcElement || event.target,
                     id = $(eventTarget).attr("id");
                 confirm({
-                    title: '你确定要停止吗？',
+                    title: '你确定要解封吗？',
                     okText: '确定',
                     okType: 'danger',
-                    cancelText: '算了，不停了',
+                    cancelText: '取消',
                     onOk: function(){
                         var ltProps = this.props.ltProps;
                         var collection = ltProps.collection;
-                        collection.stopTask({id: id});
+                        collection.deleteTask({
+                            "originId": id,
+                        });
+                    }.bind(this)
+                  });
+            }
+
+            handleBanClick(event) {
+                var eventTarget = event.srcElement || event.target,
+                    id = $(eventTarget).attr("id");
+                var model = _.find(this.state.data, function(obj){
+                        return obj.id == id
+                    }.bind(this))
+                confirm({
+                    title: '你确定要封禁吗？',
+                    okText: '确定',
+                    okType: 'danger',
+                    cancelText: '取消',
+                    onOk: function(){
+                        var ltProps = this.props.ltProps;
+                        var collection = ltProps.collection;
+                        collection.addTask({
+                            "domains": model.domain,
+                        });
                     }.bind(this)
                   });
             }
@@ -172,8 +197,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
 
             handleNoAlertViewClick(id) {
+                this.curModel = _.find(this.state.data, function(obj){
+                        return obj.id == id
+                    }.bind(this))
                 this.setState({
-                    modalVisible: true
+                    modalVisible: true,
+                    warnTime: this.curModel.warnTime ? moment(this.curModel.warnTime) : moment().add(1,'day')
                 })
             }
 
@@ -195,6 +224,9 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                 };
                 let view = (
                         <Form>
+                            <FormItem {...formItemLayout} label={"现在是"} style={{display:"none"}}>
+                                <span className="ant-form-text">{new Date().format("yyyy/MM/dd hh:mm:ss")}</span>
+                            </FormItem>
                             <FormItem {...formItemLayout} label="快速选择">
                                 <Button.Group>
                                     <Button onClick={$.proxy(this.onClickDays, this, 3)}>近三天</Button>
@@ -219,9 +251,20 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
 
             handleModalOk() {
-                this.setState({
-                    modalVisible: false
-                })
+                const { validateFields } = this.props.form;
+                
+                validateFields(["warnTime"], function(err, vals) {
+                    if (!err) {
+                        var collection = this.props.ltProps.collection;
+                        collection.reminderDomain({
+                            "domain": this.curModel.domain,
+                            "remaindTime": vals.warnTime.valueOf()
+                        })
+                        this.setState({
+                            modalVisible: false
+                        })
+                    }
+                }.bind(this))
             }
 
             handleModalRecordCancel() {
@@ -314,7 +357,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     title: '提醒时间',
                     dataIndex: 'warnTime',
                     key: 'warnTime',
-                    render: (text, record) => (new Date(text).format("yyyy/MM/dd hh:mm:ss"))
+                    render: (text, record) => {
+                        var str = "未设置"
+                        if (text)
+                            str = new Date(text).format("yyyy/MM/dd hh:mm:ss")
+                        return str
+                    }
                 },{
                     title: '最后修改时间',
                     dataIndex: 'operateTime',
@@ -334,10 +382,10 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                                 <Button size={"small"} id={record.id} onClick={(e) => this.handleOpRecordClick(e)}>操作记录</Button>
                         )
                         let relieveButton = (
-                                <Button type="primary" size={"small"} id={record.id} onClick={(e) => this.handleStopClick(e)}>解封</Button>
+                                <Button type="primary" size={"small"} id={record.id} onClick={(e) => this.handleRelieveClick(e)}>解封</Button>
                         );
                         let banButton = (
-                                <Button type="danger" size={"small"} id={record.id} onClick={(e) => this.handleStopClick(e)}>封禁</Button>
+                                <Button type="danger" size={"small"} id={record.id} onClick={(e) => this.handleBanClick(e)}>封禁</Button>
                         );
                         let menu = (
                             <Menu onClick={$.proxy(this.handleMenuClick, this)}>
@@ -383,7 +431,7 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                         showTotal: function showTotal(total) {
                         return 'Total '+ total + ' items';
                     },
-                    current: ltProps.queryCondition.currentPage,
+                    current: ltProps.queryCondition.page,
                     total: ltProps.collection.total,
                     onChange: this.onChangePage,
                     onShowSizeChange: this.onChangePage
@@ -434,8 +482,8 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
                     "blockStatus": null,
                     "startTime": null,
                     "endTime": null,
-                    "currentPage": 1,
-                    "pageSize": 10
+                    "page": 1,
+                    "size": 10
                 }
 
                 this.ltProps = {
@@ -459,11 +507,12 @@ define("banDomain.view", ['require','exports', 'template', 'base.view', 'utility
             }
 
             onSaveSuccess(){
-                Utility.alerts("添加成功！", "success", 2000);
+                Utility.alerts("添加封禁成功！", "success", 2000);
                 this.setState({
                     modalVisible: false,
                     loading: false
                 })
+                this.handleSubmit()
             }
 
             onSaveError(error) {

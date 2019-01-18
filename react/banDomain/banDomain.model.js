@@ -53,20 +53,9 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },
-
-        stopTask: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/stop?id=" + args.id,
-                successCallback = function(res) {
-                    this.trigger("stop.task.success", res);
-                }.bind(this),
-                errorCallback = function(response) {
-                    this.trigger('stop.task.error', response);
-                }.bind(this);
-            Utility.postAjax(url, args, successCallback, errorCallback);
-        }, 
         
         deleteTask: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/del?id=" + args.id,
+            var url = BASE_URL + "/channelManager/domain/block/delete",
                 successCallback = function(res) {
                     this.trigger("delete.task.success", res);
                 }.bind(this),
@@ -76,13 +65,13 @@ define("banDomain.model", ['require','exports', 'utility'], function(require, ex
             Utility.postAjax(url, args, successCallback, errorCallback);
         },
 
-        getTaskDomain: function(args) {
-            var url = BASE_URL + "/2018-08-30/realtimelog/task/domains",
+        reminderDomain: function(args) {
+            var url = BASE_URL + "/channelManager/domain/block/reminder",
                 successCallback = function(res) {
-                    this.trigger("get.domain.success", res);
+                    this.trigger("reminder.domain.success", res);
                 }.bind(this),
                 errorCallback = function(response) {
-                    this.trigger('get.domain.error', response);
+                    this.trigger('reminder.domain.error', response);
                 }.bind(this);
             Utility.getAjax(url, args, successCallback, errorCallback);
         },

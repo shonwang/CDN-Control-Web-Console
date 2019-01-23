@@ -16,20 +16,22 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
             this.$el = $(tpl);
 
             this.data = {
-              nodes: [{
-                id: 'node1',
-                // "x": 50,
-                // "y": 100
-              },{
-                id: 'node2',
-              }],
-              edges: [{
-                id: 'edge1',
-                target: 'node2',
-                source: 'node1',
-              // "x": 250,
-              // "y": 100
-              }]
+                nodes: [{
+                    id: 'node1',
+                    main: '主指标一',
+                    value: 123111,
+                    percent: '100%'
+                },{
+                    id: 'node2',
+                    main: '指标 1',
+                    value: 12312,
+                    percent: '39%'
+                }],
+                edges: [{
+                    id: 'edge1',
+                    target: 'node2',
+                    source: 'node1'
+                }]
             };
             this.dataTree = {
                 roots: [{
@@ -99,6 +101,10 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
                           '</p>' + 
                        '</div>'
             var html = G6.Util.createDOM(tpl);
+            $(html).find(".main-text").on("click", function(){
+                console.log("...............2")
+            })
+
             var keyShape = group.addShape('dom', {
                 attrs: {
                     x: 0,
@@ -126,31 +132,31 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
               let dx;
               let dy;
               graph.behaviourOn('node:mouseenter', () => {
-                graph.css({
-                  cursor: 'move'
-                });
+                // graph.css({
+                //   cursor: 'move'
+                // });
               });
               graph.behaviourOn('node:mouseleave', () => {
-                graph.css({
-                  cursor: 'default'
-                });
+                // graph.css({
+                //   cursor: 'default'
+                // });
               });
               graph.behaviourOn('node:dragstart', ({ item, x, y }) => {
-                graph.css({
-                  cursor: 'move'
-                });
+                // graph.css({
+                //   cursor: 'move'
+                // });
                 const model = item.getModel();
                 node = item;
                 dx = model.x - x;
                 dy = model.y - y;
               });
               graph.behaviourOn('node:drag', ev => {
-                // graph.preventAnimate(() => {
+                graph.preventAnimate(() => {
                   graph.update(node, {
                     x: ev.x + dx,
                     y: ev.y + dy
                   });
-                // });
+                });
               });
               graph.behaviourOn('node:dragend', () => {
                 node = undefined;
@@ -159,6 +165,7 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
                 node = undefined;
               });
             });
+
             var MIN_ARROW_SIZE = 3;
             G6.registerEdge('VHV', {
                 getPath: function(item) {
@@ -174,7 +181,6 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
 
                 endArrow: {
                     path: function(item) {
-                        console.log("-----------", keyShape)
                         var keyShape = item.getKeyShape();
                         var lineWidth = keyShape.attr('lineWidth');
                         lineWidth = lineWidth > MIN_ARROW_SIZE ? lineWidth : MIN_ARROW_SIZE;
@@ -207,7 +213,6 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
 
                 startArrow: {
                     path: function(item) {
-                        console.log("-----------", keyShape)
                         var keyShape = item.getKeyShape();
                         var lineWidth = keyShape.attr('lineWidth');
                         lineWidth = lineWidth > MIN_ARROW_SIZE ? lineWidth : MIN_ARROW_SIZE;
@@ -243,44 +248,88 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
                 collapseButtonUrl: 'https://gw.alipayobjects.com/zos/rmsportal/GGzWwlTjflbJHmXhjMXg.svg',
                 expandButtonUrl: 'https://gw.alipayobjects.com/zos/rmsportal/DzWdTiwanggjaWKwcnWZ.svg',
                 draw: this.drawFun,
-                // anchor: [
-                //     [0.5, 0],
-                //     [0.5, 1]
-                // ]
+                anchor: [
+                    [1, 0.5],
+                    [0, 0.5]
+                ]
             });
             var treeOption = {
                 container: 'mountNode',
                 height: 500,
                 renderer: 'svg',
                 modes: {
-                    default: ['panNode']
+                    default: ['panNode', 'wheelZoom']
                 },
-                //plugins: [new G6.Plugins['layout.dagre']()],
-                layout: new G6.Layouts.CompactBoxTree({
-                    // direction: 'LR', // 方向（LR/RL/H/TB/BT/V）
-                    getHGap: function getHGap(){
-                        // 横向间距
-                        return 80;
-                    },
-                    getVGap: function getVGap() {
-                        // 竖向间距
-                        return 24;
-                    },
-                    direction: 'RL'
-                }),
+                plugins: [new G6.Plugins['tool.grid'](), new G6.Plugins['layout.dagre']({
+                    rankdir: "RL"
+                })],
+                // layout: new G6.Layouts.CompactBoxTree({
+                //     // direction: 'LR', // 方向（LR/RL/H/TB/BT/V）
+                //     getHGap: function getHGap(){
+                //         // 横向间距
+                //         return 80;
+                //     },
+                //     getVGap: function getVGap() {
+                //         // 竖向间距
+                //         return 24;
+                //     },
+                //     direction: 'RL'
+                // }),
                 fitView: 'tc'
             }
-            //var graph = new G6.Graph(treeOption);
-            var tree = new G6.Tree(treeOption);
+            var tree = new G6.Graph(treeOption);
+            //var tree = new G6.Tree(treeOption);
             tree.node({
                 shape: 'card'
             });
             tree.edge({
                 shape: 'VHV',
-                endArrow: true,
+                endArrow: false,
                 startArrow: true
             });
-            tree.on('node:click', function(ev) {
+
+            //tree.read(this.dataTree);
+            tree.read(this.data);
+            var renderData = tree.save()
+            console.log(G6.Plugins)
+            console.log(renderData)
+            this.$el.find(".graph-container").remove()
+            tree = null
+            var treeOption1 = {
+                container: 'mountNode',
+                height: 500,
+                renderer: 'svg',
+                modes: {
+                    default: ['panNode', 'wheelZoom']
+                },
+                // plugins: [new G6.Plugins['tool.grid'](), new G6.Plugins['layout.dagre']({
+                //     rankdir: "RL"
+                // })],
+                // layout: new G6.Layouts.CompactBoxTree({
+                //     // direction: 'LR', // 方向（LR/RL/H/TB/BT/V）
+                //     getHGap: function getHGap(){
+                //         // 横向间距
+                //         return 80;
+                //     },
+                //     getVGap: function getVGap() {
+                //         // 竖向间距
+                //         return 24;
+                //     },
+                //     direction: 'RL'
+                // }),
+                fitView: 'tc'
+            }
+            var tree1 = new G6.Graph(treeOption1);
+            tree1.node({
+                shape: 'card'
+            });
+            tree1.edge({
+                shape: 'VHV',
+                endArrow: false,
+                startArrow: true
+            });
+            tree1.on('node:click', function(ev) {
+                console.log("......1")
                 var domEvent = ev.domEvent;
                 var item = ev.item
                 var target = domEvent.target;
@@ -297,8 +346,7 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
                     }
                 }
             });
-
-            tree.read(this.dataTree);
+            tree1.read(renderData);
         },
 
         onGetError: function(error){

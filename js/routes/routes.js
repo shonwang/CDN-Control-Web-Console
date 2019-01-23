@@ -51,6 +51,7 @@ define("routes", ['require', 'exports', 'navbar.view',
                 "adminManage"  : "adminManage",
                 "apiLimitRate" : "apiLimitRate",
                 "statisticsDataSourceSwitch": "statisticsDataSourceSwitch",
+                "antvG6Test": "antvG6Test",
 
                 // 调度配置
                 "hashOrigin": "hashOrigin",

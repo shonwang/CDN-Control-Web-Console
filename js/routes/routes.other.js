@@ -79,6 +79,25 @@ define("routes.other", ['require', 'exports', 'subNavbar.view'],
                 }.bind(this));
             },
 
+            antvG6Test: function() {
+                require(['antvG6Test.view', 'antvG6Test.model'], function(antvG6TestView, antvG6TestModel) {
+                    this.curPage = 'antvG6Test';
+                    this.navbarView.select(this.curPage, $.proxy(this.removeSubSideBar, this));
+                    if (!this.antvG6TestModel)
+                        this.antvG6TestModel = new antvG6TestModel();
+                    if (!this.antvG6TestView) {
+                        var options = {
+                            collection: this.antvG6TestModel
+                        };
+                        this.antvG6TestView = new antvG6TestView(options);
+                        this.antvG6TestView.render($('.ksc-content'));
+                    } else {
+                        this.antvG6TestView.update();
+                    }
+                    this.curView = this.antvG6TestView;
+                }.bind(this));
+            },
+
             adminManage: function(){
                 require(['adminManage.view', 'adminManage.model'], function(AdminManageView, AdminManageModel) {
                     this.curPage = 'adminManage';

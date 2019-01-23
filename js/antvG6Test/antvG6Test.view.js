@@ -93,7 +93,7 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
             if (children && children.length > 0) {
                 button = '<img class="ce-button" src=' + (collapsed ? this.expandButtonUrl : this.collapseButtonUrl) + '>';
             }
-            var tpl = '<div class="card-container" style="background-color: red">' + 
+            var tpl = '<div class="card-container" style="border: 1px solid red;border-radius: 10px;">' + 
                           '<h5 class="main-text">' + main + '</h5>' + 
                           '<p>' + 
                           '<span class="value-text">' + value + '</span>' +
@@ -131,15 +131,15 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
               let node;
               let dx;
               let dy;
-              graph.behaviourOn('node:mouseenter', () => {
-                // graph.css({
-                //   cursor: 'move'
-                // });
+              graph.behaviourOn('edge:mouseenter', (ev) => {
+                    graph.update(ev.item, {
+                        color: 'red'
+                    })
               });
-              graph.behaviourOn('node:mouseleave', () => {
-                // graph.css({
-                //   cursor: 'default'
-                // });
+              graph.behaviourOn('edge:mouseleave', (ev) => {
+                    graph.update(ev.item, {
+                        color: 'green'
+                    })
               });
               graph.behaviourOn('node:dragstart', ({ item, x, y }) => {
                 // graph.css({
@@ -261,7 +261,8 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
                     default: ['panNode', 'wheelZoom']
                 },
                 plugins: [new G6.Plugins['tool.grid'](), new G6.Plugins['layout.dagre']({
-                    rankdir: "RL"
+                    rankdir: "RL",
+                    ranksep: 300
                 })],
                 // layout: new G6.Layouts.CompactBoxTree({
                 //     // direction: 'LR', // 方向（LR/RL/H/TB/BT/V）
@@ -285,7 +286,7 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
             tree.edge({
                 shape: 'VHV',
                 endArrow: false,
-                startArrow: true
+                startArrow: true,
             });
 
             //tree.read(this.dataTree);
@@ -302,31 +303,31 @@ define("antvG6Test.view", ['require','exports', 'template', 'modal.view', 'utili
                 modes: {
                     default: ['panNode', 'wheelZoom']
                 },
-                // plugins: [new G6.Plugins['tool.grid'](), new G6.Plugins['layout.dagre']({
-                //     rankdir: "RL"
-                // })],
-                // layout: new G6.Layouts.CompactBoxTree({
-                //     // direction: 'LR', // 方向（LR/RL/H/TB/BT/V）
-                //     getHGap: function getHGap(){
-                //         // 横向间距
-                //         return 80;
-                //     },
-                //     getVGap: function getVGap() {
-                //         // 竖向间距
-                //         return 24;
-                //     },
-                //     direction: 'RL'
-                // }),
+                plugins: [new G6.Plugins['tool.tooltip']()],
                 fitView: 'tc'
             }
             var tree1 = new G6.Graph(treeOption1);
             tree1.node({
-                shape: 'card'
+                shape: 'card',
+                tooltip(model) {
+                    return [
+                        ['id', model.id]
+                    ]
+                }
             });
             tree1.edge({
                 shape: 'VHV',
                 endArrow: false,
-                startArrow: true
+                startArrow: true,
+                tooltip(model) {
+                    return [
+                        ['id', model.id]
+                    ]
+                },
+                label(model) {
+                    return model.shape + "贝塞尔曲线";
+                },
+                size: 2
             });
             tree1.on('node:click', function(ev) {
                 console.log("......1")
